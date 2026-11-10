@@ -1,7 +1,7 @@
 # Plan: Split CI checks into separate steps
 
 Requirement: [Split CI checks into separate steps](task.md)
-Status: In progress
+Status: Done
 
 ## Summary
 Replace the single `Run checks` step in `.github/workflows/ci.yml` with four named steps, one per check: Detekt, JVM tests, Kover and Konsist. Each check step runs when setup succeeded and the run was not cancelled, even if an earlier check failed. This uses GitHub's built-in step status functions instead of `continue-on-error`, so a failed step still fails the job. The Gradle daemon stays alive between steps in the same job, which keeps the extra cost to one configuration per invocation.
@@ -83,3 +83,8 @@ Replace the single `Run checks` step in `.github/workflows/ci.yml` with four nam
 ## Risks
 - **Each step configures Gradle again**, and the configuration cache is not restored on a fresh runner without an encryption key. AC-5 could be missed if configuration is slow. Mitigation: the daemon is reused within the job, and configuration took a few seconds locally. Measure on the first run, and report back if the run exceeds 2m22s.
 - **The AC-2 manual check needs a pull request** from a throwaway branch. That PR is public on the repository. Mitigation: `forge` asks the user before opening it, and closes it and deletes the branch afterwards.
+
+## Verification
+- `main` run [42774391418](https://github.com/huuphuoc1396/kmp-tmdb-app/actions/runs/42774391418): four named steps in order, all green; job 54s (AC-1, AC-5).
+- Temporary PR huuphuoc1396/kmp-tmdb-app#1 with an unused import, run [42774421735](https://github.com/huuphuoc1396/kmp-tmdb-app/actions/runs/42774421735): Static analysis failed; JVM tests, Coverage and Architecture tests still ran and passed; job and PR check failed; `reports` artifact uploaded (AC-2, AC-3, AC-4). PR closed and branch deleted.
+- EC-1, EC-2, EC-3: verified by review of the step conditions (no cancelled or failed-setup run was triggered).
