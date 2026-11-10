@@ -8,7 +8,10 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-/** Kotlin Multiplatform library targeting Android, iOS (device + simulator) and JVM. */
+/**
+ * Kotlin Multiplatform library targeting Android, iOS (device + simulator) and JVM.
+ * Unit tests live in `jvmTest` only, with `kotlin-test` and MockK.
+ */
 class KmpLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("org.jetbrains.kotlin.multiplatform")
@@ -22,15 +25,14 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
                 namespace = derivedNamespace()
                 compileSdk = libs.version("android-compileSdk").toInt()
                 minSdk = libs.version("android-minSdk").toInt()
-                // Runs commonTest on the Android host (JVM) as well.
-                withHostTest {}
             }
             jvm()
             iosArm64()
             iosSimulatorArm64()
 
-            sourceSets.getByName("commonTest").dependencies {
+            sourceSets.getByName("jvmTest").dependencies {
                 implementation(libs.findLibrary("kotlin-test").get())
+                implementation(libs.findLibrary("mockk").get())
             }
         }
     }
