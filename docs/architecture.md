@@ -53,7 +53,7 @@ Rules:
 
 All shared modules target `androidTarget`, `iosArm64`, `iosSimulatorArm64` and `jvm`.
 
-`jvm` exists mainly for **fast tests** (unit, SQLDelight in-memory, Compose UI and screenshot tests). On `cmp` it can also run a desktop app at almost no extra cost.
+`jvm` exists mainly for **fast tests**: every unit test runs on it (see section 8), along with SQLDelight in-memory, Compose UI and screenshot tests. On `cmp` it can also run a desktop app at almost no extra cost.
 
 ---
 
@@ -74,7 +74,7 @@ core/
 ├── security/    # Key management: Android Keystore / iOS Keychain / JVM fake; AES-GCM
 ├── data/        # Offline-first repository implementations, mappers, refresh policy
 ├── di/          # Koin modules for core + initKoin()
-└── testing/     # Fakes, fixture JSON, test dispatchers
+└── testing/     # Fixture JSON, test dispatchers (no fakes; see section 8)
 ```
 
 Use cases are the **public API of the shared core**. The `native` branch consumes the core only through them.
@@ -223,18 +223,24 @@ The current phase uses **plain SQLDelight**. The API is designed so that SQLCiph
 
 | Level | Tools | Runs on |
 |---|---|---|
-| Domain and data unit tests | `kotlin.test`, Turbine, Kotest assertions, handwritten fakes (Mokkery where a mock is clearer) | `commonTest`: JVM, Android, iOS simulator |
-| Network | Ktor `MockEngine` + fixture JSON | `commonTest` |
-| Database | SQLDelight in-memory driver (`JdbcSqliteDriver` on JVM) | `jvmTest` |
-| Shared ViewModels (`cmp`) | `kotlinx-coroutines-test`, Turbine | `commonTest` |
-| Compose UI (`cmp`) | `runComposeUiTest` | JVM, iOS simulator |
+| Domain and data unit tests | `kotlin.test`, MockK, Turbine, Kotest assertions | `jvmTest` |
+| Network | Ktor `MockEngine` + fixture JSON | `jvmTest` |
+| Database | SQLDelight in-memory driver (`JdbcSqliteDriver`), real database, not mocked | `jvmTest` |
+| Platform code (`actual`: Keystore, Keychain, SQLite drivers, Ktor engines, certificate pinning) | Android: instrumented tests. iOS: `kotlin.test`, no mocks | Android emulator/device, iOS simulator (local only) |
+| Shared ViewModels (`cmp`) | `kotlinx-coroutines-test`, Turbine, MockK | `jvmTest` |
+| Compose UI (`cmp`) | `runComposeUiTest` | JVM |
 | Screenshots | Roborazzi | JVM (`cmp`), Robolectric (`native` Android) |
-| Android UI (`native`) | Compose UI test + Robolectric | JVM |
+| Android unit and UI (`native`) | MockK, Compose UI test + Robolectric | JVM |
 | iOS (`native`) | XCTest for Swift ViewModels (fake use cases); XCUITest for flows | iOS simulator |
 | Architecture | Konsist | JVM |
 | Coverage and static analysis | Kover, Detekt | CI |
 
-MockK is not used in `commonTest` because it does not support Kotlin/Native.
+Rules:
+
+- Unit tests for shared code live **only in `jvmTest`**. `commonTest` contains no tests. JVM tests are fast and can use MockK, which supports only the JVM.
+- **MockK is the only mocking library** for Kotlin tests. There are no hand-written fakes; `core:testing` provides fixture JSON and test dispatchers. Ktor `MockEngine` and the in-memory SQLDelight driver are test engines, not fakes, and stay in use.
+- **Platform code is tested on its platform**, locally and not on `main` CI: Android `actual` code with instrumented tests, iOS `actual` code on the simulator with `kotlin.test`. MockK is never used there.
+- Trade-off: differences between the Kotlin/Native and JVM runtimes are not caught by unit tests. Platform tests and iOS XCTest on `native` cover them.
 
 ---
 
@@ -251,6 +257,7 @@ MockK is not used in `commonTest` because it does not support Kotlin/Native.
 | Settings | DataStore KMP + AES-GCM (`cryptography-kotlin`) |
 | Images | Coil 3 |
 | iOS interop | SKIE |
+| Testing | `kotlin.test`, MockK, Turbine, Kotest assertions (JVM); Konsist; Kover |
 | Build | Gradle version catalog, convention plugins in `build-logic` |
 | CI | GitHub Actions: Ubuntu for JVM/Android, macOS for iOS |
 
@@ -264,7 +271,7 @@ MockK is not used in `commonTest` because it does not support Kotlin/Native.
 | `cmp` | All jobs from `main` + JVM Compose UI and screenshot tests + `assembleDebug` + iOS framework build |
 | `native` | All jobs from `main` + Android unit, UI and screenshot tests + `xcodebuild test` (macOS) |
 
-On `main`, Android and iOS targets are compiled locally, not on CI.
+On `main`, Android and iOS targets are compiled locally, not on CI. Platform tests (Android instrumented, iOS simulator) also run locally only.
 
 ### Running checks locally
 
