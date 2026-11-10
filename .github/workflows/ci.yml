@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   check:
-    name: Detekt, JVM tests, coverage, architecture
+    name: Checks (JVM)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -26,12 +26,27 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - uses: gradle/actions/setup-gradle@v5
+      - id: gradle
+        uses: gradle/actions/setup-gradle@v5
         with:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
-      - name: Run checks
-        run: ./gradlew detekt jvmTest koverVerify :architecture-test:test --continue
+      # Each check runs even if an earlier check failed, but not after a cancel or a failed setup.
+      - name: Static analysis (Detekt + ktlint)
+        if: ${{ !cancelled() && steps.gradle.outcome == 'success' }}
+        run: ./gradlew detekt --continue
+
+      - name: JVM tests
+        if: ${{ !cancelled() && steps.gradle.outcome == 'success' }}
+        run: ./gradlew jvmTest --continue
+
+      - name: Coverage verification (Kover)
+        if: ${{ !cancelled() && steps.gradle.outcome == 'success' }}
+        run: ./gradlew koverVerify --continue
+
+      - name: Architecture tests (Konsist)
+        if: ${{ !cancelled() && steps.gradle.outcome == 'success' }}
+        run: ./gradlew :architecture-test:test --continue
 
       - name: Upload reports
         if: failure()
