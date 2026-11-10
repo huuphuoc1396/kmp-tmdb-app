@@ -24,4 +24,5 @@ DerivedData/
 *.xcuserstate
 
 # Claude Code local settings
-.claude/
+.claude/*
+!.claude/rules/
