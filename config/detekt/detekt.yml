@@ -1,0 +1,9 @@
+# Overrides on top of the default detekt config (buildUponDefaultConfig = true).
+
+ktlint:
+  active: true
+
+style:
+  MaxLineLength:
+    active: true
+    maxLineLength: 120

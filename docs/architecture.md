@@ -63,6 +63,7 @@ All shared modules target `androidTarget`, `iosArm64`, `iosSimulatorArm64` and `
 
 ```
 build-logic/convention/   # Convention plugins: kmp.library, kover, detekt, (cmp.feature, android.app on branches)
+architecture-test/        # Konsist tests that enforce the dependency rules in 4.4 (JVM only)
 core/
 ├── common/      # AppResult, AppError, DispatcherProvider, Clock
 ├── model/       # Title, TitleDetails, Cast, Genre, Category, Video (pure Kotlin)
@@ -259,9 +260,21 @@ MockK is not used in `commonTest` because it does not support Kotlin/Native.
 
 | Branch | Jobs |
 |---|---|
-| `main` | `detekt`, `jvmTest`, `koverVerify`, `iosSimulatorArm64Test` (macOS) |
+| `main` | `detekt`, `jvmTest`, `koverVerify`, `:architecture-test:test` on Ubuntu (JVM only) |
 | `cmp` | All jobs from `main` + JVM Compose UI and screenshot tests + `assembleDebug` + iOS framework build |
 | `native` | All jobs from `main` + Android unit, UI and screenshot tests + `xcodebuild test` (macOS) |
+
+On `main`, Android and iOS targets are compiled locally, not on CI.
+
+### Running checks locally
+
+```bash
+# Same checks as CI (JVM only)
+./gradlew detekt jvmTest koverVerify :architecture-test:test
+
+# Compile every target: Android, iOS arm64, iOS simulator arm64, JVM (needs macOS + Xcode)
+./gradlew assemble
+```
 
 ---
 
