@@ -2,6 +2,7 @@
 
 Kotlin Multiplatform shared core for a TMDB discovery app (films, series, anime, novelas; en + pt-BR).
 `main` holds only the shared core: no app module, no UI. Full design: `docs/architecture.md`.
+Per-layer rules (build logic, tests, architecture tests) are in `.claude/rules/` and load by path.
 
 Current state: the `main` skeleton. All `core/*` modules exist but have **no production code yet**, only a
 `*SmokeTest` placeholder each. New code follows `docs/architecture.md` (sections 4–6, 8), not existing examples.
