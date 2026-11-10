@@ -1,6 +1,7 @@
 package com.banhmilabs.tmdb.core.model
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ModelSmokeTest {
