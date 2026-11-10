@@ -1,0 +1,26 @@
+# OS / IDE
+.DS_Store
+.idea/
+*.iml
+.fleet/
+.vscode/
+
+# Gradle / Kotlin
+.gradle/
+build/
+.kotlin/
+local.properties
+
+# Secrets (never commit)
+secrets.properties
+*.jks
+*.keystore
+
+# Xcode
+iosApp/**/xcuserdata/
+iosApp/**/*.xcworkspace/xcuserdata/
+DerivedData/
+*.xcuserstate
+
+# Claude Code local settings
+.claude/
