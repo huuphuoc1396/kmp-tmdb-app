@@ -6,12 +6,16 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
+private const val ANDROID_TEST_RUNNER = "androidx.test.runner.AndroidJUnitRunner"
+
 /**
- * Kotlin Multiplatform library targeting Android, iOS (device + simulator) and JVM.
- * Unit tests default to `jvmTest`, with `kotlin-test` and MockK; `commonTest` gets test dependencies when first needed.
+ * Kotlin Multiplatform library targeting Android, iOS (device + simulator) and JVM, with kotlinx.serialization.
+ * Unit tests default to `jvmTest` (`kotlin-test`, MockK). `commonTest` (`kotlin-test`, no MockK) also runs in the
+ * Android device tests and on the iOS simulator.
  */
 internal fun Project.configureKotlinMultiplatform() {
     pluginManager.apply("org.jetbrains.kotlin.multiplatform")
+    pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
     pluginManager.apply("com.android.kotlin.multiplatform.library")
     pluginManager.apply("tmdb.detekt")
 
@@ -22,14 +26,23 @@ internal fun Project.configureKotlinMultiplatform() {
             namespace = derivedNamespace()
             compileSdk = libs.version("android-compileSdk").toInt()
             minSdk = libs.version("android-minSdk").toInt()
+            withDeviceTestBuilder { sourceSetTreeName = "test" }.configure {
+                instrumentationRunner = ANDROID_TEST_RUNNER
+            }
         }
         jvm()
         iosArm64()
         iosSimulatorArm64()
 
+        sourceSets.getByName("commonTest").dependencies {
+            implementation(libs.findLibrary("kotlin-test").get())
+        }
         sourceSets.getByName("jvmTest").dependencies {
             implementation(libs.findLibrary("kotlin-test").get())
             implementation(libs.findLibrary("mockk").get())
+        }
+        sourceSets.getByName("androidDeviceTest").dependencies {
+            implementation(libs.findLibrary("androidx-test-runner").get())
         }
     }
 }

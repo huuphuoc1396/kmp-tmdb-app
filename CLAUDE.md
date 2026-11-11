@@ -26,7 +26,7 @@ skeleton or existing examples.
 `<module>` is a Gradle path such as `core:common` or `service:title:data`.
 - All CI checks: `./gradlew detekt jvmTest koverVerify :architecture-test:test`
 - One module's tests: `./gradlew :<module>:jvmTest` (root `jvmTest` also runs the `build-logic` unit tests)
-- Platform tests (local only): iOS `./gradlew :<module>:iosSimulatorArm64Test` (macOS + Xcode); Android instrumented tests are not configured yet
+- Platform tests (local only): iOS `./gradlew :<module>:iosSimulatorArm64Test` (macOS + Xcode); Android `./gradlew :<module>:connectedAndroidDeviceTest` (emulator/device). Both also run `commonTest`
 - Static analysis (Detekt + ktlint rules): `./gradlew detekt` or `./gradlew :<module>:detekt`
 - Auto-format (ktlint fixes): `./gradlew :<module>:detekt --auto-correct`
 - Coverage: `./gradlew koverVerify` (80% line on every `service/*/domain` and `service/*/data`; the root project has a rule-less `koverVerify` so the command works with none); report: `:<module>:koverHtmlReport`

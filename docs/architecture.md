@@ -365,10 +365,11 @@ Module paths recognised by `moduleTypeOf`: `:core:<name>`, `:service:<ctx>:domai
 - **Network hardening:** HTTPS only, no request or response body logging in release builds. Certificate pinning only
   for hosts the project controls, or against CA keys with backup pins; pinning a third-party leaf certificate breaks
   the app when that party rotates it.
-- **Encrypted settings:** `core:security` provides a master key (Android Keystore / iOS Keychain with
-  `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` / in-memory on JVM). `core:datastore` encrypts the serialized
-  settings with AES-GCM (`cryptography-kotlin`). If the key is lost (backup restore, device reset), decryption fails
-  and the store is reset to defaults instead of crashing. `EncryptedSharedPreferences` is not used (deprecated).
+- **Encrypted settings:** `core:security` provides AES-256-GCM with a per-device master key: on Android a
+  non-exportable Android Keystore key used through `javax.crypto` (the key never leaves the Keystore); on iOS a key in
+  the Keychain with `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` and on JVM (tests) an in-memory key, both
+  through `cryptography-kotlin`. `core:datastore` stores `@Serializable` values as JSON encrypted with it. If the key is
+  lost (backup restore, device reset), decryption fails and the store is reset to defaults instead of crashing. `EncryptedSharedPreferences` is not used (deprecated).
 - **Database encryption (planned):** the database is plain SQLDelight for now. `DatabaseDriverFactory.create(passphrase:
   ByteArray?)` already takes a passphrase so SQLCipher can be added without changing the architecture.
 
@@ -433,7 +434,7 @@ app links **exactly one** Kotlin umbrella framework, to avoid duplicating the Ko
 | DI | Koin |
 | Networking | Ktor Client, kotlinx.serialization |
 | Database | SQLDelight (SQLCipher planned) |
-| Settings | DataStore KMP + AES-GCM (`cryptography-kotlin`) |
+| Settings | DataStore KMP + AES-GCM (Android Keystore; `cryptography-kotlin` on iOS / JVM) |
 | Images | Coil 3 (Compose); a disk-caching image library on SwiftUI |
 | iOS interop | SKIE |
 | Testing | `kotlin.test`, MockK, Turbine, Kotest assertions; Konsist; Kover |
