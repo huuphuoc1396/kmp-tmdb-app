@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Depends on: 01-encrypted-settings-storage
-Status: Todo
+Status: Done
 
 ## Goal
 The shared core can record that the user completed onboarding and tell the apps, at start-up and as it

@@ -5,9 +5,11 @@ Everything lives on `main` in directories: shared core (`core/`, `service/`) and
 `apps/cmp` and `apps/native`. Full design: `docs/architecture.md`.
 Per-layer rules (build logic, tests, architecture tests) are in `.claude/rules/` and load by path.
 
-Current state: the `main` skeleton. The `core/*` modules exist but have **no production code yet**, only a
-`*SmokeTest` placeholder each. No `service/*` module exists yet: each context (`title`, `favorites`, `settings`) is
-created by the first feature that needs it. New code follows `docs/architecture.md` (sections 5–8), not the
+Current state: early. Production code exists in `core:common` (`AppResult`, `AppError`, `DispatcherProvider`),
+`core:security` (master key cipher), `core:datastore` (encrypted DataStore), `core:di` (`initKoin()`) and the
+`settings` context (`service/settings/{domain,data,fake}`, onboarding state). The other `core/*` modules are still
+skeletons with a `*SmokeTest` placeholder. Contexts `title` and `favorites` are created by the first feature that
+needs them. New code follows `docs/architecture.md` (sections 5–8), not the
 skeleton or existing examples.
 
 ## Repository layout
@@ -118,11 +120,14 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | Coroutine dispatchers | `DispatcherProvider` | `core:common` |
 | Current time | `kotlin.time.Clock` (injected) | stdlib |
 | Shared IDs and models | `TitleId`, `Title`, `Genre`, `Language` | `core:model` |
+| Encrypted local settings | `encryptedDataStore(...)`, `masterKeyCipher(alias)` | `core:datastore`, `core:security` |
+| Koin start-up | `initKoin(appDeclaration)` | `core:di` |
 | Test dispatchers | `core:testing` | `core:testing` |
-| Repository test double | `Fake<Repository>` | `service/<ctx>/fake` |
+| Repository test double | `Fake<Repository>` (e.g. `FakeSettingsRepository`) | `service/<ctx>/fake` |
 | Module build setup | `tmdb.module` (shared modules), `tmdb.detekt` (JVM modules) | `build-logic/convention` |
 
-(Planned in `docs/architecture.md`; not yet implemented — create them in these modules when first needed.)
+(`core:model` types, `kotlin.time.Clock` injection and `core:testing` dispatchers are planned but not implemented yet —
+create them in these modules when first needed.)
 
 ## Do not
 - Don't use MockK or JVM-only APIs in `commonTest`; such tests go in `jvmTest`.
