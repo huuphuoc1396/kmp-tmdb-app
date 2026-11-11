@@ -5,7 +5,14 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.core.security)
+            api(projects.core.security)
+            api(libs.androidx.datastore.core.okio)
+            api(libs.okio)
+            api(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.coroutines.core)
+        }
+        jvmTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

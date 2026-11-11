@@ -38,11 +38,15 @@ paths:
 - Put shared fixtures and dispatchers in `core/testing/src/commonMain/kotlin/com/banhmilabs/tmdb/core/testing/` (package rule enforced by `PackageRulesTest`).
 - Only add something here when two or more modules need it; one-off helpers stay private in the test class.
 
-## Platform tests (not configured yet)
-- `iosTest` and Android device tests have no dependencies set up. The first task that adds `androidMain` / `iosMain` code configures them in `KmpLibraryConventionPlugin` (`kotlin-test` for `iosTest`; no MockK in either).
+## Platform tests
+- Configured in `configureKotlinMultiplatform()`: `commonTest` has `kotlin-test`; Android device tests use `sourceSetTreeName = "test"` (so `androidDeviceTest` also compiles `commonTest`) with the AndroidX test runner; `iosTest` inherits `commonTest`. No MockK in any of them.
+- Behavior shared by every platform's `actual` goes in one `commonTest` class; it runs in `jvmTest`, `connectedAndroidDeviceTest` (real Keystore) and `iosSimulatorArm64Test` (real Keychain). Platform-only checks go in `src/androidDeviceTest/` or `src/iosTest/`.
+- Test helpers that need platform APIs (for example deleting a stored key) are an `internal expect fun` in `commonTest` with `actual`s in `jvmTest`, `androidDeviceTest` and `iosTest`.
+- Reference: `core/security/src/commonTest/kotlin/com/banhmilabs/tmdb/core/security/MasterKeyCipherTest.kt`.
+- Known limitation: `iosSimulatorArm64Test` runs a standalone test binary with no app bundle, so the Keychain is unavailable (`errSecNotAvailable`, -25291) and Keychain-backed tests (`core:security`) fail there. They need an Xcode test host, which comes with `apps/native`; until then they are verified on JVM and on an Android device only. Don't skip or weaken them on iOS.
 
 ## Do / Don't
-- Prefer `src/jvmTest/`. Use `src/commonTest/` only for tests that need no MockK or JVM-only API and are worth running on Kotlin/Native (concurrency, `Flow` timing, formatting, parsing); they also run in `jvmTest`. `commonTest` has no test dependencies yet: add `kotlin-test` (and Turbine / Kotest assertions if needed) to it in `configureKotlinMultiplatform()` with the first such test. MockK stays on `jvmTest` only.
+- Prefer `src/jvmTest/`. Use `src/commonTest/` only for tests that need no MockK or JVM-only API and are worth running on Kotlin/Native (concurrency, `Flow` timing, formatting, parsing); they also run in `jvmTest`. `commonTest` has `kotlin-test`; add Turbine / Kotest assertions to it in `configureKotlinMultiplatform()` when a test needs them. MockK stays on `jvmTest` only.
 - Don't create files under `src/androidHostTest/` (the Android host test was removed).
 - Don't write ad-hoc `Fake*` classes in test code; fakes live only in `service/<ctx>/fake` with a contract test. Otherwise use MockK or a real in-memory engine (SQLDelight in-memory driver, Ktor `MockEngine`).
 - Don't weaken or delete a failing test to make a check pass; fix the cause.

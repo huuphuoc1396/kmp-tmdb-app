@@ -35,7 +35,7 @@ paths:
 - Dependencies go in `kotlin { sourceSets { commonMain.dependencies { ... } } }` with type-safe accessors (`projects.core.security`).
 - Use `api(...)` only when the module exposes the dependency's types (`service/*/domain` → `core:model`, `core:common`, and an allowlisted `domain`); otherwise `implementation(...)`.
 - Allowed project dependencies per type are in `docs/architecture.md` 5.3 and enforced by `tmdb.module`: a forbidden one fails configuration with `Rule: <from> -> <to>: …`. `service/*/fake` and `core:testing` only in test source sets (source-set name contains `Test`). Only the configurations behind Kotlin source-set dependencies are checked; plugin- and IDE-created configurations (for example the Kotlin plugin's SwiftPM lock-file classpath) are not.
-- `tmdb.module` already applies `tmdb.detekt`; don't apply it again in KMP modules.
+- `tmdb.module` already applies `tmdb.detekt` and the kotlinx.serialization compiler plugin; don't apply them again in KMP modules.
 
 ## Module types and dependency rules
 - `buildlogic/ModuleType.kt`: `moduleTypeOf(path)` maps `:core:<name>`, `:service:<ctx>:domain|data|fake`, `:apps:<app>:designsystem`, `:apps:<app>:feature:<x>:nav|api|ui` to a `ModuleType(kind, owner, app)`; any other path (including app shells, not yet supported) returns `null` and `tmdb.module` fails with "Unknown module type".
@@ -57,7 +57,7 @@ paths:
 
 ## Do / Don't
 - Keep build logic configuration-cache safe (`org.gradle.configuration-cache=true`): no `project` access inside task actions; declare extra inputs explicitly, like `inputs.files(...)` in `architecture-test/build.gradle.kts`.
-- Unit test deps are set in `configureKotlinMultiplatform()`: multiplatform test libraries (`kotlin-test`, Turbine, Kotest assertions) may go on `commonTest` once a module needs it; MockK and other JVM-only libraries only on `jvmTest`.
+- Unit test deps are set in `configureKotlinMultiplatform()`: `commonTest` has `kotlin-test` (other multiplatform test libraries such as Turbine and Kotest assertions go there once a module needs them); `androidDeviceTest` has the AndroidX test runner; MockK and other JVM-only libraries only on `jvmTest`.
 - Root `build.gradle.kts` applies Kover with no rules (so `koverVerify` exists with no gated module) and makes the root `jvmTest` depend on `build-logic`'s `:convention:test`.
 
 ## Testing
