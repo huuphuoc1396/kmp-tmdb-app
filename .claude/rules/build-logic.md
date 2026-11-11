@@ -25,28 +25,30 @@ paths:
   }
   ```
 - Read the catalog through `Project.libs`, `libs.findLibrary("<alias>").get()` and `libs.version("<alias>")` from `com/banhmilabs/tmdb/buildlogic/ProjectExtensions.kt`. Never hardcode a version or SDK level.
-- Magic numbers go in a `private companion object` constant (`MIN_LINE_COVERAGE` in `KoverConventionPlugin.kt`).
+- Shared configuration lives in `internal fun Project.configureX()` functions in `com/banhmilabs/tmdb/buildlogic/` (`configureKotlinMultiplatform()`, `configureKover()`); plugins call them.
+- Magic numbers go in a `private const val` (`MIN_LINE_COVERAGE` in `buildlogic/Kover.kt`).
 - Gradle plugin artifacts are `compileOnly` in `build-logic/convention/build.gradle.kts`.
-- References: `KmpLibraryConventionPlugin.kt` (targets + test deps), `KoverConventionPlugin.kt` (extension config + constant), `core/data/build.gradle.kts` (module file shape).
+- References: `ModuleConventionPlugin.kt` (type from path, dependency check), `buildlogic/KotlinMultiplatform.kt` (targets + test deps), `buildlogic/Kover.kt` (extension config + constant), `core/network/build.gradle.kts` (module file shape).
 
 ## Module build file
-- `plugins { alias(libs.plugins.tmdb.kmp.library) }`, plus `alias(libs.plugins.tmdb.kover)` only for coverage-gated modules (today `core:domain`, `core:data`; after the migration every `service/*/domain` and `service/*/data`).
-- Dependencies go in `kotlin { sourceSets { commonMain.dependencies { ... } } }` with type-safe accessors (`projects.core.domain`).
-- Use `api(...)` only when the module exposes the dependency's types (`core:domain` → `model`, `common`; after the migration `service/*/domain` → `core:model`, `core:common`, and any other `domain` it lists in 4.3); otherwise `implementation(...)`.
-- Allowed project dependencies per module type are in `docs/architecture.md` 4.3. `service/*/fake` and `core:testing` go only in `jvmTest` dependencies; no module except `core:di` and the app depends on `service/*/data`.
-- `tmdb.kmp.library` already applies `tmdb.detekt`; don't apply it again in KMP modules.
+- `plugins { alias(libs.plugins.tmdb.module) }` and nothing else: the type (from the path) decides KMP targets, Detekt, and Kover for `domain` / `data`.
+- Dependencies go in `kotlin { sourceSets { commonMain.dependencies { ... } } }` with type-safe accessors (`projects.core.security`).
+- Use `api(...)` only when the module exposes the dependency's types (`service/*/domain` → `core:model`, `core:common`, and an allowlisted `domain`); otherwise `implementation(...)`.
+- Allowed project dependencies per type are in `docs/architecture.md` 4.3 and enforced by `tmdb.module`: a forbidden one fails configuration with `Rule: <from> -> <to>: …`. `service/*/fake` and `core:testing` only in test source sets (configuration name contains `Test`).
+- `tmdb.module` already applies `tmdb.detekt`; don't apply it again in KMP modules.
 
-## Target build logic (planned with the `service/*` migration)
-- One `tmdb.module` convention plugin infers the module type from its path (`:core:*`, `:service:*:domain|data|fake`, `:feature:*:nav|api|ui`) and applies the matching setup (KMP targets, Detekt, Kover for `domain`/`data`), so module files only declare dependencies.
-- One dependency-rule table (module type → allowed types, `docs/architecture.md` 4.3) lives in `build-logic`; a check fails configuration on a forbidden `project(...)` dependency, including `domain → domain` deeper than one level.
-- The plugin sets a unique module (klib) name from the path (`:service:title:domain` → `service-title-domain`) because leaf names repeat.
+## Module types and dependency rules
+- `buildlogic/ModuleType.kt`: `moduleTypeOf(path)` maps `:core:<name>`, `:service:<ctx>:domain|data|fake`, `:feature:<x>:nav|api|ui` to a `ModuleType(kind, owner)`; any other path returns `null` and `tmdb.module` fails with "Unknown module type".
+- `buildlogic/DependencyRules.kt`: `violation(from, to, testScope)` is the 4.3 table; `domainAllowlist` holds the allowed `domain → domain` pairs (`title` → `favorites`), and `allowlistViolation()` rejects chains deeper than one level.
+- `tmdb.module` sets `group` to the parent package of the path so klib names stay unique when leaf names repeat.
+- Changing the architecture: update `docs/architecture.md` 4.2 / 4.3 first (with the user's agreement), then `moduleTypeOf` / `DependencyRules` and their tests in `build-logic/convention/src/test/` (JUnit Jupiter; `kotlin-test` doesn't match the `kotlin-dsl` compiler).
 
 ## Adding a convention plugin
 1. If it wraps a third-party Gradle plugin: add the version, a `<name>-gradlePlugin` library and the plugin id to `gradle/libs.versions.toml`; add `compileOnly(libs.<name>.gradlePlugin)` to `build-logic/convention/build.gradle.kts`; declare the plugin with `apply false` in the root `build.gradle.kts`.
 2. Write `<Name>ConventionPlugin.kt`.
 3. Register it in `gradlePlugin { plugins { register("<name>") { id = libs.plugins.tmdb.<name>.get().pluginId; implementationClass = "<Name>ConventionPlugin" } } }`.
 4. Add `tmdb-<name> = { id = "tmdb.<name>" }` (no version) under `[plugins]`.
-5. Apply it in modules with `alias(libs.plugins.tmdb.<name>)`.
+5. Apply it from `tmdb.module` for the types that need it, or in non-shared modules with `alias(libs.plugins.tmdb.<name>)`.
 
 ## Adding a library
 1. `[versions]` entry (latest stable on Maven Central; check it compiles with the project's Kotlin and JDK 21).
@@ -55,8 +57,9 @@ paths:
 
 ## Do / Don't
 - Keep build logic configuration-cache safe (`org.gradle.configuration-cache=true`): no `project` access inside task actions; declare extra inputs explicitly, like `inputs.files(...)` in `architecture-test/build.gradle.kts`.
-- Don't add a `Test` source set dependency to `commonTest`; unit test deps belong on `jvmTest` in `KmpLibraryConventionPlugin`.
+- Don't add a `Test` source set dependency to `commonTest`; unit test deps belong on `jvmTest` in `configureKotlinMultiplatform()`.
+- Root `build.gradle.kts` applies Kover with no rules (so `koverVerify` exists with no gated module) and makes the root `jvmTest` depend on `build-logic`'s `:convention:test`.
 
 ## Testing
-- `./gradlew compileTestKotlinJvm` after any build change; `./gradlew assemble` (macOS + Xcode) when targets, Android config or plugins change.
+- `./gradlew jvmTest` after any build-logic change (runs the `build-logic` unit tests too); `./gradlew compileTestKotlinJvm` after module build changes; `./gradlew assemble` (macOS + Xcode) when targets, Android config or plugins change.
 - When adding or removing tasks, confirm with `./gradlew :core:common:tasks --all | grep <task>`.

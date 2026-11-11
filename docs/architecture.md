@@ -69,12 +69,12 @@ Modules are grouped in three tiers, following the patterns large Android codebas
 
 `core:di` (on every branch) and the app module (on `cmp` / `native`) are the **composition roots**: the only modules that see every implementation.
 
-> **Status:** the `main` skeleton still has `core:domain` and `core:data`. They move to `service/*` in a separate migration task. New code follows this section, not the skeleton.
+> **Status:** `main` has the `core/*` modules only. The `service/*` tree below is the target: each context, and each `fake` module, is created by the first feature that needs it (4.5).
 
 ### 4.1 Shared core (`main`, identical on every branch)
 
 ```
-build-logic/convention/   # Convention plugins (planned: one tmdb.module plugin that infers the module type from its path)
+build-logic/convention/   # tmdb.module (type from path + dependency rules), tmdb.detekt
 architecture-test/        # Konsist rules for imports and packages (JVM only)
 core/                     # Libraries
 ├── common/      # AppResult, AppError, DispatcherProvider
@@ -85,7 +85,7 @@ core/                     # Libraries
 ├── security/    # Master key: Android Keystore / iOS Keychain / JVM fake; AES-GCM
 ├── testing/     # Test dispatchers
 └── di/          # initKoin(); collects the Koin module of every service/*/data
-service/                  # Services
+service/                  # Services (created on demand)
 ├── title/       # Home lists, details, cast, videos, genres, search
 │   ├── domain/  # TitleDetails, Cast, Video, Category; TitleRepository; ObserveHomeFeed, RefreshHomeFeed
 │   ├── data/    # TitleRepositoryImpl, TMDB endpoints + DTOs, mappers, queries, refresh policy, Koin module
@@ -132,7 +132,7 @@ The **public API of the shared core** is the set of `service/*/domain` modules: 
 |---|---|---|
 | `core/common`, `core/model` | kernel | Technical primitives; models shared by two or more contexts |
 | `core/network`, `core/database`, `core/datastore`, `core/security` | infra | Infrastructure, `expect`/`actual` |
-| `core/designsystem` (`cmp`) | designsystem | Stateless UI components used by two or more features |
+| `core/designsystem` (`cmp`) | designsystem | Theme, stateless UI components used by two or more features, image loading, `UiText`, Compose resources |
 | `core/testing` | testing | Shared test utilities |
 | `core/di`, app module | root | Wiring |
 | `service/<ctx>/domain` | domain | Context models, repository interfaces, use cases |
@@ -229,15 +229,18 @@ The target structure is fixed, but a module is created only when it is needed:
 
 | Rule | Checked by |
 |---|---|
-| Allowed dependencies (4.3 table), one-level `domain → domain` | Planned: a dependency-rule table in `build-logic` that fails the build on a forbidden `project(...)` dependency |
-| No framework imports; package matches the path | Konsist (`architecture-test`) |
-| Unique module names per path | Planned: the `tmdb.module` convention plugin |
+| Module type from path; unknown paths rejected | `tmdb.module` (`moduleTypeOf` in `build-logic`) |
+| Allowed dependencies (4.3 table), `domain → domain` allowlist and its one-level depth | `tmdb.module` (`DependencyRules` in `build-logic`): a forbidden `project(...)` dependency fails configuration with `Rule: <from> -> <to>: …` |
+| No framework imports; package matches the path; import rules | Konsist (`architecture-test`), over `core/`, `service/` and `feature/` |
+| Unique module names per path | `tmdb.module` sets `group` to the parent package of the path |
+
+Every shared module applies only `alias(libs.plugins.tmdb.module)`; KMP targets, Detekt and (for `domain` / `data`) Kover come from its type. The `domain → domain` allowlist is `DependencyRules.domainAllowlist`; adding a pair there and to the list in 4.3 is the only way to allow one. The rule table and type parsing have unit tests in `build-logic`, run by `./gradlew jvmTest`.
 
 ### 4.7 `cmp` branch: share everything
 
 ```
-core/designsystem/        # CMP theme (dark, purple), typography, stateless components
-core/ui/                  # Coil 3 image loading, UiText, Compose resources (en, pt-BR)
+core/designsystem/        # CMP theme (dark, purple), typography, stateless components,
+                          # Coil 3 image loading, UiText, Compose resources (en, pt-BR)
 feature/onboarding/ui/    # OnboardingRoute, OnboardingViewModel, OnboardingScreen
 feature/home/ui/          # HomeRoute, HomeViewModel, HomeScreen
 feature/details/
@@ -430,8 +433,7 @@ On `main`, Android and iOS targets are compiled locally, not on CI. Platform tes
 
 ## 11. Roadmap
 
-1. **`main`**: build-logic, `core/*` modules, JVM tests running, CI.
-   - Migrate `core:domain` / `core:data` to `service/<ctx>/{domain,data,fake}` and add the `tmdb.module` convention plugin with the dependency-rule table (section 4).
+1. **`main`**: build-logic, `core/*` modules, JVM tests running, CI. Done, including the `tmdb.module` plugin and dependency rules (section 4); service contexts arrive with features.
 2. **`cmp`**: design system, then the three screens, then UI tests.
 3. **`native`**: Android screens, then the SwiftUI app with SKIE, then XCTest/XCUITest.
 4. **Spike**: SQLCipher with SQLDelight on Android and iOS.

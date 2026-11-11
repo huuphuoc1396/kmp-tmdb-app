@@ -4,10 +4,10 @@ Kotlin Multiplatform shared core for a TMDB discovery app (films, series, anime,
 `main` holds only the shared core: no app module, no UI. Full design: `docs/architecture.md`.
 Per-layer rules (build logic, tests, architecture tests) are in `.claude/rules/` and load by path.
 
-Current state: the `main` skeleton. All `core/*` modules exist but have **no production code yet**, only a
-`*SmokeTest` placeholder each. The target layout (`docs/architecture.md` section 4) replaces `core:domain` and
-`core:data` with `service/<context>/{domain,data,fake}`; that migration is a separate task. New code follows
-`docs/architecture.md` (sections 4–6, 8), not the skeleton or existing examples.
+Current state: the `main` skeleton. The `core/*` modules exist but have **no production code yet**, only a
+`*SmokeTest` placeholder each. No `service/*` module exists yet: each context (`title`, `favorites`, `settings`) is
+created by the first feature that needs it. New code follows `docs/architecture.md` (sections 4–6, 8), not the
+skeleton or existing examples.
 
 ## Branches
 - `main`: shared core + build-logic + docs + CI. `cmp` (Compose Multiplatform) and `native` (Jetpack Compose + SwiftUI/SKIE) branch from it.
@@ -23,11 +23,11 @@ Current state: the `main` skeleton. All `core/*` modules exist but have **no pro
 ## Commands
 `<module>` is a Gradle path such as `core:common` or `service:title:data`.
 - All CI checks: `./gradlew detekt jvmTest koverVerify :architecture-test:test`
-- One module's tests: `./gradlew :<module>:jvmTest`
+- One module's tests: `./gradlew :<module>:jvmTest` (root `jvmTest` also runs the `build-logic` unit tests)
 - Platform tests (local only): iOS `./gradlew :<module>:iosSimulatorArm64Test` (macOS + Xcode); Android instrumented tests are not configured yet
 - Static analysis (Detekt + ktlint rules): `./gradlew detekt` or `./gradlew :<module>:detekt`
 - Auto-format (ktlint fixes): `./gradlew :<module>:detekt --auto-correct`
-- Coverage: `./gradlew koverVerify` (today `core:domain`, `core:data`; after the migration `service/*/domain`, `service/*/data`); report: `:<module>:koverHtmlReport`
+- Coverage: `./gradlew koverVerify` (80% line on every `service/*/domain` and `service/*/data`; the root project has a rule-less `koverVerify` so the command works with none); report: `:<module>:koverHtmlReport`
 - Architecture rules: `./gradlew :architecture-test:test`
 - Compile every target (Android, iOS, JVM; macOS + Xcode): `./gradlew assemble`
 
@@ -56,8 +56,9 @@ Full (when the user asks, or before opening a PR):
 - `DatabaseDriverFactory.create(passphrase: ByteArray?)` keeps the passphrase parameter so SQLCipher can be added later.
 
 ## Modules
-All shared modules use `tmdb.kmp.library` → targets `android` (with host tests), `jvm`, `iosArm64`, `iosSimulatorArm64`.
-Target layout (`docs/architecture.md` 4.1–4.3). Modules marked *on demand* are created only when first needed (4.5).
+All shared modules apply only `tmdb.module`, which reads the module type from the path (`docs/architecture.md` 4.2)
+and sets targets `android` (with host tests), `jvm`, `iosArm64`, `iosSimulatorArm64`, Detekt, and Kover for
+`domain`/`data`. Modules marked *on demand* are created only when first needed (4.5).
 
 | Module | Purpose | May depend on |
 |---|---|---|
@@ -69,8 +70,8 @@ Target layout (`docs/architecture.md` 4.1–4.3). Modules marked *on demand* are
 | `core:datastore` | DataStore KMP + encrypted serializer | `security`, kernel |
 | `core:testing` | Test dispatchers | kernel |
 | `core:di` | `initKoin()`, collects every `service/*/data` Koin module | everything |
-| `service/<ctx>/domain` | Context models, repository interfaces, use cases | kernel; another context's `domain` (one level, listed in 4.3) |
-| `service/<ctx>/data` | Repository impls, endpoints + DTOs, mappers, queries, refresh policy, Koin module | own `domain`, kernel, `network`/`database`/`datastore` |
+| `service/<ctx>/domain` (on demand) | Context models, repository interfaces, use cases | kernel; another context's `domain` (one level, listed in 4.3) |
+| `service/<ctx>/data` (on demand) | Repository impls, endpoints + DTOs, mappers, queries, refresh policy, Koin module | own `domain`, kernel, `network`/`database`/`datastore` |
 | `service/<ctx>/fake` (on demand) | In-memory repository fakes + repository contract test | own `domain`, kernel |
 | `feature/<x>/nav` (`cmp`, on demand) | Route, Args, Result; renamed `api` when it must expose an entry interface | `core:model` |
 | `feature/<x>/ui` (`cmp`) | ViewModel + screen | `nav`/`api`, `service/*/domain`, `core:designsystem`, kernel |
@@ -83,18 +84,20 @@ Forbidden: `ui → ui`, `ui → data`, `data → data`, `fake → data`, `domain
 Feature A needing something from feature B: service `domain` → `core:designsystem` → a `@Composable` slot passed by the
 app module → an entry interface in B's `api` bound with Koin (4.3).
 
-Enforced by Konsist (`architecture-test/`, today over `core/*` only): `model`/`domain` import no frameworks (Ktor,
-SQLDelight, `androidx.`, Compose, Koin, `android.`, `platform.`); `domain` imports no `data`/`network`/`database`/
-`datastore`/`security`/`di`; `network`/`database`/`datastore` import no `data`/`di`; every file uses the package of its
-path (`core/<module>` → `com.banhmilabs.tmdb.core.<module>`, `service/<ctx>/<type>` → `…service.<ctx>.<type>`).
-Planned with the migration: a dependency-rule table in `build-logic` that fails the build on forbidden `project(...)` deps.
+Enforced by `tmdb.module` (`build-logic/convention/.../buildlogic/DependencyRules.kt`): an unknown module path or a
+forbidden `project(...)` dependency fails configuration with `Rule: <from> -> <to>: …`; the `domain → domain`
+allowlist is `DependencyRules.domainAllowlist` (one level, checked). Enforced by Konsist (`architecture-test/`, over
+`core/`, `service/`, `feature/`): `core:model`, `service/*/domain`, `feature/*/nav` import no frameworks (Ktor,
+SQLDelight, `androidx.`, Compose, Koin, `android.`, `platform.`); `domain` imports no `data`/`fake`/infrastructure/`di`;
+`network`/`database`/`datastore` import no `service`/`di`; feature `ui` imports no other `ui` and no `data`; every
+file uses the package of its path (`service/title/domain` → `com.banhmilabs.tmdb.service.title.domain`).
 
 ## Conventions
-- New shared module: add to `settings.gradle.kts`, apply `alias(libs.plugins.tmdb.kmp.library)`. Namespace is derived from the path (`:service:title:domain` → `com.banhmilabs.tmdb.service.title.domain`); don't set it by hand. Add the module to `PackageRulesTest`.
-- Leaf names repeat (`domain`, `data`, `ui`); module (klib) names must be unique per path (`service-title-domain`).
+- New shared module: create it at its architecture path, add it to `settings.gradle.kts`, and apply only `alias(libs.plugins.tmdb.module)`. Type, namespace (`:service:title:domain` → `com.banhmilabs.tmdb.service.title.domain`), Kover and the dependency check come from the path; don't set them by hand. Konsist picks it up automatically.
+- Leaf names repeat (`domain`, `data`, `ui`); `tmdb.module` keeps klib names unique by setting `group` from the path.
 - A model goes in `core:model` only when two or more contexts (or a `nav` module) need it; otherwise it stays in its context's `domain`.
 - A use case is a class with `operator fun invoke`, no interface. Repository interfaces expose only what consumers need; `upsert`-style operations stay in `data`.
-- Apply `alias(libs.plugins.tmdb.kover)` only where coverage is enforced (`domain`, `data`; 80% line, DI/`*Dto`/generated excluded).
+- Coverage (80% line, DI/`*Dto`/generated excluded) is applied by `tmdb.module` to `domain` and `data` modules only.
 - Module dependencies use type-safe accessors: `implementation(projects.service.title.domain)`.
 - Every dependency and plugin version goes in `gradle/libs.versions.toml`; shared build config goes in a convention plugin in `build-logic/convention`.
 - Write unit tests in `jvmTest` only, never `commonTest`: `kotlin.test`, Turbine, Kotest assertions; Ktor `MockEngine` + fixture JSON for network; real SQLDelight in-memory `JdbcSqliteDriver` for database.
@@ -114,7 +117,7 @@ Planned with the migration: a dependency-rule table in `build-logic` that fails 
 | Shared IDs and models | `TitleId`, `Title`, `Genre`, `Language` | `core:model` |
 | Test dispatchers | `core:testing` | `core:testing` |
 | Repository test double | `Fake<Repository>` | `service/<ctx>/fake` |
-| Module build setup | `tmdb.kmp.library`, `tmdb.kover`, `tmdb.detekt` | `build-logic/convention` |
+| Module build setup | `tmdb.module` (shared modules), `tmdb.detekt` (JVM modules) | `build-logic/convention` |
 
 (Planned in `docs/architecture.md`; not yet implemented — create them in these modules when first needed.)
 
@@ -124,7 +127,7 @@ Planned with the migration: a dependency-rule table in `build-logic` that fails 
 - Don't use MockK in iOS or Android instrumented tests (JVM-only); test against the real platform API.
 - Don't mock the database or HTTP client; use the in-memory SQLDelight driver and Ktor `MockEngine`.
 - Don't let a feature `ui` depend on another feature's `ui` or on any `service/*/data`.
-- Don't add a `domain → domain` dependency deeper than one level or without listing it in `docs/architecture.md` 4.3.
+- Don't add a `domain → domain` dependency without adding the pair to `DependencyRules.domainAllowlist` and to `docs/architecture.md` 4.3 (one level only).
 - Don't create a use case that only forwards to a repository.
 - Don't feed network results to callers directly; upsert into SQLDelight and read through `observe()`.
 - Don't use `EncryptedSharedPreferences` (deprecated); use `core:datastore` with the AES-GCM serializer.

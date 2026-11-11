@@ -11,21 +11,25 @@ dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.detekt.gradlePlugin)
     compileOnly(libs.kover.gradlePlugin)
+
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 gradlePlugin {
     plugins {
-        register("kmpLibrary") {
-            id = libs.plugins.tmdb.kmp.library.get().pluginId
-            implementationClass = "KmpLibraryConventionPlugin"
-        }
         register("detekt") {
             id = libs.plugins.tmdb.detekt.get().pluginId
             implementationClass = "DetektConventionPlugin"
         }
-        register("kover") {
-            id = libs.plugins.tmdb.kover.get().pluginId
-            implementationClass = "KoverConventionPlugin"
+        register("module") {
+            id = libs.plugins.tmdb.module.get().pluginId
+            implementationClass = "ModuleConventionPlugin"
         }
     }
 }

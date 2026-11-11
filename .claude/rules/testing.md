@@ -10,7 +10,7 @@ paths:
 
 ## Responsibility
 - Unit tests for each module live in its `src/jvmTest/kotlin/` under the module's package (`core/<module>` → `com/banhmilabs/tmdb/core/<module>/`, `service/<ctx>/<type>` → `com/banhmilabs/tmdb/service/<ctx>/<type>/`).
-- `core:testing` is a normal KMP library (`commonMain`) that other modules' tests consume. Target: test dispatchers only, depending on kernel modules. Today it still depends on `core:domain` as `api` until the `service/*` migration.
+- `core:testing` is a normal KMP library (`commonMain`) that other modules' tests consume. It holds test dispatchers only and may depend only on the kernel (`core:common`, `core:model`).
 - Strategy (jvmTest only, service fakes across modules, MockK inside a module, platform code tested on its platform) is in CLAUDE.md and `docs/architecture.md` section 8; this file covers how to write the tests.
 
 ## Pattern
@@ -20,7 +20,7 @@ paths:
 - MockK (collaborators in the same module, or to `verify` calls): `mockk<T>()`, `every { ... } returns ...`, `verify { ... }`. Test-only types go in a `private` nested declaration inside the test class.
 - Dependencies from another module (a ViewModel or use case using a repository): use `Fake<Repository>` from `service/<ctx>/fake` via `jvmTest` dependencies, with the real use cases on top.
 - Reference: `core/common/src/jvmTest/kotlin/com/banhmilabs/tmdb/core/common/CommonSmokeTest.kt`.
-- `kotlin-test` and MockK come from `tmdb.kmp.library`; don't add them per module. To use `core:testing`, add `implementation(projects.core.testing)` to the module's `jvmTest` dependencies.
+- `kotlin-test` and MockK come from `tmdb.module`; don't add them per module. To use `core:testing`, add `implementation(projects.core.testing)` to the module's `jvmTest` dependencies.
 
 ## Adding tests to a module
 1. Create `<Subject>Test.kt` under the module's `src/jvmTest/kotlin/...` in the subject's package.
