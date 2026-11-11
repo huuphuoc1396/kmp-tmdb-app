@@ -6,9 +6,9 @@ paths:
 # Architecture tests (Konsist)
 
 ## Responsibility
-- Enforces the import and package rules from `docs/architecture.md` sections 4.3 and 4.6 by reading Kotlin source files with Konsist. Allowed module dependencies (`project(...)`) are checked by `tmdb.module` in `build-logic`, not here.
+- Enforces the import and package rules from `docs/architecture.md` sections 5.3 and 9 by reading Kotlin source files with Konsist. Allowed module dependencies (`project(...)`) are checked by `tmdb.module` in `build-logic`, not here.
 - A plain Kotlin/JVM module (`kotlin.jvm` + `tmdb.detekt`), JUnit Jupiter via the JUnit BOM, `useJUnitPlatform()`. It depends on no project module.
-- `architecture-test/build.gradle.kts` declares `core/`, `service/` and `feature/` `**/*.kt` as test inputs so Gradle re-runs the tests when sources change. Any new directory a rule checks (for example `android/` on `native`) must be added to those inputs, or the task stays up to date and misses violations.
+- `architecture-test/build.gradle.kts` declares `core/`, `service/` and `feature/` `**/*.kt` as test inputs so Gradle re-runs the tests when sources change. Any new directory a rule checks (for example `apps/` once an app exists) must be added to those inputs, or the task stays up to date and misses violations.
 
 ## Pattern
 - One test class per rule group: `DependencyRulesTest` (imports between layers), `PackageRulesTest` (package names).
@@ -23,7 +23,7 @@ paths:
 1. Pick the class by rule group (or add a new `<Group>RulesTest`), and the scope (production vs project).
 2. Select files with the `ModulePaths.kt` helpers; add a new `internal` helper there only if two tests need it.
 3. Write the assertion with `additionalMessage = "Rule: ..."`.
-4. If the rule comes from the architecture doc, keep `docs/architecture.md` sections 4.3 and 4.6 in sync.
+4. If the rule comes from the architecture doc, keep `docs/architecture.md` sections 5.3 and 9 in sync.
 5. Check it catches a violation: temporarily add a breaking import (or a file under a not-yet-existing module path, e.g. `service/x/domain/src/commonMain/kotlin/...`), run the test, see it fail, revert.
 
 ## Adding a module
