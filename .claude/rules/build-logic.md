@@ -30,10 +30,16 @@ paths:
 - References: `KmpLibraryConventionPlugin.kt` (targets + test deps), `KoverConventionPlugin.kt` (extension config + constant), `core/data/build.gradle.kts` (module file shape).
 
 ## Module build file
-- `plugins { alias(libs.plugins.tmdb.kmp.library) }`, plus `alias(libs.plugins.tmdb.kover)` only for coverage-gated modules (`core:domain`, `core:data`).
+- `plugins { alias(libs.plugins.tmdb.kmp.library) }`, plus `alias(libs.plugins.tmdb.kover)` only for coverage-gated modules (today `core:domain`, `core:data`; after the migration every `service/*/domain` and `service/*/data`).
 - Dependencies go in `kotlin { sourceSets { commonMain.dependencies { ... } } }` with type-safe accessors (`projects.core.domain`).
-- Use `api(...)` only when the module exposes the dependency's types (`core:domain` → `model`, `common`; `core:testing` → `domain`); otherwise `implementation(...)`.
+- Use `api(...)` only when the module exposes the dependency's types (`core:domain` → `model`, `common`; after the migration `service/*/domain` → `core:model`, `core:common`, and any other `domain` it lists in 4.3); otherwise `implementation(...)`.
+- Allowed project dependencies per module type are in `docs/architecture.md` 4.3. `service/*/fake` and `core:testing` go only in `jvmTest` dependencies; no module except `core:di` and the app depends on `service/*/data`.
 - `tmdb.kmp.library` already applies `tmdb.detekt`; don't apply it again in KMP modules.
+
+## Target build logic (planned with the `service/*` migration)
+- One `tmdb.module` convention plugin infers the module type from its path (`:core:*`, `:service:*:domain|data|fake`, `:feature:*:nav|api|ui`) and applies the matching setup (KMP targets, Detekt, Kover for `domain`/`data`), so module files only declare dependencies.
+- One dependency-rule table (module type → allowed types, `docs/architecture.md` 4.3) lives in `build-logic`; a check fails configuration on a forbidden `project(...)` dependency, including `domain → domain` deeper than one level.
+- The plugin sets a unique module (klib) name from the path (`:service:title:domain` → `service-title-domain`) because leaf names repeat.
 
 ## Adding a convention plugin
 1. If it wraps a third-party Gradle plugin: add the version, a `<name>-gradlePlugin` library and the plugin id to `gradle/libs.versions.toml`; add `compileOnly(libs.<name>.gradlePlugin)` to `build-logic/convention/build.gradle.kts`; declare the plugin with `apply false` in the root `build.gradle.kts`.
