@@ -34,6 +34,5 @@ detekt = { id = "dev.detekt", version.ref = "detekt" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 
 # Convention plugins (build-logic)
-tmdb-kmp-library = { id = "tmdb.kmp.library" }
 tmdb-detekt = { id = "tmdb.detekt" }
-tmdb-kover = { id = "tmdb.kover" }
+tmdb-module = { id = "tmdb.module" }

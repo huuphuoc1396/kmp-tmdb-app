@@ -23,12 +23,10 @@ include(
     ":architecture-test",
     ":core:common",
     ":core:model",
-    ":core:domain",
     ":core:network",
     ":core:database",
     ":core:datastore",
     ":core:security",
-    ":core:data",
     ":core:di",
     ":core:testing",
 )

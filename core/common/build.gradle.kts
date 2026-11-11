@@ -1,3 +1,3 @@
 plugins {
-    alias(libs.plugins.tmdb.kmp.library)
+    alias(libs.plugins.tmdb.module)
 }

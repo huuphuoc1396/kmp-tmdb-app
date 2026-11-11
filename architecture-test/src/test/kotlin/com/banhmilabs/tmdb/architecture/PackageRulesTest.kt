@@ -7,16 +7,11 @@ import org.junit.jupiter.api.Test
 class PackageRulesTest {
     @Test
     fun `files use their module package`() {
-        val modules = listOf(
-            "common", "model", "domain", "network", "database",
-            "datastore", "security", "data", "di", "testing",
-        )
-        val scope = Konsist.scopeFromProject()
-        modules.forEach { module ->
-            scope.filesInCoreModule(module)
-                .assertTrue(additionalMessage = "Rule: files in core/$module use package ${corePackage(module)}") {
-                    it.packagee?.name?.startsWith(corePackage(module)) == true
-                }
-        }
+        Konsist.scopeFromProject().files
+            .filter { it.modulePath() != null }
+            .assertTrue(additionalMessage = "Rule: files use the package of their module path") { file ->
+                val expected = file.modulePath()?.let(::packageOf)
+                expected != null && file.packagee?.name?.startsWith(expected) == true
+            }
     }
 }
