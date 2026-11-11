@@ -14,7 +14,7 @@ import com.banhmilabs.tmdb.buildlogic.ModuleKind.SECURITY
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.TESTING
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.UI
 
-/** Allowed module dependencies from `docs/architecture.md` 4.3. */
+/** Allowed module dependencies from `docs/architecture.md` 5.3 and 9. */
 internal object DependencyRules {
     /** Allowed `domain -> domain` pairs, as `source context to target context`, one level deep. */
     val domainAllowlist: Set<Pair<String, String>> = setOf("title" to "favorites")
@@ -29,6 +29,7 @@ internal object DependencyRules {
         testScope: Boolean,
         allowlist: Set<Pair<String, String>> = domainAllowlist,
     ): String? {
+        appViolation(from, to)?.let { return it }
         if (to.kind in TEST_ONLY && from.kind != DI) {
             return if (testScope) null else "fake and core:testing are allowed only in test source sets"
         }
@@ -56,6 +57,13 @@ internal object DependencyRules {
         }
     }
 
+    /** The shared core never depends on an app, and one app never depends on another. */
+    private fun appViolation(from: ModuleType, to: ModuleType): String? = when {
+        to.app == null || to.app == from.app -> null
+        from.app == null -> "the shared core (core, service) never depends on an app"
+        else -> "apps never depend on each other"
+    }
+
     private fun isOwnDomain(from: ModuleType, to: ModuleType) = to.kind == DOMAIN && to.owner == from.owner
 
     private fun ruleFor(kind: ModuleKind): String = when (kind) {
@@ -67,7 +75,7 @@ internal object DependencyRules {
         DOMAIN -> "domain depends only on the kernel and allowlisted domains of other contexts"
         DATA -> "data depends only on its own context's domain, the kernel and infrastructure"
         FAKE -> "fake depends only on its own context's domain and the kernel"
-        UI -> "ui depends only on nav/api, service domains, core:designsystem and the kernel"
+        UI -> "ui depends only on nav/api and the designsystem of its app, service domains and the kernel"
     }
 
     private val ModuleKind.label get() = name.lowercase()

@@ -40,7 +40,7 @@ core/                     # Libraries tier
 service/<context>/        # Services tier: domain, data, fake
 apps/
 ├── cmp/                  # Compose Multiplatform app: designsystem, feature/*, app shells
-└── native/               # Native apps: android/ (Jetpack Compose), iosApp/ (SwiftUI), shared/ (iOS umbrella)
+└── native/               # Native apps: Android modules (Jetpack Compose), iosApp/ (SwiftUI), shared/ (iOS umbrella)
 docs/
 ```
 
@@ -100,7 +100,7 @@ cost.
 |---|---|---|
 | Libraries | `core/` | Infrastructure and a small shared kernel; no business features |
 | Services | `service/<context>/` | One business capability (bounded context): `domain`, `data`, `fake` |
-| Features | `apps/<app>/feature/<feature>/` (and `apps/native/android/feature/` on Android) | Screens: `ui` (ViewModel + screen) and, when needed, `nav` / `api` |
+| Features | `apps/<app>/feature/<feature>/` | Screens: `ui` (ViewModel + screen) and, when needed, `nav` / `api` |
 
 `core:di` and each app shell are the **composition roots**: the only modules that see every implementation.
 
@@ -345,9 +345,14 @@ Rules:
 Every shared module applies only `alias(libs.plugins.tmdb.module)`; KMP targets, Detekt and (for `domain` / `data`)
 Kover come from its type. The rule table and type parsing have unit tests in `build-logic`.
 
-> **Status:** path parsing and Konsist currently cover `core/`, `service/` and `feature/`. When the first app
-> directory is created, `moduleTypeOf` and the Konsist inputs are extended to `apps/<app>/…` with the same types and
-> rules, plus the rule that one app never depends on the other.
+Module paths recognised by `moduleTypeOf`: `:core:<name>`, `:service:<ctx>:domain|data|fake`,
+`:apps:<app>:designsystem` and `:apps:<app>:feature:<x>:nav|api|ui`. Two rules span apps: a `ui` module uses only the
+`nav` / `api` / designsystem of its own app, and a module never depends on a module of another app; the shared core
+(`core/`, `service/`) never depends on an app at all.
+
+> **Status:** app shells (`composeApp`, `androidApp`, `apps/native/app`) and the per-app build setup (Compose for
+> `apps/cmp`, Android-only modules for `apps/native`) are added with the first app; `tmdb.module` currently
+> configures every recognised module as a KMP library.
 
 ---
 
@@ -389,10 +394,9 @@ ViewModels use androidx.lifecycle KMP.
 
 ```
 apps/native/
-├── android/
-│   ├── designsystem/     # Jetpack Compose theme + components
-│   ├── feature/<x>/{nav,api,ui}/
-│   └── app/              # Activity, navigation graph, Koin start
+├── designsystem/         # Android: Jetpack Compose theme + components
+├── feature/<x>/{nav,api,ui}/   # Android feature modules
+├── app/                  # Android: Activity, navigation graph, Koin start
 ├── shared/               # iOS umbrella framework: exports core:common, core:model, service/*/domain
 │                         # (debug builds also export service/*/fake for previews and tests); SKIE; KoinHelper
 └── iosApp/
@@ -402,7 +406,9 @@ apps/native/
     └── Localizable.xcstrings
 ```
 
-Feature rules are the same on both platforms. On iOS, SKIE turns `Flow<T>` into `AsyncSequence`, `suspend` into
+Gradle modules in `apps/native` are the Android app; iOS code lives in `iosApp/` (Xcode, Swift packages) and
+reaches Kotlin only through `shared/`. Both apps therefore use the same module paths. Feature rules are the same on
+both platforms. On iOS, SKIE turns `Flow<T>` into `AsyncSequence`, `suspend` into
 `async throws`, `sealed` hierarchies into exhaustive `switch onEnum(of:)`, and Kotlin enums into Swift enums. An iOS
 app links **exactly one** Kotlin umbrella framework, to avoid duplicating the Kotlin runtime and types.
 

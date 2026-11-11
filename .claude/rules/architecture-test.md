@@ -8,15 +8,15 @@ paths:
 ## Responsibility
 - Enforces the import and package rules from `docs/architecture.md` sections 5.3 and 9 by reading Kotlin source files with Konsist. Allowed module dependencies (`project(...)`) are checked by `tmdb.module` in `build-logic`, not here.
 - A plain Kotlin/JVM module (`kotlin.jvm` + `tmdb.detekt`), JUnit Jupiter via the JUnit BOM, `useJUnitPlatform()`. It depends on no project module.
-- `architecture-test/build.gradle.kts` declares `core/`, `service/` and `feature/` `**/*.kt` as test inputs so Gradle re-runs the tests when sources change. Any new directory a rule checks (for example `apps/` once an app exists) must be added to those inputs, or the task stays up to date and misses violations.
+- `architecture-test/build.gradle.kts` declares `core/`, `service/` and `apps/` `**/*.kt` as test inputs so Gradle re-runs the tests when sources change. Any new directory a rule checks must be added to those inputs, or the task stays up to date and misses violations.
 
 ## Pattern
 - One test class per rule group: `DependencyRulesTest` (imports between layers), `PackageRulesTest` (package names).
-- Shared helpers live in `ModulePaths.kt`: `ROOT_PACKAGE`, `KoFileDeclaration.modulePath()` (`core/<m>`, `service/<ctx>/<type>`, `feature/<x>/<type>` from the file path), `packageOf(modulePath)`, `KoScope.filesMatching(regex)` (by module path), `importsAnyOf(prefixes)`, `importsMatching(regex)`.
+- Shared helpers live in `ModulePaths.kt`: `ROOT_PACKAGE`, `KoFileDeclaration.modulePath()` (`core/<m>`, `service/<ctx>/<type>`, `apps/<app>/designsystem`, `apps/<app>/feature/<x>/<type>` from the file path), `appOf(modulePath)`, `packageOf(modulePath)`, `KoScope.filesMatching(regex)` (by module path), `importsAnyOf(prefixes)`, `importsMatching(regex)`.
 - Scope: `Konsist.scopeFromProduction()` for dependency rules (tests may import anything); `Konsist.scopeFromProject()` when tests must follow the rule too (package rule).
 - Assert with `assertFalse` / `assertTrue(additionalMessage = "Rule: <same text as the test name>") { ... }`.
 - Test names are backtick sentences stating the rule: `` `domain imports no data, fake or infrastructure` ``.
-- Konsist assertions are non-strict: an empty file list passes, so rules for `service/` and `feature/` hold before those modules exist.
+- Konsist assertions are non-strict: an empty file list passes, so rules for `service/` and `apps/` hold before those modules exist.
 - References: `architecture-test/src/test/kotlin/com/banhmilabs/tmdb/architecture/DependencyRulesTest.kt`, `.../ModulePaths.kt`.
 
 ## Adding a rule
@@ -31,10 +31,11 @@ paths:
 
 ## Current rules
 - Packages: every file uses the package of its module path (`service/title/domain` → `com.banhmilabs.tmdb.service.title.domain`).
-- No frameworks in `core/model`, `service/*/domain`, `feature/*/nav` (`feature/*/api` may use the Compose runtime).
+- No frameworks in `core/model`, `service/*/domain`, `apps/*/feature/*/nav` (`api` may use the Compose runtime).
 - `service/*/domain` imports no `service.*.data|fake` and no `core.network|database|datastore|security|di`.
 - `core/model` imports nothing else in the app; `core/network|database|datastore` import no `service.*` and no `core.di`.
-- `feature/*/ui` imports no other feature's `ui` and no `service.*.data`.
+- `apps/*/feature/*/ui` imports no other feature's `ui` and no `service.*.data`.
+- `core/` and `service/` import nothing from `apps.*`; a file in one app imports nothing from another app.
 
 ## Do / Don't
 - Don't add project dependencies to this module; Konsist reads sources by path.

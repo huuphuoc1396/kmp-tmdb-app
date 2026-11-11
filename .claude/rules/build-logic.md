@@ -38,8 +38,8 @@ paths:
 - `tmdb.module` already applies `tmdb.detekt`; don't apply it again in KMP modules.
 
 ## Module types and dependency rules
-- `buildlogic/ModuleType.kt`: `moduleTypeOf(path)` maps `:core:<name>`, `:service:<ctx>:domain|data|fake`, `:feature:<x>:nav|api|ui` to a `ModuleType(kind, owner)`; any other path returns `null` (paths under `apps/<app>/` are added with the first app module, `docs/architecture.md` 9) and `tmdb.module` fails with "Unknown module type".
-- `buildlogic/DependencyRules.kt`: `violation(from, to, testScope)` is the 4.3 table; `domainAllowlist` holds the allowed `domain → domain` pairs (`title` → `favorites`), and `allowlistViolation()` rejects chains deeper than one level.
+- `buildlogic/ModuleType.kt`: `moduleTypeOf(path)` maps `:core:<name>`, `:service:<ctx>:domain|data|fake`, `:apps:<app>:designsystem`, `:apps:<app>:feature:<x>:nav|api|ui` to a `ModuleType(kind, owner, app)`; any other path (including app shells, not yet supported) returns `null` and `tmdb.module` fails with "Unknown module type".
+- `buildlogic/DependencyRules.kt`: `violation(from, to, testScope)` is the 5.3 table; `domainAllowlist` holds the allowed `domain → domain` pairs (`title` → `favorites`), and `allowlistViolation()` rejects chains deeper than one level. `appViolation()` rejects shared core → app and app → other app before the table is consulted.
 - `tmdb.module` sets `group` to the parent package of the path so klib names stay unique when leaf names repeat.
 - Changing the architecture: update `docs/architecture.md` 5.2 / 5.3 first (with the user's agreement), then `moduleTypeOf` / `DependencyRules` and their tests in `build-logic/convention/src/test/` (JUnit Jupiter; `kotlin-test` doesn't match the `kotlin-dsl` compiler).
 

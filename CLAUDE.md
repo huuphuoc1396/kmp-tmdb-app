@@ -88,8 +88,9 @@ app shell → an entry interface in B's `api` bound with Koin (5.4).
 
 Enforced by `tmdb.module` (`build-logic/convention/.../buildlogic/DependencyRules.kt`): an unknown module path or a
 forbidden `project(...)` dependency fails configuration with `Rule: <from> -> <to>: …`; the `domain → domain`
-allowlist is `DependencyRules.domainAllowlist` (one level, checked). Enforced by Konsist (`architecture-test/`, over
-`core/`, `service/`, `feature/`): `core:model`, `service/*/domain`, `feature/*/nav` import no frameworks (Ktor,
+allowlist is `DependencyRules.domainAllowlist` (one level, checked); the shared core never depends on an app and apps
+never depend on each other. Enforced by Konsist (`architecture-test/`, over
+`core/`, `service/`, `apps/`): `core:model`, `service/*/domain`, `apps/*/feature/*/nav` import no frameworks (Ktor,
 SQLDelight, `androidx.`, Compose, Koin, `android.`, `platform.`); `domain` imports no `data`/`fake`/infrastructure/`di`;
 `network`/`database`/`datastore` import no `service`/`di`; feature `ui` imports no other `ui` and no `data`; every
 file uses the package of its path (`service/title/domain` → `com.banhmilabs.tmdb.service.title.domain`).
