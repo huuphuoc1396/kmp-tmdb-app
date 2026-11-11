@@ -29,4 +29,7 @@ include(
     ":core:security",
     ":core:di",
     ":core:testing",
+    ":service:settings:domain",
+    ":service:settings:data",
+    ":service:settings:fake",
 )
