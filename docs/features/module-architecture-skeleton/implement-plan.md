@@ -237,8 +237,7 @@ After the last step run: `./gradlew detekt jvmTest koverVerify :architecture-tes
 - Throwing inside `dependencies.withType<ProjectDependency>().configureEach` might surface as a generic build-script error. — The message keeps the `Rule:` prefix and both paths, so it stays readable; checked in the AC-3 manual step.
 
 ## Deviations
-- `tmdb.module` skips project dependencies whose target is the module itself: the Kotlin and Android plugins add such self-dependencies, and without the skip every module failed its own rule (found in the AC-3 manual check).
-- `enforceDependencyRules` names the `Configuration` and `ProjectDependency` receivers explicitly, so `name` / `path` can't resolve to the `Project`.
+- `tmdb.module` checks only the configurations behind Kotlin source-set dependencies (`api`, `implementation`, `compileOnly`, `runtimeOnly` of each source set), and test scope comes from the source-set name. Checking every configuration failed in two ways: the Kotlin and Android plugins add dependencies of a module on itself (found in the AC-3 manual check), and Android Studio sync failed on the Kotlin plugin's `swiftPMDependenciesForLockFilesMetadataClasspathDependencies`, which collects the dependencies of every project (`Rule: :core:common -> :core:database`). Error messages name the configuration.
 - `DependencyRules.violation` reports a dedicated message ("fake and core:testing are allowed only in test source sets") when a production source set depends on `fake` or `core:testing`; `core:di` is exempt as a composition root.
 - `DependencyRules` takes the allowlist as a parameter (default `domainAllowlist`) so tests can check chains without changing the shipped list.
 - Risks 1 and 2 did not happen: `gradle.includedBuild("build-logic")` exposes `:convention:test` from the `pluginManagement` include, and the root project with Kover applied has a passing `koverVerify`.

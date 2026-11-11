@@ -34,7 +34,7 @@ paths:
 - `plugins { alias(libs.plugins.tmdb.module) }` and nothing else: the type (from the path) decides KMP targets, Detekt, and Kover for `domain` / `data`.
 - Dependencies go in `kotlin { sourceSets { commonMain.dependencies { ... } } }` with type-safe accessors (`projects.core.security`).
 - Use `api(...)` only when the module exposes the dependency's types (`service/*/domain` → `core:model`, `core:common`, and an allowlisted `domain`); otherwise `implementation(...)`.
-- Allowed project dependencies per type are in `docs/architecture.md` 4.3 and enforced by `tmdb.module`: a forbidden one fails configuration with `Rule: <from> -> <to>: …`. `service/*/fake` and `core:testing` only in test source sets (configuration name contains `Test`).
+- Allowed project dependencies per type are in `docs/architecture.md` 4.3 and enforced by `tmdb.module`: a forbidden one fails configuration with `Rule: <from> -> <to>: …`. `service/*/fake` and `core:testing` only in test source sets (source-set name contains `Test`). Only the configurations behind Kotlin source-set dependencies are checked; plugin- and IDE-created configurations (for example the Kotlin plugin's SwiftPM lock-file classpath) are not.
 - `tmdb.module` already applies `tmdb.detekt`; don't apply it again in KMP modules.
 
 ## Module types and dependency rules
