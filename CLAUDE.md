@@ -1,17 +1,19 @@
 # kmp-tmdb-app
 
 Kotlin Multiplatform shared core for a TMDB discovery app (films, series, anime, novelas; en + pt-BR).
-`main` holds only the shared core: no app module, no UI. Full design: `docs/architecture.md`.
+Everything lives on `main` in directories: shared core (`core/`, `service/`) and, once built, the apps under
+`apps/cmp` and `apps/native`. Full design: `docs/architecture.md`.
 Per-layer rules (build logic, tests, architecture tests) are in `.claude/rules/` and load by path.
 
 Current state: the `main` skeleton. The `core/*` modules exist but have **no production code yet**, only a
 `*SmokeTest` placeholder each. No `service/*` module exists yet: each context (`title`, `favorites`, `settings`) is
-created by the first feature that needs it. New code follows `docs/architecture.md` (sections 4–6, 8), not the
+created by the first feature that needs it. New code follows `docs/architecture.md` (sections 5–8), not the
 skeleton or existing examples.
 
-## Branches
-- `main`: shared core + build-logic + docs + CI. `cmp` (Compose Multiplatform) and `native` (Jetpack Compose + SwiftUI/SKIE) branch from it.
-- Change `build-logic/`, `core/*` and `service/*` on `main` first, then merge into `cmp` / `native`. Never merge `cmp` ↔ `native` or back into `main`.
+## Repository layout
+- One branch (`main`); apps are directories, not branches. `apps/cmp` (Compose Multiplatform: shared ViewModel + UI) and `apps/native` (Jetpack Compose + SwiftUI/SKIE) both build on `core/*` and `service/*`. Neither exists yet; each is created with its first screen.
+- `apps/cmp` and `apps/native` never depend on each other.
+- CI runs JVM checks only; app builds and platform tests run locally.
 
 ## Setup
 - JDK 21 (toolchain from `jvmToolchain` in `gradle/libs.versions.toml`). Gradle wrapper only.
@@ -45,7 +47,7 @@ Full (when the user asks, or before opening a PR):
 - Platform tests for modules whose `androidMain` / `iosMain` changed (emulator or simulator; say if skipped).
 
 ## Architecture
-- Three tiers: **Libraries** (`core/`), **Services** (`service/<context>/{domain,data,fake}`), **Features** (`feature/<x>/{nav,ui}` on `cmp`). `core:di` and the app module are the composition roots.
+- Three tiers: **Libraries** (`core/`), **Services** (`service/<context>/{domain,data,fake}`), **Features** (`apps/<app>/feature/<x>/{nav,api,ui}`). `core:di` and each app shell are the composition roots.
 - Offline-first: UI ◄ ViewModel ◄ (use case) ◄ `Repository.observe()` ◄ SQLDelight (single source of truth). `Repository.refresh()` → Ktor → upsert into SQLDelight. The network never feeds the UI directly.
 - The `service/*/domain` modules (repository interfaces, use cases, their models) are the public API of the core. Platforms never see `data`, `network` or `database`.
 - Use cases are optional: create one only when it combines repositories, applies business rules, shapes data for a screen, or is reused by two features. Otherwise the ViewModel calls the repository directly. Never write a use case that only forwards.
@@ -56,9 +58,9 @@ Full (when the user asks, or before opening a PR):
 - `DatabaseDriverFactory.create(passphrase: ByteArray?)` keeps the passphrase parameter so SQLCipher can be added later.
 
 ## Modules
-All shared modules apply only `tmdb.module`, which reads the module type from the path (`docs/architecture.md` 4.2)
+All shared modules apply only `tmdb.module`, which reads the module type from the path (`docs/architecture.md` 5.2)
 and sets targets `android` (with host tests), `jvm`, `iosArm64`, `iosSimulatorArm64`, Detekt, and Kover for
-`domain`/`data`. Modules marked *on demand* are created only when first needed (4.5).
+`domain`/`data`. Modules marked *on demand* are created only when first needed (5.5).
 
 | Module | Purpose | May depend on |
 |---|---|---|
@@ -66,28 +68,29 @@ and sets targets `android` (with host tests), `jvm`, `iosArm64`, `iosSimulatorAr
 | `core:model` | Models shared by ≥ 2 contexts or a `nav` module (`TitleId`, `Title`, `Genre`, `Language`) | — |
 | `core:security` | Master key (Keystore / Keychain / JVM fake), AES-GCM | `common`, `model` |
 | `core:network` | Ktor client factory, auth, cert pinning, error mapping (no endpoints) | `security`, kernel |
-| `core:database` | One SQLDelight schema, `DatabaseDriverFactory` | `security`, kernel |
+| `core:database` | `DatabaseDriverFactory` (no tables; each `service/*/data` owns its own SQLDelight database) | `security`, kernel |
 | `core:datastore` | DataStore KMP + encrypted serializer | `security`, kernel |
 | `core:testing` | Test dispatchers | kernel |
 | `core:di` | `initKoin()`, collects every `service/*/data` Koin module | everything |
-| `service/<ctx>/domain` (on demand) | Context models, repository interfaces, use cases | kernel; another context's `domain` (one level, listed in 4.3) |
-| `service/<ctx>/data` (on demand) | Repository impls, endpoints + DTOs, mappers, queries, refresh policy, Koin module | own `domain`, kernel, `network`/`database`/`datastore` |
+| `service/<ctx>/domain` (on demand) | Context models, repository interfaces, use cases | kernel; another context's `domain` (one level, registered in `DependencyRules.domainAllowlist`) |
+| `service/<ctx>/data` (on demand) | Repository impls, endpoints + DTOs, mappers, its own SQLDelight database, refresh policy, Koin module | own `domain`, kernel, `network`/`database`/`datastore` |
 | `service/<ctx>/fake` (on demand) | In-memory repository fakes + repository contract test | own `domain`, kernel |
-| `feature/<x>/nav` (`cmp`, on demand) | Route, Args, Result; renamed `api` when it must expose an entry interface | `core:model` |
-| `feature/<x>/ui` (`cmp`) | ViewModel + screen | `nav`/`api`, `service/*/domain`, `core:designsystem`, kernel |
+| `apps/<app>/feature/<x>/nav` (on demand) | Route, Args, Result; renamed `api` when it must expose an entry interface | `core:model` |
+| `apps/<app>/feature/<x>/ui` | ViewModel + screen | `nav`/`api` (same app), `service/*/domain`, the app's `designsystem`, kernel |
 | `architecture-test` | Konsist rules (JVM only) | — |
 
 Contexts: `title` (home lists, details, cast, videos, genres, search), `favorites`, `settings` (language, onboarding).
 Kernel = `core:common` + `core:model`. Test source sets may also use `service/*/fake` and `core:testing`.
 
 Forbidden: `ui → ui`, `ui → data`, `data → data`, `fake → data`, `domain → data`/`fake`, `fake` outside tests.
-Feature A needing something from feature B: service `domain` → `core:designsystem` → a `@Composable` slot passed by the
-app module → an entry interface in B's `api` bound with Koin (4.3).
+Feature A needing something from feature B: service `domain` → the app's `designsystem` → a `@Composable` slot passed by the
+app shell → an entry interface in B's `api` bound with Koin (5.4).
 
 Enforced by `tmdb.module` (`build-logic/convention/.../buildlogic/DependencyRules.kt`): an unknown module path or a
 forbidden `project(...)` dependency fails configuration with `Rule: <from> -> <to>: …`; the `domain → domain`
-allowlist is `DependencyRules.domainAllowlist` (one level, checked). Enforced by Konsist (`architecture-test/`, over
-`core/`, `service/`, `feature/`): `core:model`, `service/*/domain`, `feature/*/nav` import no frameworks (Ktor,
+allowlist is `DependencyRules.domainAllowlist` (one level, checked); the shared core never depends on an app and apps
+never depend on each other. Enforced by Konsist (`architecture-test/`, over
+`core/`, `service/`, `apps/`): `core:model`, `service/*/domain`, `apps/*/feature/*/nav` import no frameworks (Ktor,
 SQLDelight, `androidx.`, Compose, Koin, `android.`, `platform.`); `domain` imports no `data`/`fake`/infrastructure/`di`;
 `network`/`database`/`datastore` import no `service`/`di`; feature `ui` imports no other `ui` and no `data`; every
 file uses the package of its path (`service/title/domain` → `com.banhmilabs.tmdb.service.title.domain`).
@@ -100,7 +103,7 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 - Coverage (80% line, DI/`*Dto`/generated excluded) is applied by `tmdb.module` to `domain` and `data` modules only.
 - Module dependencies use type-safe accessors: `implementation(projects.service.title.domain)`.
 - Every dependency and plugin version goes in `gradle/libs.versions.toml`; shared build config goes in a convention plugin in `build-logic/convention`.
-- Write unit tests in `jvmTest` only, never `commonTest`: `kotlin.test`, Turbine, Kotest assertions; Ktor `MockEngine` + fixture JSON for network; real SQLDelight in-memory `JdbcSqliteDriver` for database.
+- Write unit tests in `jvmTest` by default (fast, MockK available). `commonTest` is allowed for tests that use only multiplatform libraries (no MockK) and are worth running on Kotlin/Native too (concurrency, `Flow` timing, formatting, parsing); they also run in `jvmTest`. Tools: `kotlin.test`, Turbine, Kotest assertions; Ktor `MockEngine` + fixture JSON for network; real SQLDelight in-memory `JdbcSqliteDriver` for database.
 - Test doubles: across modules use the repository fakes from `service/<ctx>/fake` (each kept honest by a contract test that both `data` and `fake` extend); MockK for collaborators in the same module and for `verify`. No other hand-written fakes, no Mokkery.
 - Platform `actual` code is tested on its platform, locally: Android instrumented tests; iOS `iosTest` with `kotlin.test` and no mocks.
 - Inject dispatchers via `DispatcherProvider` (`core:common`) and time via `kotlin.time.Clock`.
@@ -122,17 +125,17 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 (Planned in `docs/architecture.md`; not yet implemented — create them in these modules when first needed.)
 
 ## Do not
-- Don't put tests in `commonTest`; write them in `jvmTest`.
+- Don't use MockK or JVM-only APIs in `commonTest`; such tests go in `jvmTest`.
 - Don't write ad-hoc `Fake*` classes in test code; add the fake to `service/<ctx>/fake` with its contract test, or use MockK.
 - Don't use MockK in iOS or Android instrumented tests (JVM-only); test against the real platform API.
 - Don't mock the database or HTTP client; use the in-memory SQLDelight driver and Ktor `MockEngine`.
 - Don't let a feature `ui` depend on another feature's `ui` or on any `service/*/data`.
-- Don't add a `domain → domain` dependency without adding the pair to `DependencyRules.domainAllowlist` and to `docs/architecture.md` 4.3 (one level only).
+- Don't add a `domain → domain` dependency without adding the pair to `DependencyRules.domainAllowlist` (one level only) with its reason.
 - Don't create a use case that only forwards to a repository.
 - Don't feed network results to callers directly; upsert into SQLDelight and read through `observe()`.
 - Don't use `EncryptedSharedPreferences` (deprecated); use `core:datastore` with the AES-GCM serializer.
 - Don't put the TMDB token in source or committed files; use `secrets.properties` / CI secrets.
 - Don't log request/response bodies in release builds.
-- Don't add an app module or UI on `main`; those belong on `cmp` / `native`.
+- Don't make `apps/cmp` and `apps/native` depend on each other, or put UI in `core/` or `service/`.
 - Don't hardcode versions or SDK levels in module build files; read them from `libs.versions.toml`.
 - Don't add `GlobalScope` or hardcoded `Dispatchers.*`; inject `DispatcherProvider`.

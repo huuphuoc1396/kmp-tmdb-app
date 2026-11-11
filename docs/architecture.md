@@ -1,157 +1,184 @@
 # Architecture
 
-An entertainment discovery app (films, series, anime, novelas) in **English and Portuguese (pt-BR)**, built with **Kotlin Multiplatform** on top of the TMDB API.
+A **Kotlin Multiplatform** architecture for Android and iOS apps that share their business core and choose, per app,
+how much of the presentation layer to share. This document describes the architecture only: module tiers, dependency
+rules, data flow, testing and enforcement. What a concrete app does and how its features are built is specced
+separately in `docs/features/<feature>/`.
 
-The repository shows **two levels of code sharing** between Android and iOS, built on the same shared core:
-
-| Branch | Network | Local | Business logic | ViewModel | UI |
-|---|---|---|---|---|---|
-| `main` | shared | shared | shared | — | — |
-| `cmp` | shared | shared | shared | **shared** (KMP ViewModel) | **shared** (Compose Multiplatform) |
-| `native` | shared | shared | shared | per platform (Android ViewModel / Swift `@Observable`) | per platform (Jetpack Compose / SwiftUI) |
+The rules are illustrated with a generic **shop** example (section 3) so that they can be judged independently of any
+one product.
 
 ---
 
-## 1. Product scope
+## 1. Goals
 
-Three screens, all with a dark theme, purple accents, readable typography and vertical scrolling where needed.
+- **One business core, two presentation styles.** The same `core/*` and `service/*` modules back two apps in one
+  repository:
 
-1. **Onboarding**: full-screen cinematic artwork, a short value proposition, and an **"Acessar"** button.
-2. **Home**: search field, category tabs (Filmes, Séries, Anime, Novelas), featured poster carousels, a **"Mais populares"** section, and a profile entry point. Tapping a title opens its details.
-3. **Title details**: artwork, name, release year, rating, runtime, synopsis, main cast, genres and recommendations, plus back navigation, a favorite toggle and an **"Assistir trailer"** action.
+  | App | Network | Local | Business logic | ViewModel | UI |
+  |---|---|---|---|---|---|
+  | `apps/cmp` | shared | shared | shared | **shared** (KMP ViewModel) | **shared** (Compose Multiplatform) |
+  | `apps/native` | shared | shared | shared | per platform (Android ViewModel / Swift `@Observable`) | per platform (Jetpack Compose / SwiftUI) |
 
-### Category mapping (TMDB)
+- **Scales with the team.** Modules follow the patterns large Android codebases use (Airbnb: feature + nav modules;
+  Square: public / impl / fake; Slack: Features / Services / Libraries), so the structure holds as contexts and
+  features grow.
+- **Rules are checked by the build, not by review.** A forbidden dependency or import fails the build (section 9).
+- **Offline-first.** The local database is the single source of truth; the network only refreshes it.
+- **Fast feedback.** Almost every test runs on the JVM, without an emulator or Xcode.
 
-| Category | Source |
+---
+
+## 2. Repository layout
+
+Everything lives on `main`, in directories:
+
+```
+build-logic/convention/   # tmdb.module (type from path + dependency rules), tmdb.detekt
+architecture-test/        # Konsist rules for imports and packages (JVM only)
+core/                     # Libraries tier
+service/<context>/        # Services tier: domain, data, fake
+apps/
+├── cmp/                  # Compose Multiplatform app: designsystem, feature/*, app shells
+└── native/               # Native apps: Android modules (Jetpack Compose), iosApp/ (SwiftUI), shared/ (iOS umbrella)
+docs/
+```
+
+- `core/` and `service/` are shared by both apps. A change there is visible to both immediately; there is no branch
+  to merge.
+- `apps/cmp` and `apps/native` never depend on each other.
+- Each app directory is created when its first screen is built; until then the repository contains only the shared
+  core.
+
+---
+
+## 3. Worked example: a shop
+
+A small shopping app, chosen because it exercises every rule in this document:
+
+| Tier | Module | Role in the example |
+|---|---|---|
+| Libraries | `core:model` | `ProductId`, `Money`: used by two contexts and by a `nav` module |
+| Services | `service/catalog/{domain,data,fake}` | Products, categories, search. Remote + cached |
+| | `service/cart/{domain,data,fake}` | Cart lines. Local only |
+| | `service/account/{domain,data}` | Signed-in user, preferences (encrypted settings) |
+| | `service/checkout/domain` | Combines cart, catalog and account (see 5.3 rule 4) |
+| Features | `feature/product-list/ui` | Browse and search products |
+| | `feature/product-details/{nav,ui}` | One product; navigated to from the list |
+| | `feature/cart/{api,ui}` | Cart screen; exposes an `AddToCartButton` entry used inside other screens |
+
+How the example uses each rule:
+
+| Rule | In the shop |
 |---|---|
-| Filmes | `/movie/*`, `/discover/movie` |
-| Séries | `/tv/*`, `/discover/tv` |
-| Anime | `/discover/tv?with_genres=16&with_original_language=ja` |
-| Novelas | `/discover/tv?with_genres=10766&with_origin_country=BR\|MX` |
-
-Content language follows the device locale (`language=pt-BR` or `en-US`). The cached content for each language is stored separately.
-
----
-
-## 2. Branch strategy
-
-```
-main     ── shared core (KMP libraries) + docs + CI for core
- ├── cmp      ── merges from main; adds shared ViewModels + Compose Multiplatform UI
- └── native   ── merges from main; adds Android (Compose + ViewModel) and iOS (SwiftUI + Swift VM via SKIE)
-```
-
-Rules:
-
-- Changes to `build-logic/`, `core/*` or `service/*` are made on `main` first, then merged into `cmp` and `native`.
-- `cmp` and `native` never merge into each other or back into `main`.
-- `main` has no app module. It builds and tests on the JVM target only, with no emulator or Xcode required.
+| Shared kernel (6.1) | `ProductId` lives in `core:model` because `catalog`, `cart` and `product-details/nav` all need it. `Category` stays in `catalog/domain`. |
+| `domain → domain` (5.3) | `cart/domain → catalog/domain`: a cart line shows the current price and stock. `catalog/domain` depends on no other domain, so the chain is one level. |
+| Three or more domains | Checkout needs cart, catalog and account, so it gets its own context `service/checkout/domain` instead of a third dependency from `cart`. |
+| Use cases (6.2) | `ObserveCart` would only forward, so the ViewModel calls `CartRepository.observe()` directly. `AddToCart` checks stock and quantity limits, so it is a use case. `CalculateCartTotal` applies discounts, so it is a use case. |
+| Repository surface (6.2) | `CatalogRepository` exposes `observeProducts`, `refresh`, `search`. `upsertProducts` stays inside `catalog/data`. |
+| Offline-first (7) | Product lists are read from the database and refreshed by TTL; the cart is local only and works offline. |
+| Feature to feature (5.4) | `PriceTag` (stateless, used by list and details) goes to the design system. The cart badge on the details screen is a `@Composable` slot filled by the app. The `AddToCartButton` deep inside each product-list row comes from `feature/cart/api`. |
+| Navigation | `product-list/ui` navigates through `product-details/nav` (`ProductDetailsRoute(productId: ProductId)`), never through `product-details/ui`. |
+| Fakes (8) | `FakeCatalogRepository` and `CatalogRepositoryContract` in `catalog/fake`; `CatalogRepositoryImplTest` and `FakeCatalogRepositoryTest` both extend the contract. |
 
 ---
 
-## 3. Targets
+## 4. Targets
 
 All shared modules target `androidTarget`, `iosArm64`, `iosSimulatorArm64` and `jvm`.
 
-`jvm` exists mainly for **fast tests**: every unit test runs on it (see section 8), along with SQLDelight in-memory, Compose UI and screenshot tests. On `cmp` it can also run a desktop app at almost no extra cost.
+`jvm` exists mainly for **fast tests** (section 8). `apps/cmp` can also ship a desktop app from it at almost no extra
+cost.
 
 ---
 
-## 4. Module structure
+## 5. Modules
 
-Modules are grouped in three tiers, following the patterns large Android codebases use (Airbnb: feature + nav modules; Square: public / impl / fake; Slack: Features / Services / Libraries):
+### 5.1 Tiers
 
 | Tier | Directory | Contains |
 |---|---|---|
 | Libraries | `core/` | Infrastructure and a small shared kernel; no business features |
 | Services | `service/<context>/` | One business capability (bounded context): `domain`, `data`, `fake` |
-| Features | `feature/<feature>/` (`cmp`) or platform folders (`native`) | Screens: `ui` (ViewModel + screen) and, when needed, `nav` / `api` |
+| Features | `apps/<app>/feature/<feature>/` | Screens: `ui` (ViewModel + screen) and, when needed, `nav` / `api` |
 
-`core:di` (on every branch) and the app module (on `cmp` / `native`) are the **composition roots**: the only modules that see every implementation.
-
-> **Status:** `main` has the `core/*` modules only. The `service/*` tree below is the target: each context, and each `fake` module, is created by the first feature that needs it (4.5).
-
-### 4.1 Shared core (`main`, identical on every branch)
+`core:di` and each app shell are the **composition roots**: the only modules that see every implementation.
 
 ```
-build-logic/convention/   # tmdb.module (type from path + dependency rules), tmdb.detekt
-architecture-test/        # Konsist rules for imports and packages (JVM only)
-core/                     # Libraries
+core/
 ├── common/      # AppResult, AppError, DispatcherProvider
-├── model/       # Shared kernel: TitleId, GenreId, Title, Genre, Language
-├── network/     # Ktor client factory, auth, certificate pinning, error mapping (no endpoints)
-├── database/    # One SQLDelight schema + DatabaseDriverFactory (expect/actual)
+├── model/       # Shared kernel: IDs and models used by two or more contexts
+├── network/     # HTTP client factory, auth, error mapping (no endpoints)
+├── database/    # SQLDelight driver factory (expect/actual), passphrase handling; no tables
 ├── datastore/   # DataStore KMP with an encrypted serializer
 ├── security/    # Master key: Android Keystore / iOS Keychain / JVM fake; AES-GCM
 ├── testing/     # Test dispatchers
 └── di/          # initKoin(); collects the Koin module of every service/*/data
-service/                  # Services (created on demand)
-├── title/       # Home lists, details, cast, videos, genres, search
-│   ├── domain/  # TitleDetails, Cast, Video, Category; TitleRepository; ObserveHomeFeed, RefreshHomeFeed
-│   ├── data/    # TitleRepositoryImpl, TMDB endpoints + DTOs, mappers, queries, refresh policy, Koin module
-│   └── fake/    # FakeTitleRepository, TitleRepositoryContract
-├── favorites/   # Local-only favorites
-│   ├── domain/  # FavoritesRepository
-│   └── data/    # FavoritesRepositoryImpl
-└── settings/    # Content language, onboarding state
-    ├── domain/  # SettingsRepository
-    └── data/    # SettingsRepositoryImpl (DataStore)
+service/<context>/
+├── domain/      # Models, repository interfaces, use cases
+├── data/        # Repository implementations, endpoints + DTOs, mappers, queries, refresh policy, Koin module
+└── fake/        # In-memory repository fakes + repository contract tests
 ```
 
-Example layout of one service context:
+Layout of one context (shop `catalog`):
 
 ```
-service/title/
-├── domain/src/commonMain/kotlin/com/banhmilabs/tmdb/service/title/domain/
-│   ├── model/        TitleDetails.kt, Cast.kt, Video.kt, Category.kt
-│   ├── TitleRepository.kt
-│   └── usecase/      ObserveHomeFeed.kt, RefreshHomeFeed.kt
+service/catalog/
+├── domain/src/commonMain/kotlin/<root>/service/catalog/domain/
+│   ├── model/        Product.kt, Category.kt
+│   ├── CatalogRepository.kt
+│   └── usecase/      SearchProducts.kt
 ├── data/src/
-│   ├── commonMain/kotlin/com/banhmilabs/tmdb/service/title/data/
-│   │   ├── remote/   TmdbTitleApi.kt, dto/
-│   │   ├── local/    TitleLocalDataSource.kt
-│   │   ├── mapper/   TitleMapper.kt
+│   ├── commonMain/kotlin/<root>/service/catalog/data/
+│   │   ├── remote/   CatalogApi.kt, dto/
+│   │   ├── local/    CatalogLocalDataSource.kt
+│   │   ├── mapper/   ProductMapper.kt
 │   │   ├── RefreshPolicy.kt
-│   │   ├── TitleRepositoryImpl.kt
-│   │   └── di/TitleDataModule.kt
-│   └── jvmTest/      TitleRepositoryImplTest.kt (extends the contract), resources/fixtures/*.json
+│   │   ├── CatalogRepositoryImpl.kt
+│   │   └── di/CatalogDataModule.kt
+│   └── jvmTest/      CatalogRepositoryImplTest.kt (extends the contract), resources/fixtures/*.json
 └── fake/src/
-    ├── commonMain/kotlin/com/banhmilabs/tmdb/service/title/fake/
-    │   ├── FakeTitleRepository.kt
-    │   └── TitleRepositoryContract.kt
-    └── jvmTest/      FakeTitleRepositoryTest.kt (extends the contract)
+    ├── commonMain/kotlin/<root>/service/catalog/fake/
+    │   ├── FakeCatalogRepository.kt
+    │   └── CatalogRepositoryContract.kt
+    └── jvmTest/      FakeCatalogRepositoryTest.kt (extends the contract)
 ```
 
-Gradle paths, accessors and packages follow the directory: `service/title/domain` → `:service:title:domain` → `projects.service.title.domain` → package `com.banhmilabs.tmdb.service.title.domain`. Because several modules share a leaf name (`domain`, `data`, `ui`), the convention plugin gives each one a unique module name from its path (for example `service-title-domain`) so Kotlin/Native klibs and artifacts don't clash.
+Gradle paths, accessors and packages follow the directory: `service/catalog/domain` → `:service:catalog:domain` →
+`projects.service.catalog.domain` → package `<root>.service.catalog.domain`, where `<root>` is
+`com.banhmilabs.tmdb`. Several modules share a leaf name (`domain`, `data`, `ui`), so the convention plugin gives each
+a unique name from its path so Kotlin/Native klibs don't clash.
 
-The **public API of the shared core** is the set of `service/*/domain` modules: repository interfaces, use cases and their models. Platforms never see `data`, `network` or `database`.
+The **public API of the shared core** is the set of `service/*/domain` modules. Apps never see `data`, `network` or
+`database`.
 
-### 4.2 Module types
+### 5.2 Module types
 
 | Path | Type | Contains |
 |---|---|---|
 | `core/common`, `core/model` | kernel | Technical primitives; models shared by two or more contexts |
-| `core/network`, `core/database`, `core/datastore`, `core/security` | infra | Infrastructure, `expect`/`actual` |
-| `core/designsystem` (`cmp`) | designsystem | Theme, stateless UI components used by two or more features, image loading, `UiText`, Compose resources |
+| `core/network`, `core/database`, `core/datastore` | infra | Infrastructure, `expect`/`actual` |
+| `core/security` | security | Master key and encryption, used by infra |
 | `core/testing` | testing | Shared test utilities |
-| `core/di`, app module | root | Wiring |
+| `core/di`, app shells | root | Wiring |
 | `service/<ctx>/domain` | domain | Context models, repository interfaces, use cases |
 | `service/<ctx>/data` | data | Repository implementations, endpoints + DTOs, mappers, queries, Koin module |
 | `service/<ctx>/fake` | fake | In-memory repository fakes + the repository contract test |
-| `feature/<x>/nav` | nav | Route, Args, Result only |
-| `feature/<x>/api` | api | `nav` plus entry interfaces (for example a `@Composable` entry); replaces `nav` when needed |
-| `feature/<x>/ui` | ui | ViewModel, screen, implementations of the feature's entries |
+| `apps/<app>/designsystem` | designsystem | Theme, stateless components used by two or more features, image loading, string resources |
+| `…/feature/<x>/nav` | nav | Route, Args, Result only |
+| `…/feature/<x>/api` | api | `nav` plus entry interfaces (for example a `@Composable` entry); replaces `nav` when needed |
+| `…/feature/<x>/ui` | ui | ViewModel, screen, implementations of the feature's entries |
 
-### 4.3 Dependency rules
+### 5.3 Dependency rules
 
 ```mermaid
 graph TD
-  ROOT[app + core:di] --> UI[feature/x/ui]
+  ROOT[app shell + core:di] --> UI[feature/x/ui]
   ROOT --> DATA[service/ctx/data]
   UI --> NAV[feature/y/nav or api]
   UI --> DOMAIN[service/ctx/domain]
-  UI --> DS[core/designsystem]
-  DOMAIN -.->|one level, documented| DOMAIN2[service/other/domain]
+  UI --> DS[designsystem]
+  DOMAIN -.->|one level, registered| DOMAIN2[service/other/domain]
   DATA --> DOMAIN
   FAKE[service/ctx/fake] --> DOMAIN
   DOMAIN --> KERNEL[core:common + core:model]
@@ -165,276 +192,266 @@ Allowed dependencies (everything not listed is forbidden):
 
 | Type | May depend on |
 |---|---|
-| `core:common`, `core:model` | nothing |
-| infra | kernel, `core:security` |
+| kernel | nothing |
+| infra, security | kernel, `core:security` |
 | designsystem | `core:model` |
 | domain | kernel, another context's `domain` (one level, see below) |
 | data | its own context's `domain`, kernel, infra |
 | fake | its own context's `domain`, kernel |
 | nav, api | `core:model` |
-| ui | its own and other features' `nav` / `api`, `service/*/domain`, designsystem, kernel |
+| ui | its own and other features' `nav` / `api` in the same app, `service/*/domain`, its app's designsystem, kernel |
 | testing | kernel |
-| root | everything |
-| test source sets (`jvmTest`) | additionally `service/*/fake`, `core:testing` |
+| root | everything in its app and the shared core |
+| test source sets | additionally `service/*/fake`, `core:testing` |
 
-Forbidden in particular: `ui → ui`, `ui → data`, `ui → infra`, `data → data`, `fake → data`, `domain → data` / `fake`, and `fake` outside test source sets (or a demo app).
+Forbidden in particular: `ui → ui`, `ui → data`, `ui → infra`, `data → data`, `fake → data`, `domain → data` /
+`fake`, `fake` outside test source sets (or a demo app), and anything from `apps/cmp` to `apps/native` or back.
 
 **`domain → domain`:**
 
 1. Only to another context's `domain`, never to its `data` or `fake`.
 2. One level only: a `domain` that another context depends on depends on no other `domain`.
-3. Each one is listed here with its reason. Current list:
-   - `service/title/domain → service/favorites/domain`: `ObserveHomeFeed` adds the favorite flag to home titles.
-4. When one context depends on three or more other domains, the combining logic moves to its own context (for example `service/home/domain`).
+3. Every pair is registered in `DependencyRules.domainAllowlist` with its reason. Current pairs:
+   `title → favorites` (home lists carry the favorite flag).
+4. When one context would depend on three or more other domains, the combining logic moves to its own context (shop:
+   `service/checkout/domain`).
 
-**When feature A needs something from feature B** (never `ui → ui`), in this order:
+`domain`, `core:model` and `nav` import no frameworks (HTTP client, SQLDelight, Compose, `androidx.`, Koin,
+`android.`, `platform.`). `api` may use the Compose runtime for `@Composable` entry interfaces.
+
+### 5.4 When feature A needs something from feature B
+
+Never `ui → ui`. In this order:
 
 1. Data or logic: use `service/*/domain` directly.
-2. A stateless component: move it to `core/designsystem`.
-3. A stateful component owned by B: A's screen takes a `@Composable` slot, and the app module passes B's composable (a `@ViewBuilder` closure on SwiftUI).
-4. When a slot is not enough (the component sits deep in A's tree): rename B's `nav` to `api`, declare an entry interface there, implement it in `B/ui` and bind it with Koin.
+2. A stateless component: move it to the app's designsystem.
+3. A stateful component owned by B: A's screen takes a `@Composable` slot and the app shell passes B's composable (a
+   `@ViewBuilder` closure on SwiftUI).
+4. When a slot is not enough (the component sits deep in A's tree): rename B's `nav` to `api`, declare an entry
+   interface there, implement it in `B/ui` and bind it with Koin.
 
-Navigation between features goes through the target feature's `nav` module; the app module builds the navigation graph.
+Navigation between features goes through the target feature's `nav` module; the app shell builds the navigation
+graph.
 
-`domain`, `core:model` and `nav` import no frameworks (Ktor, SQLDelight, Compose, `androidx.`, Koin, `android.`, `platform.`). `api` may use the Compose runtime for `@Composable` entry interfaces.
-
-### 4.4 Models and use cases
-
-- A model goes in `core:model` only when **two or more contexts** need it, or a `nav` / `api` module does (for example `TitleId` in `DetailsRoute`). Modules of the same context and features that reach it through a `domain` don't count. Everything else stays in its context's `domain`.
-- **Use cases are optional.** A ViewModel may call a repository interface directly when it only forwards (`observe…`, `refresh…`, `toggle…`). Create a use case only when it:
-  1. combines two or more repositories,
-  2. applies business rules (filtering, sorting, merging, validation, aggregating refresh errors),
-  3. shapes data for a screen that both platforms need, or
-  4. is reused by two or more features.
-
-  The reason: on `native` the ViewModel exists twice (Kotlin and Swift), so any logic outside the core is written twice.
-- A use case is a class with `operator fun invoke`, with no interface. Never create a use case that only forwards.
-- Repository interfaces expose only operations consumers need (`observe`, `refresh`, `toggle`, `set`). Internal operations such as `upsert` stay in `data`.
-- Time comes from an injected `kotlin.time.Clock` (check it is stable for the project's Kotlin version; otherwise add a `Clock` to `core:common`). Dispatchers come from `DispatcherProvider`.
-
-### 4.5 Creating modules on demand
+### 5.5 Creating modules on demand
 
 The target structure is fixed, but a module is created only when it is needed:
 
 | Module | Create when |
 |---|---|
+| A service context | It has its own repository; until then the capability stays in the nearest context |
 | `service/<ctx>/fake` | Tests or a demo of another module need that context's fake repository |
 | `feature/<x>/nav` | Another feature navigates to this feature; until then the route lives in `ui` |
-| `feature/<x>/api` (rename of `nav`) | The feature must expose an entry component (rule 4 above) |
-| `core/designsystem` | The first stateless component is used by two features |
-| A new service context | It has its own repository and use cases; until then it stays in the nearest context (search lives in `title`) |
+| `feature/<x>/api` (rename of `nav`) | The feature must expose an entry component (5.4 rule 4) |
+| `apps/<app>/designsystem` | The first stateless component is used by two features |
+| An app directory | Its first screen is built |
 | A per-feature demo app | Building the full app slows down feature development |
 
-### 4.6 Enforcement
+---
 
-| Rule | Checked by |
-|---|---|
-| Module type from path; unknown paths rejected | `tmdb.module` (`moduleTypeOf` in `build-logic`) |
-| Allowed dependencies (4.3 table), `domain → domain` allowlist and its one-level depth | `tmdb.module` (`DependencyRules` in `build-logic`): a forbidden `project(...)` dependency fails configuration with `Rule: <from> -> <to>: …` |
-| No framework imports; package matches the path; import rules | Konsist (`architecture-test`), over `core/`, `service/` and `feature/` |
-| Unique module names per path | `tmdb.module` sets `group` to the parent package of the path |
+## 6. Models and use cases
 
-Every shared module applies only `alias(libs.plugins.tmdb.module)`; KMP targets, Detekt and (for `domain` / `data`) Kover come from its type. The `domain → domain` allowlist is `DependencyRules.domainAllowlist`; adding a pair there and to the list in 4.3 is the only way to allow one. The rule table and type parsing have unit tests in `build-logic`, run by `./gradlew jvmTest`.
+### 6.1 Where a model lives
 
-### 4.7 `cmp` branch: share everything
+A model goes in `core:model` only when **two or more contexts** need it, or a `nav` / `api` module does. Modules of
+the same context and features that reach it through a `domain` don't count. Everything else stays in its context's
+`domain`. Keep `core:model` small: IDs and value types first, full models only when unavoidable.
 
-```
-core/designsystem/        # CMP theme (dark, purple), typography, stateless components,
-                          # Coil 3 image loading, UiText, Compose resources (en, pt-BR)
-feature/onboarding/ui/    # OnboardingRoute, OnboardingViewModel, OnboardingScreen
-feature/home/ui/          # HomeRoute, HomeViewModel, HomeScreen
-feature/details/
-├── nav/                  # DetailsRoute(titleId: TitleId)
-└── ui/                   # DetailsViewModel, DetailsScreen
-composeApp/               # App(), type-safe Navigation Compose, slots between features, MainViewController() for iOS
-androidApp/               # MainActivity, Application
-iosApp/                   # Hosts ComposeUIViewController only
-desktopApp/               # optional
-```
+### 6.2 Use cases and repositories
 
-ViewModels use androidx.lifecycle KMP. A feature's `ui` module holds its route until another feature needs it, then the route moves to `nav`.
+- **Use cases are optional.** A ViewModel may call a repository interface directly when it only forwards
+  (`observe…`, `refresh…`, `toggle…`). Create a use case only when it:
+  1. combines two or more repositories,
+  2. applies business rules (filtering, sorting, merging, validation, aggregating refresh errors),
+  3. shapes data for a screen that both platforms need, or
+  4. is reused by two or more features.
 
-### 4.8 `native` branch: native UI and ViewModel on each platform
-
-```
-android/
-├── designsystem/         # Jetpack Compose Material 3 theme + components
-├── feature/onboarding/ui/
-├── feature/home/ui/
-├── feature/details/{nav,ui}/
-└── app/                  # MainActivity, Navigation Compose, Koin start
-shared/                   # iOS umbrella framework: exports core:common, core:model and service/*/domain
-                          # (debug builds also export service/*/fake for SwiftUI previews and tests); SKIE; KoinHelper
-iosApp/
-├── DI/                   # Swift access to repositories and use cases via KoinHelper
-├── DesignSystem/         # SwiftUI theme + components
-├── Features/Onboarding|Home|Details/   # Swift packages: @Observable ViewModel + SwiftUI View
-└── Localizable.xcstrings # en, pt-BR
-```
-
-Feature rules are the same on both platforms: features never import each other's UI; they share data through `service/*/domain` and navigate through routes.
-
-**How SKIE is used on iOS:**
-
-- `Flow<T>` becomes an `AsyncSequence`, so a Swift ViewModel can write `for await feed in observeHomeFeed() { ... }` inside a `Task`.
-- `suspend` functions become `async throws`.
-- `sealed` hierarchies (for example `AppError`) can be matched exhaustively with `switch onEnum(of:)`.
-- Kotlin enums become Swift enums, and default arguments are preserved.
-
-An iOS app links **exactly one** Kotlin umbrella framework, to avoid duplicating the Kotlin runtime and types.
+  Reason: in `apps/native` the ViewModel exists twice (Kotlin and Swift), so logic outside the core is written twice.
+- A use case is a class with `operator fun invoke`, with no interface. Never create a use case that only forwards.
+- Repository interfaces expose only what consumers need (`observe`, `refresh`, `toggle`, `set`). Internal operations
+  such as `upsert` stay in `data`.
+- Time comes from an injected `kotlin.time.Clock`; dispatchers from `DispatcherProvider`.
 
 ---
 
-## 5. Offline-first data flow
+## 7. Data flow (offline-first)
 
 ```
-UI ◄── ViewModel ◄── (UseCase) ◄── Repository.observe()  ◄── SQLDelight (single source of truth)
-                                   Repository.refresh() ──► Ktor ──► upsert into SQLDelight
+UI ◄── ViewModel ◄── (UseCase) ◄── Repository.observe()  ◄── local database (single source of truth)
+                                   Repository.refresh() ──► network ──► upsert into the database
 ```
 
-A use case sits in between only when it adds logic (see 4.4); otherwise the ViewModel calls the repository interface directly. Repository interfaces live in `service/<ctx>/domain`, their implementations in `service/<ctx>/data`.
-
-- **Reads** always come from the database (`query.asFlow().mapToList(dispatcher)`). The network never feeds the UI directly.
-- **Refresh** uses stale-while-revalidate. Each list stores `fetchedAt`, and a refresh runs when the data is older than its TTL (for example, home lists after 6 hours and details after 24 hours) or when the user pulls to refresh.
-- **Favorites** are local only and work fully offline.
-- **Search** needs the network. Recent queries and the last results are cached.
-- **Connectivity** is observed per platform (`ConnectivityManager` / `NWPathMonitor`). The UI shows an offline banner and keeps showing cached content.
-- **Errors** are mapped to `AppError` (Network, Unauthorized, NotFound, Unknown). An error never clears cached data.
-- **Images**: Coil 3 with a disk cache (Compose). The SwiftUI app uses an image library with a disk cache, because `AsyncImage` does not cache to disk.
-
-### Database schema (SQLDelight)
-
-| Table | Purpose |
-|---|---|
-| `title` | Shared title rows (id, mediaType, name, posterPath, backdropPath, rating, year, language) |
-| `title_list` | Membership of a list: `(listKey, language, position, titleId, fetchedAt)`, where `listKey` is for example `ANIME_FEATURED` |
-| `title_detail` | Runtime, synopsis, genres, trailer key, `fetchedAt` |
-| `cast_member` | Main cast for each title |
-| `recommendation` | `(titleId, recommendedId, position)` |
-| `favorite` | `(titleId, addedAt)` |
-| `recent_search` | `(query, searchedAt)` |
-
----
-
-## 6. Security
-
-### 6.1 Hiding the API key
-
-Any key shipped inside a client app can be extracted. This project makes extraction harder and keeps the key out of source control:
-
-1. The TMDB read token lives in `secrets.properties`, which is git-ignored. On CI it comes from GitHub Actions secrets.
-2. At build time, Gradle generates the key as an **XOR-obfuscated byte array with a random per-build salt**, so it never appears as a plaintext string in source or in the binary.
-3. Android uses R8 shrinking and obfuscation. iOS compiles Kotlin to a native binary.
-4. In production, the right fix is a **backend proxy** (for example a Cloudflare Worker) that keeps the token server-side. This is documented as the recommended next step.
-
-Network hardening: HTTPS only, certificate pinning for `api.themoviedb.org`, and no request or response body logging in release builds.
-
-### 6.2 Encrypted local settings
-
-- `core:security` provides a **master key** through expect/actual:
-  - Android: AES-256 key in Android Keystore (non-exportable).
-  - iOS: key stored in Keychain with `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`.
-  - JVM: in-memory fake for tests.
-- `core:datastore` uses DataStore KMP with a custom `OkioSerializer` that encrypts and decrypts the serialized settings with **AES-GCM** (via `cryptography-kotlin`).
-- `EncryptedSharedPreferences` is not used because it is deprecated.
-
-### 6.3 Database encryption (planned)
-
-The current phase uses **plain SQLDelight**. The API is designed so that SQLCipher can be added later without changing the architecture:
-
-- `DatabaseDriverFactory.create(passphrase: ByteArray?)` already takes a passphrase, generated once and protected by the master key.
-- Planned spike:
-  - Android: `AndroidSqliteDriver(factory = SupportOpenHelperFactory(passphrase))` with `net.zetetic:sqlcipher-android`.
-  - iOS: `NativeSqliteDriver` with `encryptionConfig`, linking SQLCipher instead of the system `sqlite3`.
-
----
-
-## 7. Localization
-
-| Layer | en / pt-BR strings |
-|---|---|
-| TMDB content | `language` query parameter, cached per language |
-| `cmp` UI | Compose Multiplatform resources (`values/`, `values-pt-rBR/`) |
-| `native` Android UI | Android resources (`values/`, `values-pt-rBR/`) |
-| `native` iOS UI | String Catalog (`Localizable.xcstrings`) |
+- **Reads** always come from the database as a `Flow`. The network never feeds the UI directly; data that must be
+  fetched on demand (search) is upserted first and then observed.
+- **Refresh** is stale-while-revalidate: each cached set stores `fetchedAt`, and a refresh runs when it is older than
+  its TTL or the user asks for it. TTLs are set per data type by the context's `RefreshPolicy`.
+- **Local-only data** (shop: the cart) has no `refresh` and works fully offline.
+- **Errors** map to `AppError` (Network, Unauthorized, NotFound, Unknown) inside `AppResult`. An error never clears
+  cached data.
+- **Locale-dependent content** is cached per locale; the cache key includes the locale.
+- **Connectivity** is observed per platform behind an `expect`/`actual` interface; the UI keeps showing cached
+  content while offline.
+- **Schema ownership:** each context's `data` module owns its own SQLDelight database (its `.sq` files and database
+  file); `core:database` provides only the driver factory. A context reads another context's data through that
+  context's `domain`, never through a SQL join, so `data → data` stays impossible even at the schema level.
 
 ---
 
 ## 8. Testing strategy
 
-| Level | Tools | Runs on |
+| Level | Tools | Source set |
 |---|---|---|
-| Domain and data unit tests | `kotlin.test`, Turbine, Kotest assertions, service fakes, MockK | `jvmTest` |
-| Network | Ktor `MockEngine` + fixture JSON (in each `data` module's test resources) | `jvmTest` |
-| Database | SQLDelight in-memory driver (`JdbcSqliteDriver`), real database, not mocked | `jvmTest` |
-| Platform code (`actual`: Keystore, Keychain, SQLite drivers, Ktor engines, certificate pinning) | Android: instrumented tests. iOS: `kotlin.test`, no mocks | Android emulator/device, iOS simulator (local only) |
+| Domain and data unit tests | `kotlin.test`, Turbine, Kotest assertions, service fakes, MockK | `jvmTest` (default) |
+| Pure multiplatform logic that should also run on Kotlin/Native | `kotlin.test`, Turbine, Kotest assertions, service fakes (no MockK) | `commonTest` (allowed) |
+| Network | HTTP client mock engine + fixture JSON (each `data` module's test resources) | `jvmTest` |
+| Database | SQLDelight in-memory driver, real database, not mocked | `jvmTest` |
+| Platform code (`actual`) | Android: instrumented tests. iOS: `kotlin.test`, no mocks | device / simulator, local |
 | Repository fakes | Contract test shared by `data` and `fake` | `jvmTest` |
-| Shared ViewModels (`cmp`) | `kotlinx-coroutines-test`, Turbine, service fakes, MockK | `jvmTest` |
-| Compose UI (`cmp`) | `runComposeUiTest` | JVM |
-| Screenshots | Roborazzi | JVM (`cmp`), Robolectric (`native` Android) |
-| Android unit and UI (`native`) | MockK, Compose UI test + Robolectric | JVM |
-| iOS (`native`) | XCTest for Swift ViewModels (service fakes from the debug framework); XCUITest for flows | iOS simulator |
+| Shared ViewModels (`apps/cmp`) | `kotlinx-coroutines-test`, Turbine, service fakes, MockK | `jvmTest` |
+| Compose UI and screenshots (`apps/cmp`) | `runComposeUiTest`, Roborazzi | JVM |
+| Android UI (`apps/native`) | Compose UI test + Robolectric, Roborazzi | JVM |
+| iOS (`apps/native`) | XCTest for Swift ViewModels (service fakes from the debug framework); XCUITest for flows | simulator |
 | Architecture | Konsist | JVM |
-| Coverage and static analysis | Kover, Detekt | CI |
+| Coverage and static analysis | Kover (80% line on `domain` and `data`), Detekt | CI |
 
 Rules:
 
-- Unit tests for shared code live **only in `jvmTest`**. `commonTest` contains no tests. JVM tests are fast and can use MockK, which supports only the JVM.
-- **Test doubles across modules are the service fakes.** Each `service/<ctx>/fake` module holds an in-memory, controllable fake per repository interface (for example `FakeTitleRepository` backed by `MutableStateFlow`). A ViewModel or use case test uses the real use cases on top of a fake repository, so business logic is still exercised.
-- **Fakes are kept honest by contract tests.** An abstract `<Repository>Contract` class in the `fake` module describes the required behavior; both `data` (`<Repository>ImplTest`) and `fake` (`Fake<Repository>Test`) extend it.
-- **MockK** is used for collaborators inside the same module and for verifying interactions. There are no other hand-written fakes (no ad-hoc `Fake*` classes in test code) and no Mokkery.
-- Ktor `MockEngine` and the in-memory SQLDelight driver are test engines, not fakes, and stay in use; the database and HTTP client are never mocked.
-- `core:testing` holds test dispatchers. Fixture JSON lives in each `data` module's `jvmTest` resources.
-- **Platform code is tested on its platform**, locally and not on `main` CI: Android `actual` code with instrumented tests, iOS `actual` code on the simulator with `kotlin.test`. MockK is never used there.
-- Trade-off: differences between the Kotlin/Native and JVM runtimes are not caught by unit tests. Platform tests and iOS XCTest on `native` cover them.
+- **`jvmTest` is the default** for unit tests: fast, and it can use MockK and JVM-only tooling.
+- **`commonTest` is allowed** for tests that use only multiplatform libraries (no MockK) and are worth running on
+  Kotlin/Native too: concurrency and `Flow` timing, formatting, parsing, date and time. `commonTest` tests also run in
+  the `jvmTest` task, so they cost nothing on CI and can be run on the iOS simulator locally.
+- **Test doubles across modules are the service fakes.** Each `service/<ctx>/fake` holds an in-memory, controllable
+  fake per repository interface. ViewModel and use case tests run the real use cases on top of a fake repository.
+- **Fakes are kept honest by contract tests.** An abstract `<Repository>Contract` in the `fake` module describes the
+  behavior; both `<Repository>ImplTest` (in `data`) and `Fake<Repository>Test` (in `fake`) extend it.
+- **MockK** is for collaborators inside the same module and for verifying interactions, in `jvmTest` only. No other
+  hand-written fakes, no Mokkery.
+- The HTTP mock engine and the in-memory database driver are test engines, not fakes; the database and HTTP client
+  are never mocked.
+- **Platform code is tested on its platform**, locally: Android `actual` code with instrumented tests, iOS `actual`
+  code on the simulator with `kotlin.test`. Never MockK there.
 
 ---
 
-## 9. Tech stack
+## 9. Enforcement
+
+| Rule | Checked by |
+|---|---|
+| Module type from path; unknown paths rejected | `tmdb.module` (`moduleTypeOf` in `build-logic`) |
+| Allowed dependencies (5.3 table), the `domain → domain` allowlist and its one-level depth | `tmdb.module` (`DependencyRules`): a forbidden `project(...)` dependency fails configuration with `Rule: <from> -> <to>: …` |
+| No framework imports; package matches the path; import rules | Konsist (`architecture-test`) |
+| Unique module names per path | `tmdb.module` sets `group` from the path |
+
+Every shared module applies only `alias(libs.plugins.tmdb.module)`; KMP targets, Detekt and (for `domain` / `data`)
+Kover come from its type. The rule table and type parsing have unit tests in `build-logic`.
+
+Module paths recognised by `moduleTypeOf`: `:core:<name>`, `:service:<ctx>:domain|data|fake`,
+`:apps:<app>:designsystem` and `:apps:<app>:feature:<x>:nav|api|ui`. Two rules span apps: a `ui` module uses only the
+`nav` / `api` / designsystem of its own app, and a module never depends on a module of another app; the shared core
+(`core/`, `service/`) never depends on an app at all.
+
+> **Status:** app shells (`composeApp`, `androidApp`, `apps/native/app`) and the per-app build setup (Compose for
+> `apps/cmp`, Android-only modules for `apps/native`) are added with the first app; `tmdb.module` currently
+> configures every recognised module as a KMP library.
+
+---
+
+## 10. Security
+
+- **Secrets** (API tokens) never live in source or committed files: a git-ignored `secrets.properties` locally,
+  CI secrets on CI. At build time they are injected obfuscated (XOR with a per-build salt), never as a plaintext
+  string. Any key shipped in a client can still be extracted; the real fix is a backend proxy that keeps it
+  server-side.
+- **Network hardening:** HTTPS only, no request or response body logging in release builds. Certificate pinning only
+  for hosts the project controls, or against CA keys with backup pins; pinning a third-party leaf certificate breaks
+  the app when that party rotates it.
+- **Encrypted settings:** `core:security` provides a master key (Android Keystore / iOS Keychain with
+  `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` / in-memory on JVM). `core:datastore` encrypts the serialized
+  settings with AES-GCM (`cryptography-kotlin`). If the key is lost (backup restore, device reset), decryption fails
+  and the store is reset to defaults instead of crashing. `EncryptedSharedPreferences` is not used (deprecated).
+- **Database encryption (planned):** the database is plain SQLDelight for now. `DatabaseDriverFactory.create(passphrase:
+  ByteArray?)` already takes a passphrase so SQLCipher can be added without changing the architecture.
+
+---
+
+## 11. Presentation per app
+
+### `apps/cmp`: share everything
+
+```
+apps/cmp/
+├── designsystem/         # Theme, typography, stateless components, image loading, Compose resources
+├── feature/<x>/{nav,api,ui}/
+├── composeApp/           # App(), type-safe navigation graph, slots between features, MainViewController()
+├── androidApp/           # Activity, Application
+├── iosApp/               # Hosts ComposeUIViewController only
+└── desktopApp/           # optional
+```
+
+ViewModels use androidx.lifecycle KMP.
+
+### `apps/native`: native UI and ViewModel on each platform
+
+```
+apps/native/
+├── designsystem/         # Android: Jetpack Compose theme + components
+├── feature/<x>/{nav,api,ui}/   # Android feature modules
+├── app/                  # Android: Activity, navigation graph, Koin start
+├── shared/               # iOS umbrella framework: exports core:common, core:model, service/*/domain
+│                         # (debug builds also export service/*/fake for previews and tests); SKIE; KoinHelper
+└── iosApp/
+    ├── DI/               # Swift access to repositories and use cases via KoinHelper
+    ├── DesignSystem/
+    ├── Features/<X>/     # Swift packages: @Observable ViewModel + SwiftUI View
+    └── Localizable.xcstrings
+```
+
+Gradle modules in `apps/native` are the Android app; iOS code lives in `iosApp/` (Xcode, Swift packages) and
+reaches Kotlin only through `shared/`. Both apps therefore use the same module paths. Feature rules are the same on
+both platforms. On iOS, SKIE turns `Flow<T>` into `AsyncSequence`, `suspend` into
+`async throws`, `sealed` hierarchies into exhaustive `switch onEnum(of:)`, and Kotlin enums into Swift enums. An iOS
+app links **exactly one** Kotlin umbrella framework, to avoid duplicating the Kotlin runtime and types.
+
+### Localization
+
+| Layer | Strings |
+|---|---|
+| Remote content | Locale sent to the API, cached per locale |
+| `apps/cmp` UI | Compose Multiplatform resources |
+| `apps/native` Android UI | Android resources |
+| `apps/native` iOS UI | String Catalog |
+
+---
+
+## 12. Tech stack
 
 | Area | Choice |
 |---|---|
 | Language | Kotlin 2.x (K2), Swift 6 |
-| UI | Compose Multiplatform (`cmp`); Jetpack Compose + SwiftUI (`native`) |
+| UI | Compose Multiplatform (`apps/cmp`); Jetpack Compose + SwiftUI (`apps/native`) |
 | Navigation | Navigation Compose (type-safe); SwiftUI `NavigationStack` |
 | DI | Koin |
-| Networking | Ktor Client (OkHttp / Darwin engines), kotlinx.serialization |
+| Networking | Ktor Client, kotlinx.serialization |
 | Database | SQLDelight (SQLCipher planned) |
 | Settings | DataStore KMP + AES-GCM (`cryptography-kotlin`) |
-| Images | Coil 3 |
+| Images | Coil 3 (Compose); a disk-caching image library on SwiftUI |
 | iOS interop | SKIE |
-| Testing | `kotlin.test`, MockK, Turbine, Kotest assertions (JVM); Konsist; Kover |
+| Testing | `kotlin.test`, MockK, Turbine, Kotest assertions; Konsist; Kover |
 | Build | Gradle version catalog, convention plugins in `build-logic` |
-| CI | GitHub Actions: Ubuntu for JVM/Android, macOS for iOS |
 
 ---
 
-## 10. CI
+## 13. CI
 
-| Branch | Jobs |
-|---|---|
-| `main` | `detekt`, `jvmTest`, `koverVerify`, `:architecture-test:test` on Ubuntu (JVM only) |
-| `cmp` | All jobs from `main` + JVM Compose UI and screenshot tests + `assembleDebug` + iOS framework build |
-| `native` | All jobs from `main` + Android unit, UI and screenshot tests + `xcodebuild test` (macOS) |
-
-On `main`, Android and iOS targets are compiled locally, not on CI. Platform tests (Android instrumented, iOS simulator) also run locally only.
-
-### Running checks locally
+CI runs on `main` and on pull requests to it, on Ubuntu, JVM only:
 
 ```bash
-# Same checks as CI (JVM only)
 ./gradlew detekt jvmTest koverVerify :architecture-test:test
-
-# Compile every target: Android, iOS arm64, iOS simulator arm64, JVM (needs macOS + Xcode)
-./gradlew assemble
 ```
 
----
+Android and iOS targets, the app builds and platform tests run locally:
 
-## 11. Roadmap
-
-1. **`main`**: build-logic, `core/*` modules, JVM tests running, CI. Done, including the `tmdb.module` plugin and dependency rules (section 4); service contexts arrive with features.
-2. **`cmp`**: design system, then the three screens, then UI tests.
-3. **`native`**: Android screens, then the SwiftUI app with SKIE, then XCTest/XCUITest.
-4. **Spike**: SQLCipher with SQLDelight on Android and iOS.
-5. **Optional**: TMDB backend proxy.
+```bash
+# Compile every target (needs macOS + Xcode)
+./gradlew assemble
+```

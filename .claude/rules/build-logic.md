@@ -34,14 +34,14 @@ paths:
 - `plugins { alias(libs.plugins.tmdb.module) }` and nothing else: the type (from the path) decides KMP targets, Detekt, and Kover for `domain` / `data`.
 - Dependencies go in `kotlin { sourceSets { commonMain.dependencies { ... } } }` with type-safe accessors (`projects.core.security`).
 - Use `api(...)` only when the module exposes the dependency's types (`service/*/domain` → `core:model`, `core:common`, and an allowlisted `domain`); otherwise `implementation(...)`.
-- Allowed project dependencies per type are in `docs/architecture.md` 4.3 and enforced by `tmdb.module`: a forbidden one fails configuration with `Rule: <from> -> <to>: …`. `service/*/fake` and `core:testing` only in test source sets (source-set name contains `Test`). Only the configurations behind Kotlin source-set dependencies are checked; plugin- and IDE-created configurations (for example the Kotlin plugin's SwiftPM lock-file classpath) are not.
+- Allowed project dependencies per type are in `docs/architecture.md` 5.3 and enforced by `tmdb.module`: a forbidden one fails configuration with `Rule: <from> -> <to>: …`. `service/*/fake` and `core:testing` only in test source sets (source-set name contains `Test`). Only the configurations behind Kotlin source-set dependencies are checked; plugin- and IDE-created configurations (for example the Kotlin plugin's SwiftPM lock-file classpath) are not.
 - `tmdb.module` already applies `tmdb.detekt`; don't apply it again in KMP modules.
 
 ## Module types and dependency rules
-- `buildlogic/ModuleType.kt`: `moduleTypeOf(path)` maps `:core:<name>`, `:service:<ctx>:domain|data|fake`, `:feature:<x>:nav|api|ui` to a `ModuleType(kind, owner)`; any other path returns `null` and `tmdb.module` fails with "Unknown module type".
-- `buildlogic/DependencyRules.kt`: `violation(from, to, testScope)` is the 4.3 table; `domainAllowlist` holds the allowed `domain → domain` pairs (`title` → `favorites`), and `allowlistViolation()` rejects chains deeper than one level.
+- `buildlogic/ModuleType.kt`: `moduleTypeOf(path)` maps `:core:<name>`, `:service:<ctx>:domain|data|fake`, `:apps:<app>:designsystem`, `:apps:<app>:feature:<x>:nav|api|ui` to a `ModuleType(kind, owner, app)`; any other path (including app shells, not yet supported) returns `null` and `tmdb.module` fails with "Unknown module type".
+- `buildlogic/DependencyRules.kt`: `violation(from, to, testScope)` is the 5.3 table; `domainAllowlist` holds the allowed `domain → domain` pairs (`title` → `favorites`), and `allowlistViolation()` rejects chains deeper than one level. `appViolation()` rejects shared core → app and app → other app before the table is consulted.
 - `tmdb.module` sets `group` to the parent package of the path so klib names stay unique when leaf names repeat.
-- Changing the architecture: update `docs/architecture.md` 4.2 / 4.3 first (with the user's agreement), then `moduleTypeOf` / `DependencyRules` and their tests in `build-logic/convention/src/test/` (JUnit Jupiter; `kotlin-test` doesn't match the `kotlin-dsl` compiler).
+- Changing the architecture: update `docs/architecture.md` 5.2 / 5.3 first (with the user's agreement), then `moduleTypeOf` / `DependencyRules` and their tests in `build-logic/convention/src/test/` (JUnit Jupiter; `kotlin-test` doesn't match the `kotlin-dsl` compiler).
 
 ## Adding a convention plugin
 1. If it wraps a third-party Gradle plugin: add the version, a `<name>-gradlePlugin` library and the plugin id to `gradle/libs.versions.toml`; add `compileOnly(libs.<name>.gradlePlugin)` to `build-logic/convention/build.gradle.kts`; declare the plugin with `apply false` in the root `build.gradle.kts`.
@@ -57,7 +57,7 @@ paths:
 
 ## Do / Don't
 - Keep build logic configuration-cache safe (`org.gradle.configuration-cache=true`): no `project` access inside task actions; declare extra inputs explicitly, like `inputs.files(...)` in `architecture-test/build.gradle.kts`.
-- Don't add a `Test` source set dependency to `commonTest`; unit test deps belong on `jvmTest` in `configureKotlinMultiplatform()`.
+- Unit test deps are set in `configureKotlinMultiplatform()`: multiplatform test libraries (`kotlin-test`, Turbine, Kotest assertions) may go on `commonTest` once a module needs it; MockK and other JVM-only libraries only on `jvmTest`.
 - Root `build.gradle.kts` applies Kover with no rules (so `koverVerify` exists with no gated module) and makes the root `jvmTest` depend on `build-logic`'s `:convention:test`.
 
 ## Testing

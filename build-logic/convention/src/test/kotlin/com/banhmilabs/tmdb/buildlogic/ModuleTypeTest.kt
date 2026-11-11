@@ -25,15 +25,16 @@ class ModuleTypeTest {
     }
 
     @Test
-    fun featureModulesCarryTheirFeature() {
-        assertEquals(ModuleType(ModuleKind.NAV, "details"), moduleTypeOf(":feature:details:nav"))
-        assertEquals(ModuleType(ModuleKind.API, "favorites"), moduleTypeOf(":feature:favorites:api"))
-        assertEquals(ModuleType(ModuleKind.UI, "home"), moduleTypeOf(":feature:home:ui"))
+    fun featureModulesCarryTheirFeatureAndApp() {
+        assertEquals(ModuleType(ModuleKind.NAV, "details", "cmp"), moduleTypeOf(":apps:cmp:feature:details:nav"))
+        assertEquals(ModuleType(ModuleKind.API, "cart", "native"), moduleTypeOf(":apps:native:feature:cart:api"))
+        assertEquals(ModuleType(ModuleKind.UI, "home", "cmp"), moduleTypeOf(":apps:cmp:feature:home:ui"))
     }
 
     @Test
-    fun designsystemIsKnown() {
-        assertEquals(ModuleType(ModuleKind.DESIGNSYSTEM), moduleTypeOf(":core:designsystem"))
+    fun designsystemBelongsToAnApp() {
+        assertEquals(ModuleType(ModuleKind.DESIGNSYSTEM, app = "cmp"), moduleTypeOf(":apps:cmp:designsystem"))
+        assertEquals(ModuleType(ModuleKind.DESIGNSYSTEM, app = "native"), moduleTypeOf(":apps:native:designsystem"))
     }
 
     @Test
@@ -45,8 +46,14 @@ class ModuleTypeTest {
             ":core:data",
             ":service:title",
             ":service:title:impl",
-            ":feature:home",
-            ":feature:home:impl",
+            ":core:designsystem",
+            ":feature:home:ui",
+            ":feature:details:nav",
+            ":apps:cmp",
+            ":apps:cmp:feature:home",
+            ":apps:cmp:feature:home:impl",
+            ":apps:native:android:feature:home:ui",
+            ":apps:cmp:composeApp",
             ":tools:x",
             ":architecture-test",
         ).forEach { assertNull(moduleTypeOf(it), it) }

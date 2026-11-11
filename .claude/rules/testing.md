@@ -11,7 +11,7 @@ paths:
 ## Responsibility
 - Unit tests for each module live in its `src/jvmTest/kotlin/` under the module's package (`core/<module>` → `com/banhmilabs/tmdb/core/<module>/`, `service/<ctx>/<type>` → `com/banhmilabs/tmdb/service/<ctx>/<type>/`).
 - `core:testing` is a normal KMP library (`commonMain`) that other modules' tests consume. It holds test dispatchers only and may depend only on the kernel (`core:common`, `core:model`).
-- Strategy (jvmTest only, service fakes across modules, MockK inside a module, platform code tested on its platform) is in CLAUDE.md and `docs/architecture.md` section 8; this file covers how to write the tests.
+- Strategy (`jvmTest` by default, `commonTest` allowed for multiplatform-only tests, service fakes across modules, MockK inside a module, platform code tested on its platform) is in CLAUDE.md and `docs/architecture.md` section 8; this file covers how to write the tests.
 
 ## Pattern
 - One test class per subject: `<Subject>Test`, same package as the subject.
@@ -42,6 +42,7 @@ paths:
 - `iosTest` and Android device tests have no dependencies set up. The first task that adds `androidMain` / `iosMain` code configures them in `KmpLibraryConventionPlugin` (`kotlin-test` for `iosTest`; no MockK in either).
 
 ## Do / Don't
-- Don't create files under `src/commonTest/` or `src/androidHostTest/` (the Android host test was removed).
+- Prefer `src/jvmTest/`. Use `src/commonTest/` only for tests that need no MockK or JVM-only API and are worth running on Kotlin/Native (concurrency, `Flow` timing, formatting, parsing); they also run in `jvmTest`. `commonTest` has no test dependencies yet: add `kotlin-test` (and Turbine / Kotest assertions if needed) to it in `configureKotlinMultiplatform()` with the first such test. MockK stays on `jvmTest` only.
+- Don't create files under `src/androidHostTest/` (the Android host test was removed).
 - Don't write ad-hoc `Fake*` classes in test code; fakes live only in `service/<ctx>/fake` with a contract test. Otherwise use MockK or a real in-memory engine (SQLDelight in-memory driver, Ktor `MockEngine`).
 - Don't weaken or delete a failing test to make a check pass; fix the cause.

@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 /**
  * Kotlin Multiplatform library targeting Android, iOS (device + simulator) and JVM.
- * Unit tests live in `jvmTest` only, with `kotlin-test` and MockK.
+ * Unit tests default to `jvmTest`, with `kotlin-test` and MockK; `commonTest` gets test dependencies when first needed.
  */
 internal fun Project.configureKotlinMultiplatform() {
     pluginManager.apply("org.jetbrains.kotlin.multiplatform")

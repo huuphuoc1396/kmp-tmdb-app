@@ -20,7 +20,8 @@ class ModuleConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         val type = moduleTypeOf(path) ?: throw GradleException(
             "Unknown module type for $path. Shared modules live at :core:<name>, " +
-                ":service:<context>:domain|data|fake or :feature:<name>:nav|api|ui (docs/architecture.md 4.2).",
+                ":service:<context>:domain|data|fake, :apps:<app>:designsystem or :apps:<app>:feature:<name>:nav|api|ui " +
+                "(docs/architecture.md 5.2).",
         )
         DependencyRules.allowlistViolation()?.let { throw GradleException(it) }
 
@@ -54,7 +55,7 @@ class ModuleConventionPlugin : Plugin<Project> {
                     val to = moduleTypeOf(toPath)
                         ?: throw GradleException("Rule: $edge: target is not a shared module")
                     DependencyRules.violation(from, to, testScope)?.let {
-                        throw GradleException("Rule: $edge: $it (docs/architecture.md 4.3)")
+                        throw GradleException("Rule: $edge: $it (docs/architecture.md 5.3)")
                     }
                 }
             }

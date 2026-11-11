@@ -25,13 +25,13 @@ class DependencyRulesTest {
 
     @Test
     fun uiToUiIsRejected() {
-        assertRejected(":feature:home:ui", ":feature:details:ui")
+        assertRejected(":apps:cmp:feature:home:ui", ":apps:cmp:feature:details:ui")
     }
 
     @Test
     fun uiToDataIsRejected() {
-        assertRejected(":feature:home:ui", ":service:title:data")
-        assertRejected(":feature:home:ui", ":core:network")
+        assertRejected(":apps:cmp:feature:home:ui", ":service:title:data")
+        assertRejected(":apps:cmp:feature:home:ui", ":core:network")
     }
 
     @Test
@@ -65,8 +65,8 @@ class DependencyRulesTest {
 
     @Test
     fun fakeAndTestingAllowedOnlyInTestScope() {
-        assertRejected(":feature:home:ui", ":service:title:fake")
-        assertAllowed(":feature:home:ui", ":service:title:fake", testScope = true)
+        assertRejected(":apps:cmp:feature:home:ui", ":service:title:fake")
+        assertAllowed(":apps:cmp:feature:home:ui", ":service:title:fake", testScope = true)
         assertRejected(":service:title:data", ":core:testing")
         assertAllowed(":service:title:data", ":core:testing", testScope = true)
     }
@@ -84,15 +84,38 @@ class DependencyRulesTest {
 
     @Test
     fun featureTypesFollowTable() {
-        assertAllowed(":feature:home:ui", ":feature:details:nav")
-        assertAllowed(":feature:home:ui", ":feature:favorites:api")
-        assertAllowed(":feature:home:ui", ":service:title:domain")
-        assertAllowed(":feature:home:ui", ":core:designsystem")
-        assertAllowed(":feature:details:nav", ":core:model")
-        assertRejected(":feature:details:nav", ":core:common")
-        assertRejected(":feature:details:api", ":service:title:domain")
-        assertAllowed(":core:designsystem", ":core:model")
-        assertRejected(":core:designsystem", ":service:title:domain")
+        assertAllowed(":apps:cmp:feature:home:ui", ":apps:cmp:feature:details:nav")
+        assertAllowed(":apps:cmp:feature:home:ui", ":apps:cmp:feature:favorites:api")
+        assertAllowed(":apps:cmp:feature:home:ui", ":service:title:domain")
+        assertAllowed(":apps:cmp:feature:home:ui", ":apps:cmp:designsystem")
+        assertAllowed(":apps:cmp:feature:details:nav", ":core:model")
+        assertRejected(":apps:cmp:feature:details:nav", ":core:common")
+        assertRejected(":apps:cmp:feature:details:api", ":service:title:domain")
+        assertAllowed(":apps:cmp:designsystem", ":core:model")
+        assertRejected(":apps:cmp:designsystem", ":service:title:domain")
+    }
+
+    @Test
+    fun uiUsesOnlyItsOwnAppFeaturesAndDesignsystem() {
+        assertRejected(":apps:cmp:feature:home:ui", ":apps:native:feature:details:nav")
+        assertRejected(":apps:cmp:feature:home:ui", ":apps:native:feature:cart:api")
+        assertRejected(":apps:cmp:feature:home:ui", ":apps:native:designsystem")
+        assertAllowed(":apps:native:feature:home:ui", ":apps:native:designsystem")
+        assertAllowed(":apps:native:feature:home:ui", ":service:title:domain")
+    }
+
+    @Test
+    fun appsNeverDependOnEachOther() {
+        assertRejected(":apps:native:designsystem", ":apps:cmp:designsystem")
+        assertRejected(":apps:native:feature:home:ui", ":apps:cmp:feature:home:ui")
+    }
+
+    @Test
+    fun sharedCoreNeverDependsOnAnApp() {
+        assertRejected(":core:di", ":apps:cmp:feature:home:ui")
+        assertRejected(":core:model", ":apps:cmp:designsystem")
+        assertRejected(":service:title:domain", ":apps:cmp:feature:details:nav")
+        assertRejected(":core:di", ":apps:cmp:designsystem", testScope = true)
     }
 
     private fun violation(from: String, to: String, testScope: Boolean): String? =
