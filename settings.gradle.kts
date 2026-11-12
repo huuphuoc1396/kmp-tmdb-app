@@ -33,6 +33,7 @@ include(
     ":service:settings:data",
     ":service:settings:fake",
     ":apps:cmp:designsystem",
+    ":apps:cmp:feature:onboarding:ui",
     ":apps:cmp:composeApp",
     ":apps:cmp:androidApp",
 )

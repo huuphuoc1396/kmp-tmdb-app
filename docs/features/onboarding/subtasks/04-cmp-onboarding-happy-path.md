@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Onboarding](../design/onboarding.md)
 Depends on: 02-onboarding-completed-state, 03-cmp-app-shell
-Status: Todo
+Status: Done
 
 ## Goal
 On the Compose Multiplatform app (Android and iOS), a first launch shows the onboarding screen as designed, "Acessar" opens Home, and later launches open Home directly. It works offline and in en / pt-BR.
