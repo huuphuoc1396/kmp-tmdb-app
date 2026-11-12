@@ -336,3 +336,6 @@ EC-1). Tests cover both ViewModels and run Compose UI tests on JVM.
   - `OnboardingScreen` takes `(state, onIntent)`.
   - `onboardingScreen(onFinished)` is unchanged.
   - The convention is recorded in `docs/architecture.md` 11 and `CLAUDE.md`.
+- After review: the ViewModel wiring moved from `onboardingScreen()` into a stateful
+  `OnboardingScreen(onFinished, viewModel = koinViewModel())` (from user). The stateless UI is now
+  `OnboardingContent(state, onIntent)`, and `OnboardingScreenTest` became `OnboardingContentTest`.

@@ -17,6 +17,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.generated.resources.Res
 import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.generated.resources.onboarding_body
 import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.generated.resources.onboarding_get_started
@@ -36,6 +39,7 @@ import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.generated.resources.on
 import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.generated.resources.tmdb_logo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 internal const val GET_STARTED_TAG = "onboarding_get_started"
 internal const val LOGO_TAG = "onboarding_logo"
@@ -73,9 +77,23 @@ private val ButtonLabelStyle = TextStyle(
     textAlign = TextAlign.Center,
 )
 
-/** Taps on the button are ignored while [OnboardingUiState.isNavigating]. */
+/** The onboarding screen: connects [OnboardingViewModel] and turns its effects into [onFinished]. */
 @Composable
-internal fun OnboardingScreen(
+internal fun OnboardingScreen(onFinished: () -> Unit, viewModel: OnboardingViewModel = koinViewModel()) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(viewModel) {
+        viewModel.effects.collect { effect ->
+            when (effect) {
+                OnboardingEffect.NavigateToHome -> onFinished()
+            }
+        }
+    }
+    OnboardingContent(state = state, onIntent = viewModel::onIntent)
+}
+
+/** Stateless onboarding UI. Taps on the button are ignored while [OnboardingUiState.isNavigating]. */
+@Composable
+internal fun OnboardingContent(
     state: OnboardingUiState,
     onIntent: (OnboardingIntent) -> Unit,
     modifier: Modifier = Modifier,

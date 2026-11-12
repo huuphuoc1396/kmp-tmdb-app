@@ -400,8 +400,9 @@ ViewModels use androidx.lifecycle KMP and follow MVI:
 - **Effect**: a `sealed interface <Feature>Effect` of one-off events such as navigation, exposed as a `Flow` (`effects`)
   backed by a buffered `Channel`.
 
-The screen composable is stateless: `(state, onIntent)`. The feature's navigation entry collects `state` and
-`effects` and turns effects into callbacks for the app shell. There is no shared MVI base class until a second
+The stateful `<Feature>Screen(callbacks, viewModel = koinViewModel())` collects `state` and `effects` and turns
+effects into callbacks for the app shell. It draws the stateless `<Feature>Content(state, onIntent)`, which UI tests
+and previews use without Koin. The navigation entry only declares the destination and calls `<Feature>Screen`. There is no shared MVI base class until a second
 feature needs one. Reference: `apps/cmp/feature/onboarding/ui`.
 
 ### `apps/native`: native UI and ViewModel on each platform

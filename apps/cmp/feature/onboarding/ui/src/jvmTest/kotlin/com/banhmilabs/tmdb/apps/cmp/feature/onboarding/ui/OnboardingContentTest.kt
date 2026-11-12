@@ -13,7 +13,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
-class OnboardingScreenTest {
+class OnboardingContentTest {
     private val defaultLocale = Locale.getDefault()
 
     @AfterTest
@@ -24,7 +24,7 @@ class OnboardingScreenTest {
     @Test
     fun showsLogoHeadlineBodyAndButtonInEnglish() = runComposeUiTest {
         Locale.setDefault(Locale.US)
-        setContent { TmdbTheme { OnboardingScreen(state = OnboardingUiState(), onIntent = {}) } }
+        setContent { TmdbTheme { OnboardingContent(state = OnboardingUiState(), onIntent = {}) } }
 
         onNodeWithTag(LOGO_TAG).assertIsDisplayed()
         onNodeWithText("All about movies, series, anime and much more.").assertIsDisplayed()
@@ -35,7 +35,7 @@ class OnboardingScreenTest {
     @Test
     fun showsPortugueseCopyForPtBr() = runComposeUiTest {
         Locale.setDefault(Locale.of("pt", "BR"))
-        setContent { TmdbTheme { OnboardingScreen(state = OnboardingUiState(), onIntent = {}) } }
+        setContent { TmdbTheme { OnboardingContent(state = OnboardingUiState(), onIntent = {}) } }
 
         onNodeWithText("Tudo sobre filmes, séries, animes e muito mais.").assertIsDisplayed()
         onNodeWithText("Fique por dentro das informações de filmes, séries, animes e muito mais.").assertIsDisplayed()
@@ -45,7 +45,7 @@ class OnboardingScreenTest {
     @Test
     fun fallsBackToEnglishForOtherLanguages() = runComposeUiTest {
         Locale.setDefault(Locale.FRANCE)
-        setContent { TmdbTheme { OnboardingScreen(state = OnboardingUiState(), onIntent = {}) } }
+        setContent { TmdbTheme { OnboardingContent(state = OnboardingUiState(), onIntent = {}) } }
 
         onNodeWithText("Get started").assertIsDisplayed()
     }
@@ -53,7 +53,7 @@ class OnboardingScreenTest {
     @Test
     fun clickSendsGetStartedIntent() = runComposeUiTest {
         val intents = mutableListOf<OnboardingIntent>()
-        setContent { TmdbTheme { OnboardingScreen(state = OnboardingUiState(), onIntent = { intents += it }) } }
+        setContent { TmdbTheme { OnboardingContent(state = OnboardingUiState(), onIntent = { intents += it }) } }
 
         onNodeWithTag(GET_STARTED_TAG).performClick()
 
@@ -63,9 +63,8 @@ class OnboardingScreenTest {
     @Test
     fun clickIgnoredWhileNavigating() = runComposeUiTest {
         val intents = mutableListOf<OnboardingIntent>()
-        setContent {
-            TmdbTheme { OnboardingScreen(state = OnboardingUiState(isNavigating = true), onIntent = { intents += it }) }
-        }
+        val navigating = OnboardingUiState(isNavigating = true)
+        setContent { TmdbTheme { OnboardingContent(state = navigating, onIntent = { intents += it }) } }
 
         onNodeWithTag(GET_STARTED_TAG).performClick()
 
