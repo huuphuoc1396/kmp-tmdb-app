@@ -17,41 +17,42 @@ class OnboardingViewModelTest : MainDispatcherTest(StandardTestDispatcher()) {
     private val viewModel = OnboardingViewModel(repository)
 
     @Test
-    fun startsInContent() {
-        assertEquals(OnboardingUiState.Content, viewModel.uiState.value)
+    fun startsNotNavigating() {
+        assertEquals(OnboardingUiState(isNavigating = false), viewModel.state.value)
     }
 
     @Test
-    fun getStartedCompletesOnboardingThenFinishes() = runTest(testDispatcher) {
-        viewModel.uiState.test {
-            assertEquals(OnboardingUiState.Content, awaitItem())
-            viewModel.onGetStartedClick()
-            assertEquals(OnboardingUiState.Navigating, awaitItem())
-            assertEquals(OnboardingUiState.Finished, awaitItem())
+    fun getStartedCompletesOnboardingThenNavigatesHome() = runTest(testDispatcher) {
+        viewModel.effects.test {
+            viewModel.onIntent(OnboardingIntent.GetStartedClicked)
+
+            assertTrue(viewModel.state.value.isNavigating)
+            assertEquals(OnboardingEffect.NavigateToHome, awaitItem())
         }
         assertTrue(repository.observeOnboardingCompleted().first())
     }
 
     @Test
-    fun getStartedFinishesWhenSaveFails() = runTest(testDispatcher) {
+    fun getStartedNavigatesHomeWhenSaveFails() = runTest(testDispatcher) {
         repository.failNextComplete(AppError.Unknown)
 
-        viewModel.onGetStartedClick()
-        testScheduler.advanceUntilIdle()
+        viewModel.effects.test {
+            viewModel.onIntent(OnboardingIntent.GetStartedClicked)
 
-        assertEquals(OnboardingUiState.Finished, viewModel.uiState.value)
+            assertEquals(OnboardingEffect.NavigateToHome, awaitItem())
+        }
         assertFalse(repository.observeOnboardingCompleted().first())
     }
 
     @Test
-    fun repeatedTapsFinishOnce() = runTest(testDispatcher) {
-        viewModel.uiState.test {
-            assertEquals(OnboardingUiState.Content, awaitItem())
-            viewModel.onGetStartedClick()
-            viewModel.onGetStartedClick()
-            assertEquals(OnboardingUiState.Navigating, awaitItem())
-            assertEquals(OnboardingUiState.Finished, awaitItem())
-            viewModel.onGetStartedClick()
+    fun repeatedTapsNavigateOnce() = runTest(testDispatcher) {
+        viewModel.effects.test {
+            viewModel.onIntent(OnboardingIntent.GetStartedClicked)
+            viewModel.onIntent(OnboardingIntent.GetStartedClicked)
+
+            assertEquals(OnboardingEffect.NavigateToHome, awaitItem())
+            viewModel.onIntent(OnboardingIntent.GetStartedClicked)
+            testScheduler.advanceUntilIdle()
             expectNoEvents()
         }
     }

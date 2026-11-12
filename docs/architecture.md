@@ -393,7 +393,16 @@ apps/cmp/
 └── desktopApp/           # optional
 ```
 
-ViewModels use androidx.lifecycle KMP.
+ViewModels use androidx.lifecycle KMP and follow MVI:
+
+- **State**: an immutable `data class <Feature>UiState`, exposed as `StateFlow` (`state`).
+- **Intent**: a `sealed interface <Feature>Intent` of user actions, handled by a single `fun onIntent(intent)`.
+- **Effect**: a `sealed interface <Feature>Effect` of one-off events such as navigation, exposed as a `Flow` (`effects`)
+  backed by a buffered `Channel`.
+
+The screen composable is stateless: `(state, onIntent)`. The feature's navigation entry collects `state` and
+`effects` and turns effects into callbacks for the app shell. There is no shared MVI base class until a second
+feature needs one. Reference: `apps/cmp/feature/onboarding/ui`.
 
 ### `apps/native`: native UI and ViewModel on each platform
 

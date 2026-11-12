@@ -1,3 +1,3 @@
 package com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui
 
-internal enum class OnboardingUiState { Content, Navigating, Finished }
+internal data class OnboardingUiState(val isNavigating: Boolean = false)

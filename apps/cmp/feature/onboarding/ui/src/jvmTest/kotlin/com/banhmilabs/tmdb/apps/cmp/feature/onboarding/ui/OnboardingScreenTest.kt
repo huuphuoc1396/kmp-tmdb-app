@@ -24,7 +24,7 @@ class OnboardingScreenTest {
     @Test
     fun showsLogoHeadlineBodyAndButtonInEnglish() = runComposeUiTest {
         Locale.setDefault(Locale.US)
-        setContent { TmdbTheme { OnboardingScreen(isNavigating = false, onGetStartedClick = {}) } }
+        setContent { TmdbTheme { OnboardingScreen(state = OnboardingUiState(), onIntent = {}) } }
 
         onNodeWithTag(LOGO_TAG).assertIsDisplayed()
         onNodeWithText("All about movies, series, anime and much more.").assertIsDisplayed()
@@ -35,7 +35,7 @@ class OnboardingScreenTest {
     @Test
     fun showsPortugueseCopyForPtBr() = runComposeUiTest {
         Locale.setDefault(Locale.of("pt", "BR"))
-        setContent { TmdbTheme { OnboardingScreen(isNavigating = false, onGetStartedClick = {}) } }
+        setContent { TmdbTheme { OnboardingScreen(state = OnboardingUiState(), onIntent = {}) } }
 
         onNodeWithText("Tudo sobre filmes, séries, animes e muito mais.").assertIsDisplayed()
         onNodeWithText("Fique por dentro das informações de filmes, séries, animes e muito mais.").assertIsDisplayed()
@@ -45,28 +45,30 @@ class OnboardingScreenTest {
     @Test
     fun fallsBackToEnglishForOtherLanguages() = runComposeUiTest {
         Locale.setDefault(Locale.FRANCE)
-        setContent { TmdbTheme { OnboardingScreen(isNavigating = false, onGetStartedClick = {}) } }
+        setContent { TmdbTheme { OnboardingScreen(state = OnboardingUiState(), onIntent = {}) } }
 
         onNodeWithText("Get started").assertIsDisplayed()
     }
 
     @Test
-    fun clickCallsOnGetStartedClick() = runComposeUiTest {
-        var clicks = 0
-        setContent { TmdbTheme { OnboardingScreen(isNavigating = false, onGetStartedClick = { clicks++ }) } }
+    fun clickSendsGetStartedIntent() = runComposeUiTest {
+        val intents = mutableListOf<OnboardingIntent>()
+        setContent { TmdbTheme { OnboardingScreen(state = OnboardingUiState(), onIntent = { intents += it }) } }
 
         onNodeWithTag(GET_STARTED_TAG).performClick()
 
-        assertEquals(1, clicks)
+        assertEquals(listOf<OnboardingIntent>(OnboardingIntent.GetStartedClicked), intents)
     }
 
     @Test
     fun clickIgnoredWhileNavigating() = runComposeUiTest {
-        var clicks = 0
-        setContent { TmdbTheme { OnboardingScreen(isNavigating = true, onGetStartedClick = { clicks++ }) } }
+        val intents = mutableListOf<OnboardingIntent>()
+        setContent {
+            TmdbTheme { OnboardingScreen(state = OnboardingUiState(isNavigating = true), onIntent = { intents += it }) }
+        }
 
         onNodeWithTag(GET_STARTED_TAG).performClick()
 
-        assertEquals(0, clicks)
+        assertEquals(emptyList(), intents)
     }
 }

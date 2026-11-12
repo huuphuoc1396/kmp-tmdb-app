@@ -73,9 +73,13 @@ private val ButtonLabelStyle = TextStyle(
     textAlign = TextAlign.Center,
 )
 
-/** Taps on the button are ignored while [isNavigating]. */
+/** Taps on the button are ignored while [OnboardingUiState.isNavigating]. */
 @Composable
-internal fun OnboardingScreen(isNavigating: Boolean, onGetStartedClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun OnboardingScreen(
+    state: OnboardingUiState,
+    onIntent: (OnboardingIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Box(modifier = modifier.fillMaxSize()) {
         // Placeholder until licensed artwork is supplied.
         Box(
@@ -111,7 +115,10 @@ internal fun OnboardingScreen(isNavigating: Boolean, onGetStartedClick: () -> Un
                 style = HeadlineStyle,
             )
             Text(text = stringResource(Res.string.onboarding_body), style = BodyStyle)
-            GetStartedButton(enabled = !isNavigating, onClick = onGetStartedClick)
+            GetStartedButton(
+                enabled = !state.isNavigating,
+                onClick = { onIntent(OnboardingIntent.GetStartedClicked) },
+            )
         }
     }
 }

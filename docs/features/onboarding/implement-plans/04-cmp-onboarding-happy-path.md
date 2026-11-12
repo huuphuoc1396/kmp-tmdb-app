@@ -328,3 +328,11 @@ EC-1). Tests cover both ViewModels and run Compose UI tests on JVM.
   `null` (from user). `App()` draws nothing for `Loading` and passes the route to `AppNavHost(startRoute)`;
   `MainActivity` keeps the splash while it is `Loading`. `AppViewModelTest` gained
   `loadingUntilOnboardingStateIsRead`.
+- After review: onboarding follows MVI (from user).
+  - `OnboardingUiState` is a data class (`isNavigating`).
+  - `OnboardingIntent.GetStartedClicked` is handled by `onIntent`.
+  - Navigation is a one-off `OnboardingEffect.NavigateToHome`, sent through a buffered `Channel` instead of a
+    `Finished` state.
+  - `OnboardingScreen` takes `(state, onIntent)`.
+  - `onboardingScreen(onFinished)` is unchanged.
+  - The convention is recorded in `docs/architecture.md` 11 and `CLAUDE.md`.

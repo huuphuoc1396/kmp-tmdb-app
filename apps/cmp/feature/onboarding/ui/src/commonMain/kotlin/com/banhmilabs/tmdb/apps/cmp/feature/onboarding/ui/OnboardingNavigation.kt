@@ -11,13 +11,14 @@ import org.koin.compose.viewmodel.koinViewModel
 fun NavGraphBuilder.onboardingScreen(onFinished: () -> Unit) {
     composable<OnboardingRoute> {
         val viewModel = koinViewModel<OnboardingViewModel>()
-        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        LaunchedEffect(uiState) {
-            if (uiState == OnboardingUiState.Finished) onFinished()
+        val state by viewModel.state.collectAsStateWithLifecycle()
+        LaunchedEffect(viewModel) {
+            viewModel.effects.collect { effect ->
+                when (effect) {
+                    OnboardingEffect.NavigateToHome -> onFinished()
+                }
+            }
         }
-        OnboardingScreen(
-            isNavigating = uiState != OnboardingUiState.Content,
-            onGetStartedClick = viewModel::onGetStartedClick,
-        )
+        OnboardingScreen(state = state, onIntent = viewModel::onIntent)
     }
 }
