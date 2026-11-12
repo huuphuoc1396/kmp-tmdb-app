@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Design: [Onboarding](../design/onboarding.md)
-Depends on: 02-onboarding-completed-state. Prerequisite outside this feature: the native Android app shell (app module, dark theme, navigation) in `apps/native`.
+Depends on: 02-onboarding-completed-state. Prerequisite outside this feature: the standalone native Android app ([native-android-app](../../native-android-app/task.md): published shared core and the `native-android/` shell).
 Status: Todo
 
 ## Goal
@@ -15,7 +15,7 @@ On the native Android app (Jetpack Compose), onboarding works end to end as desi
 - Start screen chosen from the onboarding completed state, with no flash of the wrong screen.
 - "Acessar" records completion and replaces onboarding with Home; a placeholder Home until the Home feature exists.
 - Accessibility, large fonts, landscape / tablet, rotation and process death.
-- App: `apps/native` (on `main`).
+- App: the standalone `native-android/` project, using the shared core through the published libraries (`./gradlew publishSharedCore` first).
 ### Out of scope (handled later)
 - iOS -> 07-native-ios-onboarding
 - The real Home screen -> Home feature
@@ -99,3 +99,4 @@ Run on an Android emulator or device (TalkBack for accessibility).
 ## Change log
 - 2026-11-10: Initial version.
 - 2026-11-11: Renumbered from 05; apps are directories on `main`; copy and assets resolved.
+- 2026-11-12: Target moved from `apps/native` to the standalone `native-android/` app (feature native-android-app).

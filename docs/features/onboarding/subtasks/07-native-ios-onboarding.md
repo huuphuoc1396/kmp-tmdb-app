@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Design: [Onboarding](../design/onboarding.md)
-Depends on: 02-onboarding-completed-state. Prerequisite outside this feature: the native iOS app shell (SwiftUI app, dark theme, navigation, shared framework with SKIE) in `apps/native`.
+Depends on: 02-onboarding-completed-state. Prerequisite outside this feature: the standalone native iOS app (feature native-ios-app, not specced yet: a `native-ios/` Xcode project using the shared core as a published XCFramework, with its shell).
 Status: Todo
 
 ## Goal
@@ -15,7 +15,7 @@ On the native iOS app (SwiftUI), onboarding works end to end as designed: first 
 - Start screen chosen from the onboarding completed state, with no flash of the wrong screen.
 - "Acessar" records completion and replaces onboarding with Home; a placeholder Home until the Home feature exists.
 - Accessibility (VoiceOver, Dynamic Type), landscape / iPad, state restoration.
-- App: `apps/native` (on `main`).
+- App: the standalone `native-ios/` project (feature native-ios-app).
 ### Out of scope (handled later)
 - Android -> 06-native-android-onboarding
 - The real Home screen -> Home feature
@@ -100,3 +100,4 @@ Run on the iOS simulator (iPhone and iPad; VoiceOver via Accessibility Inspector
 ## Change log
 - 2026-11-10: Initial version.
 - 2026-11-11: Renumbered from 06; apps are directories on `main`; copy and assets resolved.
+- 2026-11-12: Target moved from `apps/native` to the standalone `native-ios/` app (feature native-ios-app, to be specced).
