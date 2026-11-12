@@ -15,6 +15,8 @@ internal enum class ModuleKind {
     NAV,
     API,
     UI,
+    APP,
+    ANDROID_APP,
 }
 
 /**
@@ -40,6 +42,12 @@ private val SERVICE_KINDS = mapOf(
     "fake" to ModuleKind.FAKE,
 )
 
+private val APP_KINDS = mapOf(
+    "designsystem" to ModuleKind.DESIGNSYSTEM,
+    "composeApp" to ModuleKind.APP,
+    "androidApp" to ModuleKind.ANDROID_APP,
+)
+
 private val FEATURE_KINDS = mapOf(
     "nav" to ModuleKind.NAV,
     "api" to ModuleKind.API,
@@ -57,8 +65,8 @@ internal fun moduleTypeOf(path: String): ModuleType? {
             CORE_KINDS[segments[1]]?.let { ModuleType(it) }
         segments.size == 3 && segments[0] == "service" ->
             SERVICE_KINDS[segments[2]]?.let { ModuleType(it, segments[1]) }
-        segments.size == 3 && segments[0] == "apps" && segments[2] == "designsystem" ->
-            ModuleType(ModuleKind.DESIGNSYSTEM, app = segments[1])
+        segments.size == 3 && segments[0] == "apps" ->
+            APP_KINDS[segments[2]]?.let { ModuleType(it, app = segments[1]) }
         segments.size == 5 && segments[0] == "apps" && segments[2] == "feature" ->
             FEATURE_KINDS[segments[4]]?.let { ModuleType(it, segments[3], segments[1]) }
         else -> null

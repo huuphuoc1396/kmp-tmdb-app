@@ -1,6 +1,8 @@
 package com.banhmilabs.tmdb.buildlogic
 
+import com.banhmilabs.tmdb.buildlogic.ModuleKind.ANDROID_APP
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.API
+import com.banhmilabs.tmdb.buildlogic.ModuleKind.APP
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.COMMON
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.DATA
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.DESIGNSYSTEM
@@ -38,7 +40,7 @@ internal object DependencyRules {
             SECURITY, TESTING -> to.kind in KERNEL
             INFRA -> to.kind in KERNEL || to.kind == SECURITY
             DESIGNSYSTEM, NAV, API -> to.kind == MODEL
-            DI -> true
+            DI, APP, ANDROID_APP -> true
             DOMAIN -> to.kind in KERNEL || (to.kind == DOMAIN && (from.owner to to.owner) in allowlist)
             DATA -> to.kind in KERNEL || to.kind in setOf(SECURITY, INFRA) || isOwnDomain(from, to)
             FAKE -> to.kind in KERNEL || isOwnDomain(from, to)
@@ -72,6 +74,7 @@ internal object DependencyRules {
         INFRA -> "infrastructure depends only on the kernel and core:security"
         DESIGNSYSTEM, NAV, API -> "${kind.label} depends only on core:model"
         DI -> "core:di may depend on anything"
+        APP, ANDROID_APP -> "an app shell may depend on its own app and the shared core"
         DOMAIN -> "domain depends only on the kernel and allowlisted domains of other contexts"
         DATA -> "data depends only on its own context's domain, the kernel and infrastructure"
         FAKE -> "fake depends only on its own context's domain and the kernel"

@@ -160,7 +160,9 @@ The **public API of the shared core** is the set of `service/*/domain` modules. 
 | `core/network`, `core/database`, `core/datastore` | infra | Infrastructure, `expect`/`actual` |
 | `core/security` | security | Master key and encryption, used by infra |
 | `core/testing` | testing | Shared test utilities |
-| `core/di`, app shells | root | Wiring |
+| `core/di` | root | Wiring of the shared core (`initKoin()`) |
+| `apps/<app>/composeApp` | root (app) | `App()`, navigation graph, slots between features; KMP library that also builds the iOS framework |
+| `apps/<app>/androidApp` | root (android-app) | Android application: `Application`, `Activity`, Koin start |
 | `service/<ctx>/domain` | domain | Context models, repository interfaces, use cases |
 | `service/<ctx>/data` | data | Repository implementations, endpoints + DTOs, mappers, queries, Koin module |
 | `service/<ctx>/fake` | fake | In-memory repository fakes + the repository contract test |
@@ -346,13 +348,15 @@ Every shared module applies only `alias(libs.plugins.tmdb.module)`; KMP targets,
 Kover come from its type. The rule table and type parsing have unit tests in `build-logic`.
 
 Module paths recognised by `moduleTypeOf`: `:core:<name>`, `:service:<ctx>:domain|data|fake`,
-`:apps:<app>:designsystem` and `:apps:<app>:feature:<x>:nav|api|ui`. Two rules span apps: a `ui` module uses only the
+`:apps:<app>:designsystem`, `:apps:<app>:composeApp`, `:apps:<app>:androidApp` and
+`:apps:<app>:feature:<x>:nav|api|ui`. Two rules span apps: a `ui` module uses only the
 `nav` / `api` / designsystem of its own app, and a module never depends on a module of another app; the shared core
 (`core/`, `service/`) never depends on an app at all.
 
-> **Status:** app shells (`composeApp`, `androidApp`, `apps/native/app`) and the per-app build setup (Compose for
-> `apps/cmp`, Android-only modules for `apps/native`) are added with the first app; `tmdb.module` currently
-> configures every recognised module as a KMP library.
+> **Status:** `apps/cmp` exists: `tmdb.module` configures `composeApp` as a KMP library with the iOS framework,
+> `androidApp` as an Android application, and adds Compose Multiplatform to the `designsystem`, `ui` and `composeApp`
+> modules of `apps/cmp`. `apps/native` (`app`, `shared`, Android-only modules) is added with that app; until then its
+> modules would be configured as KMP libraries.
 
 ---
 

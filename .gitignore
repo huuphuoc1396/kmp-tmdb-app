@@ -18,8 +18,7 @@ secrets.properties
 *.keystore
 
 # Xcode
-iosApp/**/xcuserdata/
-iosApp/**/*.xcworkspace/xcuserdata/
+xcuserdata/
 DerivedData/
 *.xcuserstate
 

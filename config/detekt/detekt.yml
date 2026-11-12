@@ -7,3 +7,7 @@ style:
   MaxLineLength:
     active: true
     maxLineLength: 120
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']

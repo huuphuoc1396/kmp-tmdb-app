@@ -32,4 +32,7 @@ include(
     ":service:settings:domain",
     ":service:settings:data",
     ":service:settings:fake",
+    ":apps:cmp:designsystem",
+    ":apps:cmp:composeApp",
+    ":apps:cmp:androidApp",
 )

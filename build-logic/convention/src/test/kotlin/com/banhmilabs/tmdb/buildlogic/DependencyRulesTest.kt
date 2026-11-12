@@ -118,6 +118,32 @@ class DependencyRulesTest {
         assertRejected(":core:di", ":apps:cmp:designsystem", testScope = true)
     }
 
+    @Test
+    fun androidAppMayDependOnComposeApp() {
+        assertAllowed(":apps:cmp:androidApp", ":apps:cmp:composeApp")
+    }
+
+    @Test
+    fun appShellMayDependOnSharedCoreAndOwnApp() {
+        assertAllowed(":apps:cmp:composeApp", ":apps:cmp:designsystem")
+        assertAllowed(":apps:cmp:composeApp", ":apps:cmp:feature:home:ui")
+        assertAllowed(":apps:cmp:composeApp", ":core:di")
+        assertAllowed(":apps:cmp:androidApp", ":core:di")
+        assertAllowed(":apps:cmp:composeApp", ":service:settings:domain")
+    }
+
+    @Test
+    fun appShellMayNotDependOnOtherApp() {
+        assertRejected(":apps:cmp:composeApp", ":apps:native:designsystem")
+        assertRejected(":apps:cmp:androidApp", ":apps:native:feature:home:ui")
+    }
+
+    @Test
+    fun appShellUsesFakeOnlyInTests() {
+        assertRejected(":apps:cmp:composeApp", ":service:settings:fake")
+        assertAllowed(":apps:cmp:composeApp", ":service:settings:fake", testScope = true)
+    }
+
     private fun violation(from: String, to: String, testScope: Boolean): String? =
         DependencyRules.violation(type(from), type(to), testScope)
 

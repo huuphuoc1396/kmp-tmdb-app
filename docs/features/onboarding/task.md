@@ -111,19 +111,24 @@ There is no loading, empty or error state: everything on the screen is bundled w
 - [Onboarding](design/onboarding.md)
 
 ## Open questions
-- [ ] Final headline, value proposition, and English button label, in en and pt-BR (owner: product/user;
-  needed before forge).
-- [ ] Artwork asset and its source/license (owner: product/designer; needed before forge; can come through
-  `mold` if a Figma design exists).
+- [x] Final headline, value proposition, and English button label, in en and pt-BR — resolved 2026-11-11: pt-BR
+  as in the design; en "All about **movies**, **series**, **anime** and **much more.**" / "Stay up to date on
+  movies, series, anime and much more." / "Get started" (see design/onboarding.md).
+- [x] Artwork asset and its source/license — resolved 2026-11-11: the film art is not committed; a neutral
+  gradient placeholder ships until licensed artwork is supplied. The logo is TMDB's official logo, used per TMDB's
+  attribution guidelines.
 
 ## Change log
 - 2026-11-10: Initial version.
 - 2026-11-10: Linked designs: onboarding.
+- 2026-11-11: Resolved open questions (English copy, placeholder artwork, official TMDB logo); added subtask
+  03 (cmp app shell) and renumbered the later subtasks.
 
 ## Subtasks
 1. [01 - Encrypted settings storage](subtasks/01-encrypted-settings-storage.md)
 2. [02 - Onboarding completed state](subtasks/02-onboarding-completed-state.md)
-3. [03 - Onboarding happy path (cmp)](subtasks/03-cmp-onboarding-happy-path.md)
-4. [04 - Onboarding robustness (cmp)](subtasks/04-cmp-onboarding-robustness.md)
-5. [05 - Onboarding on Android (native)](subtasks/05-native-android-onboarding.md)
-6. [06 - Onboarding on iOS (native)](subtasks/06-native-ios-onboarding.md)
+3. [03 - App shell (cmp)](subtasks/03-cmp-app-shell.md)
+4. [04 - Onboarding happy path (cmp)](subtasks/04-cmp-onboarding-happy-path.md)
+5. [05 - Onboarding robustness (cmp)](subtasks/05-cmp-onboarding-robustness.md)
+6. [06 - Onboarding on Android (native)](subtasks/06-native-android-onboarding.md)
+7. [07 - Onboarding on iOS (native)](subtasks/07-native-ios-onboarding.md)

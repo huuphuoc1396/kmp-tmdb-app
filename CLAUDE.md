@@ -13,13 +13,13 @@ needs them. New code follows `docs/architecture.md` (sections 5–8), not the
 skeleton or existing examples.
 
 ## Repository layout
-- One branch (`main`); apps are directories, not branches. `apps/cmp` (Compose Multiplatform: shared ViewModel + UI) and `apps/native` (Jetpack Compose + SwiftUI/SKIE) both build on `core/*` and `service/*`. Neither exists yet; each is created with its first screen.
+- One branch (`main`); apps are directories, not branches. `apps/cmp` (Compose Multiplatform: shared ViewModel + UI) and `apps/native` (Jetpack Compose + SwiftUI/SKIE) both build on `core/*` and `service/*`. `apps/cmp` exists as a shell (`designsystem`, `composeApp`, `androidApp`, Xcode `iosApp`) showing a placeholder Home; `apps/native` is created with its first screen.
 - `apps/cmp` and `apps/native` never depend on each other.
 - CI runs JVM checks only; app builds and platform tests run locally.
 
 ## Setup
 - JDK 21 (toolchain from `jvmToolchain` in `gradle/libs.versions.toml`). Gradle wrapper only.
-- Android SDK via `local.properties` (`sdk.dir`), git-ignored. compileSdk 36, minSdk 24, iOS 16.
+- Android SDK via `local.properties` (`sdk.dir`), git-ignored. compileSdk 37, targetSdk 37, minSdk 24, iOS 16.
 - iOS targets need macOS + Xcode; `kotlin.native.ignoreDisabledTargets=true` lets JVM work proceed without them.
 - Configuration cache and build cache are on (`gradle.properties`). Keep build logic config-cache safe.
 - Secrets (TMDB token) go in git-ignored `secrets.properties`; not wired up yet (planned in the network task).
@@ -34,6 +34,7 @@ skeleton or existing examples.
 - Coverage: `./gradlew koverVerify` (80% line on every `service/*/domain` and `service/*/data`; the root project has a rule-less `koverVerify` so the command works with none); report: `:<module>:koverHtmlReport`
 - Architecture rules: `./gradlew :architecture-test:test`
 - Compile every target (Android, iOS, JVM; macOS + Xcode): `./gradlew assemble`
+- Run the cmp app: Android `./gradlew :apps:cmp:androidApp:installDebug` (emulator/device); iOS: open `apps/cmp/iosApp/iosApp.xcodeproj` in Xcode, or build with `xcodebuild -project apps/cmp/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`. The Xcode project repeats the iOS deployment target (16.0) because it can't read the version catalog.
 
 ## Before finishing a code change
 Applies only when source or build files changed. Docs-only changes (`*.md`): run nothing. Report results honestly.
@@ -77,6 +78,8 @@ and sets targets `android` (with host tests), `jvm`, `iosArm64`, `iosSimulatorAr
 | `service/<ctx>/domain` (on demand) | Context models, repository interfaces, use cases | kernel; another context's `domain` (one level, registered in `DependencyRules.domainAllowlist`) |
 | `service/<ctx>/data` (on demand) | Repository impls, endpoints + DTOs, mappers, its own SQLDelight database, refresh policy, Koin module | own `domain`, kernel, `network`/`database`/`datastore` |
 | `service/<ctx>/fake` (on demand) | In-memory repository fakes + repository contract test | own `domain`, kernel |
+| `apps/<app>/composeApp` | `App()`, navigation graph; builds the iOS framework `ComposeApp` (root of the app) | its own app, the shared core |
+| `apps/<app>/androidApp` | Android application: `Application` (starts `initKoin`), `Activity` (root of the app) | its own app, the shared core |
 | `apps/<app>/feature/<x>/nav` (on demand) | Route, Args, Result; renamed `api` when it must expose an entry interface | `core:model` |
 | `apps/<app>/feature/<x>/ui` | ViewModel + screen | `nav`/`api` (same app), `service/*/domain`, the app's `designsystem`, kernel |
 | `architecture-test` | Konsist rules (JVM only) | — |
