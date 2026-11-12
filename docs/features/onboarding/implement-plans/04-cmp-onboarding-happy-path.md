@@ -324,3 +324,7 @@ EC-1). Tests cover both ViewModels and run Compose UI tests on JVM.
   `internal` to the feature module.
 - `AppNavHostTest` also extends `MainDispatcherTest`: `kotlinx-coroutines-test` on the JVM test classpath replaces
   `Dispatchers.Main`, which the NavHost's ViewModels and `collectAsStateWithLifecycle` use.
+- After review: `startDestination` is non-null, `StateFlow<StartDestination>` with a `Loading` default, instead of
+  `null` (from user). `App()` draws nothing for `Loading` and passes the route to `AppNavHost(startRoute)`;
+  `MainActivity` keeps the splash while it is `Loading`. `AppViewModelTest` gained
+  `loadingUntilOnboardingStateIsRead`.

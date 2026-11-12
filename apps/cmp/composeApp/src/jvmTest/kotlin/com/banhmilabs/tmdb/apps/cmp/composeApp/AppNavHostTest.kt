@@ -9,6 +9,7 @@ import androidx.compose.ui.test.runComposeUiTest
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.banhmilabs.tmdb.apps.cmp.designsystem.TmdbTheme
+import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.OnboardingRoute
 import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.di.onboardingUiModule
 import com.banhmilabs.tmdb.core.testing.MainDispatcherTest
 import com.banhmilabs.tmdb.service.settings.domain.SettingsRepository
@@ -40,14 +41,14 @@ class AppNavHostTest : MainDispatcherTest() {
 
     @Test
     fun onboardingStartShowsOnboarding() = runComposeUiTest {
-        setContent { TmdbTheme { AppNavHost(startDestination = StartDestination.Onboarding) } }
+        setContent { TmdbTheme { AppNavHost(startRoute = OnboardingRoute) } }
 
         onNodeWithTag(GET_STARTED_TAG).assertIsDisplayed()
     }
 
     @Test
     fun homeStartShowsHomeWithoutOnboarding() = runComposeUiTest {
-        setContent { TmdbTheme { AppNavHost(startDestination = StartDestination.Home) } }
+        setContent { TmdbTheme { AppNavHost(startRoute = HomeRoute) } }
 
         onNodeWithText("Home").assertIsDisplayed()
         onNodeWithTag(GET_STARTED_TAG).assertDoesNotExist()
@@ -58,7 +59,7 @@ class AppNavHostTest : MainDispatcherTest() {
         lateinit var navController: NavHostController
         setContent {
             navController = rememberNavController()
-            TmdbTheme { AppNavHost(startDestination = StartDestination.Onboarding, navController = navController) }
+            TmdbTheme { AppNavHost(startRoute = OnboardingRoute, navController = navController) }
         }
 
         onNodeWithTag(GET_STARTED_TAG).performClick()

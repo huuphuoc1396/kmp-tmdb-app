@@ -10,12 +10,16 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 
 /**
- * The start destination, `null` until known. Read once, not observed: completing onboarding moves to Home by
- * navigation, not by swapping the graph.
+ * The start destination. Read once, not observed: completing onboarding moves to Home by navigation, not by
+ * swapping the graph.
  */
 class AppViewModel(settingsRepository: SettingsRepository) : ViewModel() {
-    val startDestination: StateFlow<StartDestination?> = flow {
+    val startDestination: StateFlow<StartDestination> = flow {
         val completed = settingsRepository.observeOnboardingCompleted().first()
-        emit(if (completed) StartDestination.Home else StartDestination.Onboarding)
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+        if (completed) {
+            emit(StartDestination.Home)
+        } else {
+            emit(StartDestination.Onboarding)
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, StartDestination.Loading)
 }

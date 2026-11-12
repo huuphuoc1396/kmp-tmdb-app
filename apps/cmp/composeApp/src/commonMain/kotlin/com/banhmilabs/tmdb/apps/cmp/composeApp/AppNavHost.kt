@@ -9,14 +9,7 @@ import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.OnboardingRoute
 import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.onboardingScreen
 
 @Composable
-internal fun AppNavHost(
-    startDestination: StartDestination,
-    navController: NavHostController = rememberNavController(),
-) {
-    val startRoute: Any = when (startDestination) {
-        StartDestination.Onboarding -> OnboardingRoute
-        StartDestination.Home -> HomeRoute
-    }
+internal fun AppNavHost(startRoute: Any, navController: NavHostController = rememberNavController()) {
     NavHost(navController = navController, startDestination = startRoute) {
         onboardingScreen(
             onFinished = {
