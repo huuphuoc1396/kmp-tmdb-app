@@ -38,6 +38,16 @@ class ModuleTypeTest {
     }
 
     @Test
+    fun composeAppPathIsApp() {
+        assertEquals(ModuleType(ModuleKind.APP, app = "cmp"), moduleTypeOf(":apps:cmp:composeApp"))
+    }
+
+    @Test
+    fun androidAppPathIsAndroidApp() {
+        assertEquals(ModuleType(ModuleKind.ANDROID_APP, app = "cmp"), moduleTypeOf(":apps:cmp:androidApp"))
+    }
+
+    @Test
     fun unknownPathsReturnNull() {
         listOf(
             ":core:foo",
@@ -53,7 +63,7 @@ class ModuleTypeTest {
             ":apps:cmp:feature:home",
             ":apps:cmp:feature:home:impl",
             ":apps:native:android:feature:home:ui",
-            ":apps:cmp:composeApp",
+            ":apps:cmp:desktopApp",
             ":tools:x",
             ":architecture-test",
         ).forEach { assertNull(moduleTypeOf(it), it) }

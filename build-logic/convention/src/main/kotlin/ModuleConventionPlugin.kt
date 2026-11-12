@@ -1,6 +1,8 @@
 import com.banhmilabs.tmdb.buildlogic.DependencyRules
 import com.banhmilabs.tmdb.buildlogic.ModuleKind
 import com.banhmilabs.tmdb.buildlogic.ModuleType
+import com.banhmilabs.tmdb.buildlogic.configureAndroidApplication
+import com.banhmilabs.tmdb.buildlogic.configureComposeMultiplatform
 import com.banhmilabs.tmdb.buildlogic.configureKotlinMultiplatform
 import com.banhmilabs.tmdb.buildlogic.configureKover
 import com.banhmilabs.tmdb.buildlogic.derivedNamespace
@@ -20,16 +22,48 @@ class ModuleConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         val type = moduleTypeOf(path) ?: throw GradleException(
             "Unknown module type for $path. Shared modules live at :core:<name>, " +
-                ":service:<context>:domain|data|fake, :apps:<app>:designsystem or :apps:<app>:feature:<name>:nav|api|ui " +
+                ":service:<context>:domain|data|fake, :apps:<app>:designsystem|composeApp|androidApp or " +
+                ":apps:<app>:feature:<name>:nav|api|ui " +
                 "(docs/architecture.md 5.2).",
         )
         DependencyRules.allowlistViolation()?.let { throw GradleException(it) }
 
         // Leaf names repeat (domain, data, ui); group + name keeps klib names unique.
         group = derivedNamespace().substringBeforeLast('.')
-        configureKotlinMultiplatform()
+        if (type.kind == ModuleKind.ANDROID_APP) {
+            configureAndroidApplication(requireNotNull(type.app))
+            enforceAndroidDependencyRules(path, type)
+            return
+        }
+        configureKotlinMultiplatform(iosFramework = if (type.kind == ModuleKind.APP) IOS_FRAMEWORK else null)
+        if (type.app == "cmp" && type.kind in COMPOSE_KINDS) configureComposeMultiplatform()
         if (type.kind == ModuleKind.DOMAIN || type.kind == ModuleKind.DATA) configureKover()
         enforceDependencyRules(path, type)
+    }
+
+    /** Same check for the Android-only app shell: its own and its test dependency configurations. */
+    private fun Project.enforceAndroidDependencyRules(fromPath: String, from: ModuleType) {
+        configurations.matching { it.name in ANDROID_MAIN_CONFIGURATIONS || it.name.endsWith("TestImplementation") }
+            .configureEach {
+                val configuration: Configuration = this
+                configuration.dependencies.withType<ProjectDependency>().configureEach {
+                    checkDependency(fromPath, from, path, configuration.name, testScope = "Test" in configuration.name)
+                }
+            }
+    }
+
+    private fun checkDependency(fromPath: String, from: ModuleType, toPath: String, configuration: String, testScope: Boolean) {
+        val edge = "$fromPath -> $toPath ($configuration)"
+        val to = moduleTypeOf(toPath) ?: throw GradleException("Rule: $edge: target is not a shared module")
+        DependencyRules.violation(from, to, testScope)?.let {
+            throw GradleException("Rule: $edge: $it (docs/architecture.md 5.3)")
+        }
+    }
+
+    private companion object {
+        const val IOS_FRAMEWORK = "ComposeApp"
+        val COMPOSE_KINDS = setOf(ModuleKind.DESIGNSYSTEM, ModuleKind.UI, ModuleKind.APP)
+        val ANDROID_MAIN_CONFIGURATIONS = setOf("implementation", "api", "compileOnly", "runtimeOnly")
     }
 
     /**
@@ -50,13 +84,7 @@ class ModuleConventionPlugin : Plugin<Project> {
             configurations.matching { it.name in declaredNames }.configureEach {
                 val configuration: Configuration = this
                 configuration.dependencies.withType<ProjectDependency>().configureEach {
-                    val toPath = path
-                    val edge = "$fromPath -> $toPath (${configuration.name})"
-                    val to = moduleTypeOf(toPath)
-                        ?: throw GradleException("Rule: $edge: target is not a shared module")
-                    DependencyRules.violation(from, to, testScope)?.let {
-                        throw GradleException("Rule: $edge: $it (docs/architecture.md 5.3)")
-                    }
+                    checkDependency(fromPath, from, path, configuration.name, testScope)
                 }
             }
         }

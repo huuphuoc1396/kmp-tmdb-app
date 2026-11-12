@@ -46,12 +46,13 @@ No Figma variables or styles are bound to this frame; all values are raw.
 ## Copy
 | Where | Text |
 |---|---|
-| Logo | "THE MOVIE DB" (vector, not text) |
+| Logo | TMDB official logo (vector, not text) (from user) |
 | Headline (pt-BR) | Tudo sobre **filmes**, **séries**, **animes** e **muito mais.** |
 | Body (pt-BR) | Fique por dentro das informações de filmes, séries, animes e muito mais. |
 | Button (pt-BR) | Acessar |
-
-English copy is not designed (see Gaps).
+| Headline (en) | All about **movies**, **series**, **anime** and **much more.** (from user; Light + Bold as in pt-BR) |
+| Body (en) | Stay up to date on movies, series, anime and much more. (from user) |
+| Button (en) | Get started (from user) |
 
 ## States
 ### Content
@@ -75,18 +76,17 @@ The design is dark only; there is no light variant. The app uses a dark theme th
 ## Assets
 | File | Original format | Size | Used in | Status |
 |---|---|---|---|---|
-| `assets/image_4.png` | PNG | 600×900px | Full-screen artwork | downloaded |
-| `assets/group_11.svg` | SVG | 176.441×15 | Logo above headline | downloaded |
+| `assets/image_4.png` | PNG | 600×900px | Full-screen artwork | reference only, not shipped: film art; the app shows the frame's background gradient (`#303243` → `#3D458F`) as placeholder artwork until licensed art is supplied (from user) |
+| `assets/group_11.svg` | SVG | 176.441×15 | Logo above headline | reference only, not shipped: replaced by TMDB's official logo (from user) |
+| TMDB official logo | SVG | ≈ 176×15 slot (same position) | Logo above headline | missing: download from TMDB's logos & attribution page before forge (from user) |
 
 ## Gaps
-- [ ] English copy for headline (including which words are bold), body and button label (needed for AC-5;
-  tracked in task.md Open questions).
-- [ ] Artwork license: the image is promotional art of a real film. Confirm it may ship in the app or supply
-  a replacement (tracked in task.md Open questions).
-- [ ] Logo: the "THE MOVIE DB" wordmark is a custom vector; confirm it is allowed under TMDB's logo and
-  attribution guidelines or replace it with an official TMDB logo asset (needed before forge).
+- [x] English copy — resolved (from user), see Copy.
+- [x] Artwork license — resolved (from user): gradient placeholder; licensed artwork later.
+- [x] Logo — resolved (from user): TMDB's official logo; the file is still missing (see Assets).
 - [ ] Screen-reader text for the headline: the bold/regular split is visual only; confirm it is read as one
   sentence (AC-7).
 
 ## Change log
 - 2026-11-10: Initial version.
+- 2026-11-11: Added English copy; artwork -> gradient placeholder, logo -> TMDB official logo (user decisions).

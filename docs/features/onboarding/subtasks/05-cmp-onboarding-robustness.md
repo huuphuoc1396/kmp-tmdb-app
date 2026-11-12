@@ -1,8 +1,8 @@
-# 04 - Onboarding robustness (cmp)
+# 05 - Onboarding robustness (cmp)
 
 Feature: [task.md](../task.md)
 Design: [Onboarding](../design/onboarding.md)
-Depends on: 03-cmp-onboarding-happy-path
+Depends on: 04-cmp-onboarding-happy-path
 Status: Todo
 
 ## Goal
@@ -14,7 +14,7 @@ On the Compose Multiplatform app, onboarding is usable with a screen reader and 
 - Large fonts and long copy: the content block scrolls when it doesn't fit; the button stays reachable.
 - Landscape and tablet: artwork keeps a cover crop; content block bottom-anchored, centered, max width 315dp (design).
 - State restored after rotation and process death.
-- Branch: `cmp`.
+- App: `apps/cmp` (on `main`).
 ### Out of scope (handled later)
 - None within this feature.
 
@@ -54,3 +54,4 @@ Run on Android (TalkBack) and on the iOS simulator (VoiceOver via Accessibility 
 
 ## Change log
 - 2026-11-10: Initial version.
+- 2026-11-11: Renumbered from 04; apps are directories on `main`.

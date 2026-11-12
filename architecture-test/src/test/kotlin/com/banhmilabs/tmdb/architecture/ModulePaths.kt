@@ -6,7 +6,8 @@ import com.lemonappdev.konsist.api.declaration.KoFileDeclaration
 internal const val ROOT_PACKAGE = "com.banhmilabs.tmdb"
 
 private val MODULE_DIR = Regex(
-    """/(core/[^/]+|service/[^/]+/[^/]+|apps/[^/]+/designsystem|apps/[^/]+/feature/[^/]+/[^/]+)/src/""",
+    "/(core/[^/]+|service/[^/]+/[^/]+|apps/[^/]+/(?:designsystem|composeApp|androidApp)" +
+        "|apps/[^/]+/feature/[^/]+/[^/]+)/src/",
 )
 
 /** `…/service/title/domain/src/…` -> `service/title/domain`; `null` outside shared modules. */

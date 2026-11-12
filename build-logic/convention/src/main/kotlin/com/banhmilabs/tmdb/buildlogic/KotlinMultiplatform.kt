@@ -11,9 +11,10 @@ private const val ANDROID_TEST_RUNNER = "androidx.test.runner.AndroidJUnitRunner
 /**
  * Kotlin Multiplatform library targeting Android, iOS (device + simulator) and JVM, with kotlinx.serialization.
  * Unit tests default to `jvmTest` (`kotlin-test`, MockK). `commonTest` (`kotlin-test`, no MockK) also runs in the
- * Android device tests and on the iOS simulator.
+ * Android device tests and on the iOS simulator. With [iosFramework], the iOS targets also build a static framework
+ * of that name (app shells).
  */
-internal fun Project.configureKotlinMultiplatform() {
+internal fun Project.configureKotlinMultiplatform(iosFramework: String? = null) {
     pluginManager.apply("org.jetbrains.kotlin.multiplatform")
     pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
     pluginManager.apply("com.android.kotlin.multiplatform.library")
@@ -31,8 +32,14 @@ internal fun Project.configureKotlinMultiplatform() {
             }
         }
         jvm()
-        iosArm64()
-        iosSimulatorArm64()
+        listOf(iosArm64(), iosSimulatorArm64()).forEach { target ->
+            if (iosFramework != null) {
+                target.binaries.framework {
+                    baseName = iosFramework
+                    isStatic = true
+                }
+            }
+        }
 
         sourceSets.getByName("commonTest").dependencies {
             implementation(libs.findLibrary("kotlin-test").get())

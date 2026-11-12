@@ -11,6 +11,8 @@ dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.detekt.gradlePlugin)
     compileOnly(libs.kover.gradlePlugin)
+    compileOnly(libs.compose.gradlePlugin)
+    compileOnly(libs.compose.compiler.gradlePlugin)
 
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)

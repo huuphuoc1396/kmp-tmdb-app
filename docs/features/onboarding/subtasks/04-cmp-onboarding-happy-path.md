@@ -1,23 +1,22 @@
-# 05 - Onboarding on Android (native)
+# 04 - Onboarding happy path (cmp)
 
 Feature: [task.md](../task.md)
 Design: [Onboarding](../design/onboarding.md)
-Depends on: 02-onboarding-completed-state. Prerequisite outside this feature: the native Android app shell (app module, dark theme, navigation) on the `native` branch.
+Depends on: 02-onboarding-completed-state, 03-cmp-app-shell
 Status: Todo
 
 ## Goal
-On the native Android app (Jetpack Compose), onboarding works end to end as designed: first launch shows it, "Acessar" opens Home, later launches open Home directly. It is accessible, adapts to orientation and screen size, works offline, and is in en / pt-BR.
+On the Compose Multiplatform app (Android and iOS), a first launch shows the onboarding screen as designed, "Acessar" opens Home, and later launches open Home directly. It works offline and in en / pt-BR.
 
 ## Scope
 ### In scope
-- Onboarding screen as in the design, edge-to-edge, with bundled artwork and logo.
-- en and pt-BR copy (English copy from task.md Open questions).
+- Onboarding screen as in the design: artwork, scrim, logo, headline, body, primary button, edge-to-edge.
+- Gradient placeholder artwork and TMDB's official logo; en and pt-BR copy (all in design/onboarding.md).
 - Start screen chosen from the onboarding completed state, with no flash of the wrong screen.
-- "Acessar" records completion and replaces onboarding with Home; a placeholder Home until the Home feature exists.
-- Accessibility, large fonts, landscape / tablet, rotation and process death.
-- Branch: `native`.
+- "Acessar" records completion and replaces onboarding with the placeholder Home from 03-cmp-app-shell.
+- App: `apps/cmp` (on `main`).
 ### Out of scope (handled later)
-- iOS -> 06-native-ios-onboarding
+- Accessibility, landscape / tablet layout, large fonts, rotation and process death -> 05-cmp-onboarding-robustness
 - The real Home screen -> Home feature
 
 ## Acceptance criteria
@@ -47,18 +46,6 @@ On the native Android app (Jetpack Compose), onboarding works end to end as desi
   - Given the device has no network connection
   - When onboarding is shown and the user taps the primary button
   - Then the screen shows fully (artwork included) and Home opens, with no network request made by onboarding
-- **AC-7** Accessible
-  - Given a screen reader is on
-  - When onboarding is shown
-  - Then the artwork is skipped as decorative, the headline and value proposition are read, and the button is
-    announced as a button with its label
-  - And given the largest system font size, then all text stays readable without clipping
-  - And the button meets the platform's minimum touch target size and text contrast guidelines
-- **AC-8** Orientation and screen sizes
-  - Given a phone or tablet in portrait or landscape
-  - When onboarding is shown
-  - Then the artwork fills the screen (cropped, not stretched or letterboxed) and the text and button are fully
-    visible or reachable
 
 ## Edge cases
 - **EC-1** Saving "onboarding completed" fails -> the user still enters Home; onboarding may show again on the
@@ -66,16 +53,13 @@ On the native Android app (Jetpack Compose), onboarding works end to end as desi
 - **EC-2** App closed, backgrounded or killed before the button is tapped -> onboarding shows again on the next
   launch.
 - **EC-3** Button tapped repeatedly or double-tapped quickly -> Home opens exactly once.
-- **EC-4** Rotation or process death while on onboarding -> onboarding is restored as it was; no state is lost.
-- **EC-5** Long translated copy or a very large font size -> text wraps (and scrolls if needed); the button stays
-  reachable.
 - **EC-6** Device language is neither en nor pt-BR -> English copy is shown.
 
 ## Layers touched
-- UI (Jetpack Compose screen, design-system pieces it needs)
+- UI (screen, design-system pieces it needs)
 - State holder (ViewModel)
 - Navigation / start screen
-- Android resources (strings en + pt-BR, artwork, logo)
+- Resources (strings en + pt-BR, artwork, logo)
 
 ## How to test
 1. Fresh install, launch: onboarding shows artwork, logo, headline, body and the button, matching the design (AC-1).
@@ -87,14 +71,9 @@ On the native Android app (Jetpack Compose), onboarding works end to end as desi
    English copy (AC-5, EC-6).
 7. Airplane mode, fresh install: onboarding shows fully and the button opens Home (AC-6).
 8. Force the save to fail (debug build or test): Home still opens with no error shown; relaunch shows onboarding (EC-1).
-9. Screen reader on: artwork and logo are skipped, headline and body are read, the button is announced as a
-   button with its label (AC-7).
-10. Largest system font size: text wraps, the content scrolls if needed, the button stays reachable (AC-7, EC-5).
-11. Phone and tablet, portrait and landscape: artwork fills the screen with a cover crop; text and button are
-   visible or reachable (AC-8).
-12. Rotate on onboarding, and trigger process death ("Don't keep activities"): onboarding is restored as it was (EC-4).
 
-Run on an Android emulator or device (TalkBack for accessibility).
+Run on Android and on the iOS simulator.
 
 ## Change log
 - 2026-11-10: Initial version.
+- 2026-11-11: Renumbered from 03; depends on 03-cmp-app-shell; apps are directories on `main`; copy and assets resolved.

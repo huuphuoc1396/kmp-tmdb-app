@@ -1,22 +1,23 @@
-# 03 - Onboarding happy path (cmp)
+# 07 - Onboarding on iOS (native)
 
 Feature: [task.md](../task.md)
 Design: [Onboarding](../design/onboarding.md)
-Depends on: 02-onboarding-completed-state. Prerequisite outside this feature: the cmp app shell (app module, dark theme, navigation) on the `cmp` branch.
+Depends on: 02-onboarding-completed-state. Prerequisite outside this feature: the native iOS app shell (SwiftUI app, dark theme, navigation, shared framework with SKIE) in `apps/native`.
 Status: Todo
 
 ## Goal
-On the Compose Multiplatform app (Android and iOS), a first launch shows the onboarding screen as designed, "Acessar" opens Home, and later launches open Home directly. It works offline and in en / pt-BR.
+On the native iOS app (SwiftUI), onboarding works end to end as designed: first launch shows it, "Acessar" opens Home, later launches open Home directly. It is accessible, adapts to orientation and screen size, works offline, and is in en / pt-BR.
 
 ## Scope
 ### In scope
-- Onboarding screen as in the design: artwork, scrim, logo, headline, body, primary button, edge-to-edge.
-- Bundled artwork and logo; en and pt-BR copy (English copy from task.md Open questions).
+- Onboarding screen as in the design, edge-to-edge, with the gradient placeholder artwork and TMDB's official logo.
+- en and pt-BR copy in the String Catalog (copy in design/onboarding.md).
 - Start screen chosen from the onboarding completed state, with no flash of the wrong screen.
 - "Acessar" records completion and replaces onboarding with Home; a placeholder Home until the Home feature exists.
-- Branch: `cmp`.
+- Accessibility (VoiceOver, Dynamic Type), landscape / iPad, state restoration.
+- App: `apps/native` (on `main`).
 ### Out of scope (handled later)
-- Accessibility, landscape / tablet layout, large fonts, rotation and process death -> 04-cmp-onboarding-robustness
+- Android -> 06-native-android-onboarding
 - The real Home screen -> Home feature
 
 ## Acceptance criteria
@@ -46,6 +47,18 @@ On the Compose Multiplatform app (Android and iOS), a first launch shows the onb
   - Given the device has no network connection
   - When onboarding is shown and the user taps the primary button
   - Then the screen shows fully (artwork included) and Home opens, with no network request made by onboarding
+- **AC-7** Accessible
+  - Given a screen reader is on
+  - When onboarding is shown
+  - Then the artwork is skipped as decorative, the headline and value proposition are read, and the button is
+    announced as a button with its label
+  - And given the largest system font size, then all text stays readable without clipping
+  - And the button meets the platform's minimum touch target size and text contrast guidelines
+- **AC-8** Orientation and screen sizes
+  - Given a phone or tablet in portrait or landscape
+  - When onboarding is shown
+  - Then the artwork fills the screen (cropped, not stretched or letterboxed) and the text and button are fully
+    visible or reachable
 
 ## Edge cases
 - **EC-1** Saving "onboarding completed" fails -> the user still enters Home; onboarding may show again on the
@@ -53,13 +66,16 @@ On the Compose Multiplatform app (Android and iOS), a first launch shows the onb
 - **EC-2** App closed, backgrounded or killed before the button is tapped -> onboarding shows again on the next
   launch.
 - **EC-3** Button tapped repeatedly or double-tapped quickly -> Home opens exactly once.
+- **EC-4** Rotation or process death while on onboarding -> onboarding is restored as it was; no state is lost.
+- **EC-5** Long translated copy or a very large font size -> text wraps (and scrolls if needed); the button stays
+  reachable.
 - **EC-6** Device language is neither en nor pt-BR -> English copy is shown.
 
 ## Layers touched
-- UI (screen, design-system pieces it needs)
+- UI (SwiftUI view, design-system pieces it needs)
 - State holder (ViewModel)
-- Navigation / start screen
-- Resources (strings en + pt-BR, artwork, logo)
+- Start screen / navigation
+- iOS resources (String Catalog en + pt-BR, artwork, logo)
 
 ## How to test
 1. Fresh install, launch: onboarding shows artwork, logo, headline, body and the button, matching the design (AC-1).
@@ -71,8 +87,16 @@ On the Compose Multiplatform app (Android and iOS), a first launch shows the onb
    English copy (AC-5, EC-6).
 7. Airplane mode, fresh install: onboarding shows fully and the button opens Home (AC-6).
 8. Force the save to fail (debug build or test): Home still opens with no error shown; relaunch shows onboarding (EC-1).
+9. Screen reader on: artwork and logo are skipped, headline and body are read, the button is announced as a
+   button with its label (AC-7).
+10. Largest system font size: text wraps, the content scrolls if needed, the button stays reachable (AC-7, EC-5).
+11. Phone and tablet, portrait and landscape: artwork fills the screen with a cover crop; text and button are
+   visible or reachable (AC-8).
+12. Rotate on onboarding, and trigger process death (kill the app in the background after
+   the state is saved): onboarding is restored as it was (EC-4).
 
-Run on Android and on the iOS simulator.
+Run on the iOS simulator (iPhone and iPad; VoiceOver via Accessibility Inspector).
 
 ## Change log
 - 2026-11-10: Initial version.
+- 2026-11-11: Renumbered from 06; apps are directories on `main`; copy and assets resolved.
