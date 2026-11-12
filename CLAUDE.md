@@ -7,13 +7,14 @@ Per-layer rules (build logic, tests, architecture tests) are in `.claude/rules/`
 
 Current state: early. Production code exists in `core:common` (`AppResult`, `AppError`, `DispatcherProvider`),
 `core:security` (master key cipher), `core:datastore` (encrypted DataStore), `core:di` (`initKoin()`) and the
-`settings` context (`service/settings/{domain,data,fake}`, onboarding state). The other `core/*` modules are still
+`settings` context (`service/settings/{domain,data,fake}`, onboarding state), `core:testing` (`MainDispatcherTest`)
+and the `apps/cmp` onboarding feature (`apps/cmp/feature/onboarding/ui`). The other `core/*` modules are still
 skeletons with a `*SmokeTest` placeholder. Contexts `title` and `favorites` are created by the first feature that
 needs them. New code follows `docs/architecture.md` (sections 5–8), not the
 skeleton or existing examples.
 
 ## Repository layout
-- One branch (`main`); apps are directories, not branches. `apps/cmp` (Compose Multiplatform: shared ViewModel + UI) and `apps/native` (Jetpack Compose + SwiftUI/SKIE) both build on `core/*` and `service/*`. `apps/cmp` exists as a shell (`designsystem`, `composeApp`, `androidApp`, Xcode `iosApp`) showing a placeholder Home; `apps/native` is created with its first screen.
+- One branch (`main`); apps are directories, not branches. `apps/cmp` (Compose Multiplatform: shared ViewModel + UI) and `apps/native` (Jetpack Compose + SwiftUI/SKIE) both build on `core/*` and `service/*`. `apps/cmp` has its shell (`designsystem`, `composeApp`, `androidApp`, Xcode `iosApp`), the onboarding screen and a placeholder Home; `apps/native` is created with its first screen.
 - `apps/cmp` and `apps/native` never depend on each other.
 - CI runs JVM checks only; app builds and platform tests run locally.
 
@@ -125,11 +126,12 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | Shared IDs and models | `TitleId`, `Title`, `Genre`, `Language` | `core:model` |
 | Encrypted local settings | `encryptedDataStore(...)`, `masterKeyCipher(alias)` | `core:datastore`, `core:security` |
 | Koin start-up | `initKoin(appDeclaration)` | `core:di` |
-| Test dispatchers | `core:testing` | `core:testing` |
+| Test Main dispatcher (ViewModel tests) | extend `MainDispatcherTest` | `core:testing` |
+| Compose resources (strings, drawables) | `composeResources/` in the module; `Res` is in `<namespace>.generated.resources` | `apps/cmp/*` (set by `tmdb.module`) |
 | Repository test double | `Fake<Repository>` (e.g. `FakeSettingsRepository`) | `service/<ctx>/fake` |
 | Module build setup | `tmdb.module` (shared modules), `tmdb.detekt` (JVM modules) | `build-logic/convention` |
 
-(`core:model` types, `kotlin.time.Clock` injection and `core:testing` dispatchers are planned but not implemented yet —
+(`core:model` types and `kotlin.time.Clock` injection are planned but not implemented yet —
 create them in these modules when first needed.)
 
 ## Do not

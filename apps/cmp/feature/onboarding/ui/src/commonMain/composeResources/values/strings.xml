@@ -1,0 +1,6 @@
+<resources>
+    <!-- Keywords are wrapped in <b> (escaped) and drawn bold; the rest of the headline is light. -->
+    <string name="onboarding_headline">All about &lt;b&gt;movies&lt;/b&gt;, &lt;b&gt;series&lt;/b&gt;, &lt;b&gt;anime&lt;/b&gt; and &lt;b&gt;much more.&lt;/b&gt;</string>
+    <string name="onboarding_body">Stay up to date on movies, series, anime and much more.</string>
+    <string name="onboarding_get_started">Get started</string>
+</resources>

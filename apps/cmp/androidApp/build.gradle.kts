@@ -7,4 +7,5 @@ dependencies {
     implementation(projects.core.di)
     implementation(libs.koin.android)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.splashscreen)
 }

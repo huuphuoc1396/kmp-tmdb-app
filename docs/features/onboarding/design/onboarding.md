@@ -78,15 +78,16 @@ The design is dark only; there is no light variant. The app uses a dark theme th
 |---|---|---|---|---|
 | `assets/image_4.png` | PNG | 600×900px | Full-screen artwork | reference only, not shipped: film art; the app shows the frame's background gradient (`#303243` → `#3D458F`) as placeholder artwork until licensed art is supplied (from user) |
 | `assets/group_11.svg` | SVG | 176.441×15 | Logo above headline | reference only, not shipped: replaced by TMDB's official logo (from user) |
-| TMDB official logo | SVG | ≈ 176×15 slot (same position) | Logo above headline | missing: download from TMDB's logos & attribution page before forge (from user) |
+| `assets/tmdb_logo_long.svg` | SVG | 423.04×35.4 (shown 179×15dp) | Logo above headline | shipped as `apps/cmp/feature/onboarding/ui` `drawable/tmdb_logo.xml`; TMDB's `blue_long_1` from the logos & attribution page, gradient colours kept (not the design's white) (from user) |
 
 ## Gaps
 - [x] English copy — resolved (from user), see Copy.
 - [x] Artwork license — resolved (from user): gradient placeholder; licensed artwork later.
-- [x] Logo — resolved (from user): TMDB's official logo; the file is still missing (see Assets).
+- [x] Logo — resolved (from user): TMDB's official logo, `assets/tmdb_logo_long.svg`, in its own colours.
 - [ ] Screen-reader text for the headline: the bold/regular split is visual only; confirm it is read as one
   sentence (AC-7).
 
 ## Change log
 - 2026-11-10: Initial version.
 - 2026-11-11: Added English copy; artwork -> gradient placeholder, logo -> TMDB official logo (user decisions).
+- 2026-11-12: Added the official TMDB logo file (gradient, not white).
