@@ -92,3 +92,4 @@ The design is dark only; there is no light variant. The app uses a dark theme th
 - 2026-11-11: Added English copy; artwork -> gradient placeholder, logo -> TMDB official logo (user decisions).
 - 2026-11-12: Added the official TMDB logo file (gradient, not white).
 - 2026-11-12: Headline ships in a single Light weight; the bold keywords are dropped (user decision).
+- 2026-11-12: The placeholder artwork and the scrim ship as vector drawables (`drawable/onboarding_artwork_placeholder.xml`, `drawable/onboarding_scrim.xml`) instead of code gradients.

@@ -349,3 +349,8 @@ EC-1). Tests cover both ViewModels and run Compose UI tests on JVM.
   - Tests mirror these packages. The layout is recorded in `docs/architecture.md` 11.
 - After review: the headline is no longer bold (from user). The `<b>` markup, `BoldMarkup.kt` and `BoldMarkupTest`
   are removed. The headline is one plain string in a single Light weight; `design/onboarding.md` records this.
+- After review: the placeholder artwork and the scrim are vector drawables in Compose resources (from user):
+  `onboarding_artwork_placeholder.xml` and `onboarding_scrim.xml`, with the same gradient stops as the design. They
+  are drawn with `Image(contentScale = ContentScale.FillBounds)` instead of `Box` + `Brush`. They are separate so the
+  placeholder can later be swapped for licensed artwork while the scrim stays. SVG was not used: Compose resources
+  don't support SVG on Android.

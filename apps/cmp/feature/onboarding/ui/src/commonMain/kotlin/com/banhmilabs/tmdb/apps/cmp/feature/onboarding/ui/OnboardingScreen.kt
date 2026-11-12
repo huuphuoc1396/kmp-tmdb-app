@@ -1,7 +1,6 @@
 package com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,8 +16,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,8 +26,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.component.GetStartedButton
 import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.generated.resources.Res
+import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.generated.resources.onboarding_artwork_placeholder
 import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.generated.resources.onboarding_body
 import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.generated.resources.onboarding_headline
+import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.generated.resources.onboarding_scrim
 import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.generated.resources.tmdb_logo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -36,12 +37,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 internal const val LOGO_TAG = "onboarding_logo"
 
-private val ArtworkTop = Color(0xFF303243)
-private val ArtworkBottom = Color(0xFF3D458F)
-private const val ARTWORK_BOTTOM_STOP = 0.56527f
-private val ScrimColor = Color(0xD915151D)
-private const val SCRIM_START_STOP = 0.3089f
-private const val SCRIM_END_STOP = 0.62685f
 private val ContentStartPadding = 29.dp
 private val ContentEndPadding = 31.dp
 private val ContentBottomPadding = 31.dp
@@ -80,20 +75,17 @@ internal fun OnboardingContent(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier.fillMaxSize().background(
-                Brush.verticalGradient(0f to ArtworkTop, ARTWORK_BOTTOM_STOP to ArtworkBottom),
-            ),
+        Image(
+            painter = painterResource(Res.drawable.onboarding_artwork_placeholder),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds,
         )
-        Box(
-            modifier = Modifier.fillMaxSize().background(
-                Brush.verticalGradient(
-                    0f to Color.Transparent,
-                    SCRIM_START_STOP to Color.Transparent,
-                    SCRIM_END_STOP to ScrimColor,
-                    1f to ScrimColor,
-                ),
-            ),
+        Image(
+            painter = painterResource(Res.drawable.onboarding_scrim),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds,
         )
         Column(
             modifier = Modifier
