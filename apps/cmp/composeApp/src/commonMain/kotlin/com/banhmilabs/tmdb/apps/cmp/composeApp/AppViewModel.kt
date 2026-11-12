@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 
 /**
- * Picks the [StartDestination] once per launch; `null` until it is known (the splash screen stays up meanwhile).
- * Read once, not observed: completing onboarding moves to Home by navigation, not by swapping the graph.
+ * The start destination, `null` until known. Read once, not observed: completing onboarding moves to Home by
+ * navigation, not by swapping the graph.
  */
 class AppViewModel(settingsRepository: SettingsRepository) : ViewModel() {
     val startDestination: StateFlow<StartDestination?> = flow {

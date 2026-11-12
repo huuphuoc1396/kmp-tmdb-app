@@ -8,12 +8,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/** Records that onboarding was completed, then finishes. */
 internal class OnboardingViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(OnboardingUiState.Content)
     val uiState: StateFlow<OnboardingUiState> = _uiState.asStateFlow()
 
-    /** Only the first tap counts (EC-3). Home opens even when saving fails (EC-1). */
+    /** Only the first tap counts. Home opens even when saving fails. */
     fun onGetStartedClick() {
         if (_uiState.value != OnboardingUiState.Content) return
         _uiState.value = OnboardingUiState.Navigating

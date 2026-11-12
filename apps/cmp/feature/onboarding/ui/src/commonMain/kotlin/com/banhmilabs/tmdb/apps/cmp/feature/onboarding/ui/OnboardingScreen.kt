@@ -73,14 +73,11 @@ private val ButtonLabelStyle = TextStyle(
     textAlign = TextAlign.Center,
 )
 
-/**
- * The onboarding screen: placeholder artwork, scrim, then logo, headline, body and the get-started button at the
- * bottom, drawn edge-to-edge. Taps are ignored while [isNavigating].
- */
+/** Taps on the button are ignored while [isNavigating]. */
 @Composable
 internal fun OnboardingScreen(isNavigating: Boolean, onGetStartedClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize()) {
-        // Placeholder until licensed artwork is supplied (design/onboarding.md, Assets).
+        // Placeholder until licensed artwork is supplied.
         Box(
             modifier = Modifier.fillMaxSize().background(
                 Brush.verticalGradient(0f to ArtworkTop, ARTWORK_BOTTOM_STOP to ArtworkBottom),

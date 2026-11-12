@@ -11,10 +11,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.apps.cmp.designsystem.TmdbTheme
 import org.koin.compose.viewmodel.koinViewModel
 
-/**
- * The cmp app: theme and navigation graph. Hosted by androidApp and iosApp. Draws only the background until the
- * start destination is known, so the wrong first screen never flashes (AC-3).
- */
+/** The cmp app, hosted by androidApp and iosApp. Draws only the background until the start destination is known. */
 @Composable
 fun App(viewModel: AppViewModel = koinViewModel()) {
     TmdbTheme {

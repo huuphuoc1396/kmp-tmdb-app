@@ -11,7 +11,7 @@ import com.banhmilabs.tmdb.apps.cmp.composeApp.App
 import com.banhmilabs.tmdb.apps.cmp.composeApp.AppViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/** Hosts the shared Compose [App]; the splash screen stays until the start destination is known (AC-3). */
+/** Hosts the shared Compose [App]. */
 class MainActivity : ComponentActivity() {
     private val appViewModel: AppViewModel by viewModel()
 

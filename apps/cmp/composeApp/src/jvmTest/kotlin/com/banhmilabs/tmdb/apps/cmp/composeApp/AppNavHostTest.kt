@@ -24,7 +24,6 @@ import kotlin.test.Test
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-// ViewModels and collectAsStateWithLifecycle need Dispatchers.Main, which the JVM test runtime lacks.
 @OptIn(ExperimentalTestApi::class)
 class AppNavHostTest : MainDispatcherTest() {
     private val repository = FakeSettingsRepository()
@@ -72,7 +71,6 @@ class AppNavHostTest : MainDispatcherTest() {
     }
 
     private companion object {
-        // Mirrors the onboarding screen's test tag, which is internal to the feature module.
         const val GET_STARTED_TAG = "onboarding_get_started"
     }
 }

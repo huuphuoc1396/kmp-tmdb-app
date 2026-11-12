@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Splash: a plain dark screen (no app icon yet), kept until the start destination is known. -->
+    <!-- No app icon yet: the splash is a plain dark screen. -->
     <style name="Theme.Tmdb.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/tmdb_night</item>
         <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>

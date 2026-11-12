@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Matches the app background (designsystem Theme.kt, Night). -->
     <color name="tmdb_night">#FF15151D</color>
 </resources>
