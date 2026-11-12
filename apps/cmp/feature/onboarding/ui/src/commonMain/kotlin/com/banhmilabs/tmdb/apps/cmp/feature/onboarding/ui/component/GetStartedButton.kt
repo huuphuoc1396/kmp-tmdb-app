@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.stringResource
 
 internal const val GET_STARTED_TAG = "onboarding_get_started"
 
-private val ButtonHeight = 43.dp
+private val ButtonMinHeight = 48.dp
 private val ButtonPadding = 12.dp
 private val ButtonLabelStyle = TextStyle(
     color = Color.White,
@@ -44,13 +44,13 @@ internal fun GetStartedButton(enabled: Boolean, onClick: () -> Unit, modifier: M
         modifier = modifier
             .testTag(GET_STARTED_TAG)
             .fillMaxWidth()
-            .height(ButtonHeight)
+            .heightIn(min = ButtonMinHeight)
             .clip(CircleShape)
             .background(Brush.linearGradient(listOf(colors.primary, colors.primaryContainer)))
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(ButtonPadding),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text = stringResource(Res.string.onboarding_get_started), style = ButtonLabelStyle, maxLines = 1)
+        Text(text = stringResource(Res.string.onboarding_get_started), style = ButtonLabelStyle)
     }
 }

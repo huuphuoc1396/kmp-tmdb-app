@@ -310,7 +310,7 @@ UI ◄── ViewModel ◄── (UseCase) ◄── Repository.observe()  ◄�
 | Platform code (`actual`) | Android: instrumented tests. iOS: `kotlin.test`, no mocks | device / simulator, local |
 | Repository fakes | Contract test shared by `data` and `fake` | `jvmTest` |
 | Shared ViewModels (`apps/cmp`) | `kotlinx-coroutines-test`, Turbine, service fakes, MockK | `jvmTest` |
-| Compose UI and screenshots (`apps/cmp`) | `runComposeUiTest`, Roborazzi | JVM |
+| Compose UI and screenshots (`apps/cmp`) | `runComposeUiTest` from `androidx.compose.ui.test.v2` (the v1 one is deprecated), Roborazzi | JVM |
 | Android UI (`apps/native`) | Compose UI test + Robolectric, Roborazzi | JVM |
 | iOS (`apps/native`) | XCTest for Swift ViewModels (service fakes from the debug framework); XCUITest for flows | simulator |
 | Architecture | Konsist | JVM |

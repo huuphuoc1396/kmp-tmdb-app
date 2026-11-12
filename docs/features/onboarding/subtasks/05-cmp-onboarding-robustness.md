@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Onboarding](../design/onboarding.md)
 Depends on: 04-cmp-onboarding-happy-path
-Status: Todo
+Status: Done
 
 ## Goal
 On the Compose Multiplatform app, onboarding is usable with a screen reader and large fonts, adapts to landscape and tablets, and survives rotation and process death.

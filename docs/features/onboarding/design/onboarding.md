@@ -38,7 +38,7 @@ Edge-to-edge: artwork and scrim draw behind the status bar and navigation bar; s
 | Logo (`Group 11`) | Vector, 176.441×15dp, fill `#FFFFFF`; wordmark "THE MOVIE DB" → `assets/group_11.svg` |
 | Headline (`29:47`) | Width 315dp, height 117dp (3 lines), Inter 32sp, line height 1.165 (≈ 37.3sp), `#FFFFFF`, start-aligned. Mixed weights: Light for "Tudo sobre ", Bold for "filmes", "séries", "animes", " muito mais.", Medium for ", " / ", " / " e". **App: a single Light weight, no bold (from user)** |
 | Body (`29:50`) | Width 315dp, height 48dp, Inter Regular 15sp, line height 1.25 (≈ 18.75sp), `#FFFFFF`, start-aligned |
-| Primary button (`Frame 12`) | Width 314dp, height 43dp, padding 12dp all sides, corner radius 60dp (pill). Fill linear gradient 149.16°: `rgb(128, 0, 255)` / `#8000FF` at 0% → `rgb(84, 11, 161)` / `#540BA1` at 101.2% |
+| Primary button (`Frame 12`) | Width 314dp, height 43dp (app: min height 48dp for the touch target, from user), padding 12dp all sides, corner radius 60dp (pill). Fill linear gradient 149.16°: `rgb(128, 0, 255)` / `#8000FF` at 0% → `rgb(84, 11, 161)` / `#540BA1` at 101.2% |
 | Button label (`29:49`) | Inter SemiBold 16sp, line height normal, `#FFFFFF`, centered, single line |
 
 No Figma variables or styles are bound to this frame; all values are raw.
@@ -84,8 +84,8 @@ The design is dark only; there is no light variant. The app uses a dark theme th
 - [x] English copy — resolved (from user), see Copy.
 - [x] Artwork license — resolved (from user): gradient placeholder; licensed artwork later.
 - [x] Logo — resolved (from user): TMDB's official logo, `assets/tmdb_logo_long.svg`, in its own colours.
-- [ ] Screen-reader text for the headline: the bold/regular split is visual only; confirm it is read as one
-  sentence (AC-7).
+- [x] Screen-reader text for the headline — resolved: the headline is one plain string (no bold) marked as a
+  heading, so it is read as one sentence (AC-7).
 
 ## Change log
 - 2026-11-10: Initial version.
@@ -93,3 +93,4 @@ The design is dark only; there is no light variant. The app uses a dark theme th
 - 2026-11-12: Added the official TMDB logo file (gradient, not white).
 - 2026-11-12: Headline ships in a single Light weight; the bold keywords are dropped (user decision).
 - 2026-11-12: The placeholder artwork and the scrim ship as vector drawables (`drawable/onboarding_artwork_placeholder.xml`, `drawable/onboarding_scrim.xml`) instead of code gradients.
+- 2026-11-12: Headline gap closed; button min height 48dp for the touch target (AC-7).
