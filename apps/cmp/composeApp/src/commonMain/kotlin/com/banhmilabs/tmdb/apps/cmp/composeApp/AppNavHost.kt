@@ -5,8 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.OnboardingRoute
-import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.onboardingScreen
+import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.navigation.OnboardingRoute
+import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.navigation.onboardingScreen
 
 @Composable
 internal fun AppNavHost(startRoute: Any, navController: NavHostController = rememberNavController()) {

@@ -9,8 +9,8 @@ import androidx.compose.ui.test.runComposeUiTest
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.banhmilabs.tmdb.apps.cmp.designsystem.TmdbTheme
-import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.OnboardingRoute
 import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.di.onboardingUiModule
+import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.navigation.OnboardingRoute
 import com.banhmilabs.tmdb.core.testing.MainDispatcherTest
 import com.banhmilabs.tmdb.service.settings.domain.SettingsRepository
 import com.banhmilabs.tmdb.service.settings.fake.FakeSettingsRepository

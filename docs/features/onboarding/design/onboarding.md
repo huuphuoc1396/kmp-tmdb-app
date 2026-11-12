@@ -36,7 +36,7 @@ Edge-to-edge: artwork and scrim draw behind the status bar and navigation bar; s
 | Component | Values |
 |---|---|
 | Logo (`Group 11`) | Vector, 176.441×15dp, fill `#FFFFFF`; wordmark "THE MOVIE DB" → `assets/group_11.svg` |
-| Headline (`29:47`) | Width 315dp, height 117dp (3 lines), Inter 32sp, line height 1.165 (≈ 37.3sp), `#FFFFFF`, start-aligned. Mixed weights: Light for "Tudo sobre ", Bold for "filmes", "séries", "animes", " muito mais.", Medium for ", " / ", " / " e" |
+| Headline (`29:47`) | Width 315dp, height 117dp (3 lines), Inter 32sp, line height 1.165 (≈ 37.3sp), `#FFFFFF`, start-aligned. Mixed weights: Light for "Tudo sobre ", Bold for "filmes", "séries", "animes", " muito mais.", Medium for ", " / ", " / " e". **App: a single Light weight, no bold (from user)** |
 | Body (`29:50`) | Width 315dp, height 48dp, Inter Regular 15sp, line height 1.25 (≈ 18.75sp), `#FFFFFF`, start-aligned |
 | Primary button (`Frame 12`) | Width 314dp, height 43dp, padding 12dp all sides, corner radius 60dp (pill). Fill linear gradient 149.16°: `rgb(128, 0, 255)` / `#8000FF` at 0% → `rgb(84, 11, 161)` / `#540BA1` at 101.2% |
 | Button label (`29:49`) | Inter SemiBold 16sp, line height normal, `#FFFFFF`, centered, single line |
@@ -91,3 +91,4 @@ The design is dark only; there is no light variant. The app uses a dark theme th
 - 2026-11-10: Initial version.
 - 2026-11-11: Added English copy; artwork -> gradient placeholder, logo -> TMDB official logo (user decisions).
 - 2026-11-12: Added the official TMDB logo file (gradient, not white).
+- 2026-11-12: Headline ships in a single Light weight; the bold keywords are dropped (user decision).

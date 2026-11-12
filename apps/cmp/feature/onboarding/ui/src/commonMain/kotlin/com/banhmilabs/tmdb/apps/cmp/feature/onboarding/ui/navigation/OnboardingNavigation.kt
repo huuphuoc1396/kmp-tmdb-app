@@ -1,9 +1,9 @@
-package com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui
+package com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.OnboardingScreen
 
-/** Adds the onboarding screen; [onFinished] runs once onboarding is done and Home should replace it. */
 fun NavGraphBuilder.onboardingScreen(onFinished: () -> Unit) {
     composable<OnboardingRoute> { OnboardingScreen(onFinished = onFinished) }
 }

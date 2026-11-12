@@ -405,6 +405,22 @@ effects into callbacks for the app shell. It draws the stateless `<Feature>Conte
 and previews use without Koin. The navigation entry only declares the destination and calls `<Feature>Screen`. There is no shared MVI base class until a second
 feature needs one. Reference: `apps/cmp/feature/onboarding/ui`.
 
+Packages inside a feature `ui` module are organized by screen, not by layer; the module is already the feature and
+layer boundary. Only `navigation/` and `di/` are fixed packages:
+
+```
+feature/<x>/ui/src/commonMain/kotlin/<root>/apps/cmp/feature/<x>/ui/
+├── navigation/                   <X>Route, NavGraphBuilder.<x>Screen(callbacks)   (public API for the app shell)
+├── di/                           Koin module (public)
+├── <X>Contract.kt                <X>UiState, <X>Intent, <X>Effect
+├── <X>ViewModel.kt
+├── <X>Screen.kt                  <X>Screen (stateful) + <X>Content (stateless); design values private here
+└── component/                    composables and helpers used only by this feature
+```
+
+A feature with two or more screens gets one package per screen (`list/`, `detail/`), each with its own contract,
+ViewModel, screen and `component/`. Tests mirror the packages.
+
 ### `apps/native`: native UI and ViewModel on each platform
 
 ```

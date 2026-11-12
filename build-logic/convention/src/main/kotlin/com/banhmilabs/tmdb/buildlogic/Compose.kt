@@ -9,11 +9,6 @@ import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-/**
- * Compose Multiplatform for a KMP module: compiler plugin plus runtime, foundation, ui, material3 and resources.
- * The generated `Res` class lives in `<namespace>.generated.resources` so it follows the module's package rule.
- * `jvmTest` gets `runComposeUiTest` with the host's desktop runtime.
- */
 internal fun Project.configureComposeMultiplatform() {
     pluginManager.apply("org.jetbrains.compose")
     pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
@@ -26,7 +21,6 @@ internal fun Project.configureComposeMultiplatform() {
 
     extensions.configure<KotlinMultiplatformExtension> {
         (this as ExtensionAware).extensions.configure<KotlinMultiplatformAndroidLibraryExtension> {
-            // The AGP KMP library plugin packages no Android resources unless enabled; Compose resources need them.
             androidResources { enable = true }
         }
         sourceSets.getByName("commonMain").dependencies {

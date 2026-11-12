@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import com.banhmilabs.tmdb.apps.cmp.designsystem.TmdbTheme
+import com.banhmilabs.tmdb.apps.cmp.feature.onboarding.ui.component.GET_STARTED_TAG
 import java.util.Locale
 import kotlin.test.AfterTest
 import kotlin.test.Test

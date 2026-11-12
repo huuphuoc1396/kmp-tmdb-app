@@ -1,5 +1,5 @@
 <resources>
-    <string name="onboarding_headline">Tudo sobre &lt;b&gt;filmes&lt;/b&gt;, &lt;b&gt;séries&lt;/b&gt;, &lt;b&gt;animes&lt;/b&gt; e &lt;b&gt;muito mais.&lt;/b&gt;</string>
+    <string name="onboarding_headline">Tudo sobre filmes, séries, animes e muito mais.</string>
     <string name="onboarding_body">Fique por dentro das informações de filmes, séries, animes e muito mais.</string>
     <string name="onboarding_get_started">Acessar</string>
 </resources>

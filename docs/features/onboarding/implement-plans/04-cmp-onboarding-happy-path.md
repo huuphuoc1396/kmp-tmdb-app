@@ -339,3 +339,13 @@ EC-1). Tests cover both ViewModels and run Compose UI tests on JVM.
 - After review: the ViewModel wiring moved from `onboardingScreen()` into a stateful
   `OnboardingScreen(onFinished, viewModel = koinViewModel())` (from user). The stateless UI is now
   `OnboardingContent(state, onIntent)`, and `OnboardingScreenTest` became `OnboardingContentTest`.
+- After review: packages are organized by screen, not by layer (from user, following Now in Android and Kotlin
+  conventions).
+  - `navigation/` holds `OnboardingRoute` and `onboardingScreen`.
+  - `di/` holds the Koin module.
+  - The module root holds `OnboardingContract.kt` (state, intent, effect), `OnboardingViewModel.kt` and
+    `OnboardingScreen.kt` (screen and content, with the design values private).
+  - `component/` holds `GetStartedButton`.
+  - Tests mirror these packages. The layout is recorded in `docs/architecture.md` 11.
+- After review: the headline is no longer bold (from user). The `<b>` markup, `BoldMarkup.kt` and `BoldMarkupTest`
+  are removed. The headline is one plain string in a single Light weight; `design/onboarding.md` records this.

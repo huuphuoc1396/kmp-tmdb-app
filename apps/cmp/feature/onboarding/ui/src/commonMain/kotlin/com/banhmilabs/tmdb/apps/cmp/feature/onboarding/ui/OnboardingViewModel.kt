@@ -25,12 +25,10 @@ internal class OnboardingViewModel(private val settingsRepository: SettingsRepos
         }
     }
 
-    /** Only the first tap counts. Home opens even when saving fails. */
     private fun getStarted() {
         if (_state.value.isNavigating) return
         _state.update { it.copy(isNavigating = true) }
         viewModelScope.launch {
-            // Navigating only after the save returns keeps it from being cancelled with this ViewModel.
             settingsRepository.completeOnboarding()
             _effects.send(OnboardingEffect.NavigateToHome)
         }

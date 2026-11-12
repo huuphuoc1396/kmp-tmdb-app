@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TMDB's official logo (blue_long_1), converted from https://www.themoviedb.org/about/logos-attribution.
-     Colours are kept as TMDB's attribution guidelines require. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
     android:width="179dp"
