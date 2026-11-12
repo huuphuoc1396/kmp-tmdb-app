@@ -296,7 +296,7 @@ both, check that the placeholder Home shows in the dark theme (subtask "How to t
   gradients, Compose UI test setup -> 04-cmp-onboarding-happy-path.
 - Inter font -> later, if wanted (system font for now).
 - App icons and launch screen artwork -> later.
-- `apps/native` shells -> before 06 / 07.
+- `apps/native` shells -> 06-native-android-app-shell, 07-native-ios-app-shell.
 - Desktop app (optional in architecture 11) -> not planned.
 
 ## Risks

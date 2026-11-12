@@ -14,7 +14,7 @@ needs them. New code follows `docs/architecture.md` (sections 5–8), not the
 skeleton or existing examples.
 
 ## Repository layout
-- One branch (`main`); apps are directories, not branches. `apps/cmp` (Compose Multiplatform: shared ViewModel + UI) and `apps/native` (Jetpack Compose + SwiftUI/SKIE) both build on `core/*` and `service/*`. `apps/cmp` has its shell (`designsystem`, `composeApp`, `androidApp`, Xcode `iosApp`), the onboarding screen and a placeholder Home; `apps/native` is created with its first screen.
+- One branch (`main`); apps are directories, not branches. `apps/cmp` (Compose Multiplatform: shared ViewModel + UI) and `apps/native` (Jetpack Compose + SwiftUI/SKIE) both build on `core/*` and `service/*`. `apps/cmp` has its shell (`designsystem`, `composeApp`, `androidApp`, Xcode `iosApp`), the onboarding screen and a placeholder Home; `apps/native` has its Android shell (`designsystem`, `androidApp`, Jetpack Compose) showing a placeholder Home; its iOS side comes later. `native` is a Java keyword, so `apps/native` code uses the package segment `nativeapp` (`com.banhmilabs.tmdb.apps.nativeapp.…`).
 - `apps/cmp` and `apps/native` never depend on each other.
 - CI runs JVM checks only; app builds and platform tests run locally.
 
@@ -36,6 +36,7 @@ skeleton or existing examples.
 - Architecture rules: `./gradlew :architecture-test:test`
 - Compile every target (Android, iOS, JVM; macOS + Xcode): `./gradlew assemble`
 - Run the cmp app: Android `./gradlew :apps:cmp:androidApp:installDebug` (emulator/device); iOS: open `apps/cmp/iosApp/iosApp.xcodeproj` in Xcode, or build with `xcodebuild -project apps/cmp/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`. The Xcode project repeats the iOS deployment target (16.0) because it can't read the version catalog.
+- Run the native Android app: `./gradlew :apps:native:androidApp:installDebug` (emulator/device).
 
 ## Before finishing a code change
 Applies only when source or build files changed. Docs-only changes (`*.md`): run nothing. Report results honestly.
@@ -80,7 +81,7 @@ and sets targets `android` (with host tests), `jvm`, `iosArm64`, `iosSimulatorAr
 | `service/<ctx>/data` (on demand) | Repository impls, endpoints + DTOs, mappers, its own SQLDelight database, refresh policy, Koin module | own `domain`, kernel, `network`/`database`/`datastore` |
 | `service/<ctx>/fake` (on demand) | In-memory repository fakes + repository contract test | own `domain`, kernel |
 | `apps/<app>/composeApp` | `App()`, navigation graph; builds the iOS framework `ComposeApp` (root of the app) | its own app, the shared core |
-| `apps/<app>/androidApp` | Android application: `Application` (starts `initKoin`), `Activity` (root of the app) | its own app, the shared core |
+| `apps/<app>/androidApp` | Android application: `Application` (starts `initKoin`), `Activity` (root of the app); `apps/native` uses Jetpack Compose | its own app, the shared core |
 | `apps/<app>/feature/<x>/nav` (on demand) | Route, Args, Result; renamed `api` when it must expose an entry interface | `core:model` |
 | `apps/<app>/feature/<x>/ui` | ViewModel + screen | `nav`/`api` (same app), `service/*/domain`, the app's `designsystem`, kernel |
 | `architecture-test` | Konsist rules (JVM only) | — |

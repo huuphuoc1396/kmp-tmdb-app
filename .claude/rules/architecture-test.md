@@ -30,7 +30,7 @@ paths:
 - Nothing to do: `PackageRulesTest` covers every file under a recognised module path, and the rules select files by path pattern. Only a new module *type* needs its pattern added to the rules that apply to it.
 
 ## Current rules
-- Packages: every file uses the package of its module path (`service/title/domain` → `com.banhmilabs.tmdb.service.title.domain`).
+- Packages: every file uses the package of its module path (`service/title/domain` → `com.banhmilabs.tmdb.service.title.domain`; `apps/native/...` → `...apps.nativeapp...`, the same alias as `namespaceOf` in build-logic).
 - No frameworks in `core/model`, `service/*/domain`, `apps/*/feature/*/nav` (`api` may use the Compose runtime).
 - `service/*/domain` imports no `service.*.data|fake` and no `core.network|database|datastore|security|di`.
 - `core/model` imports nothing else in the app; `core/network|database|datastore` import no `service.*` and no `core.di`.

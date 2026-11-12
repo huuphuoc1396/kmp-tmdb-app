@@ -17,8 +17,8 @@ changes, whether it is completed. This is the public API both UI branches use to
 - Wiring so the apps can obtain these operations through dependency injection.
 - Branch: `main`.
 ### Out of scope (handled later)
-- Choosing the start screen and the onboarding UI -> 04-cmp-onboarding-happy-path, 06-native-android-onboarding,
-  07-native-ios-onboarding
+- Choosing the start screen and the onboarding UI -> 04-cmp-onboarding-happy-path, 08-native-android-onboarding,
+  09-native-ios-onboarding
 
 ## Acceptance criteria
 - **AC-3** Onboarding skipped after completion (partial: the core reports "completed" after it was recorded,

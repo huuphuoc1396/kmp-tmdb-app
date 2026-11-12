@@ -123,6 +123,8 @@ There is no loading, empty or error state: everything on the screen is bundled w
 - 2026-11-10: Linked designs: onboarding.
 - 2026-11-11: Resolved open questions (English copy, placeholder artwork, official TMDB logo); added subtask
   03 (cmp app shell) and renumbered the later subtasks.
+- 2026-11-12: Added subtasks 06 (native Android app shell) and 07 (native iOS app shell); renumbered the native
+  onboarding subtasks to 08 and 09.
 
 ## Subtasks
 1. [01 - Encrypted settings storage](subtasks/01-encrypted-settings-storage.md)
@@ -130,5 +132,7 @@ There is no loading, empty or error state: everything on the screen is bundled w
 3. [03 - App shell (cmp)](subtasks/03-cmp-app-shell.md)
 4. [04 - Onboarding happy path (cmp)](subtasks/04-cmp-onboarding-happy-path.md)
 5. [05 - Onboarding robustness (cmp)](subtasks/05-cmp-onboarding-robustness.md)
-6. [06 - Onboarding on Android (native)](subtasks/06-native-android-onboarding.md)
-7. [07 - Onboarding on iOS (native)](subtasks/07-native-ios-onboarding.md)
+6. [06 - App shell (native Android)](subtasks/06-native-android-app-shell.md)
+7. [07 - App shell (native iOS)](subtasks/07-native-ios-app-shell.md)
+8. [08 - Onboarding on Android (native)](subtasks/08-native-android-onboarding.md)
+9. [09 - Onboarding on iOS (native)](subtasks/09-native-ios-onboarding.md)

@@ -1,23 +1,23 @@
-# 06 - Onboarding on Android (native)
+# 09 - Onboarding on iOS (native)
 
 Feature: [task.md](../task.md)
 Design: [Onboarding](../design/onboarding.md)
-Depends on: 02-onboarding-completed-state. Prerequisite outside this feature: the native Android app shell (app module, dark theme, navigation) in `apps/native`.
+Depends on: 02-onboarding-completed-state, 07-native-ios-app-shell
 Status: Todo
 
 ## Goal
-On the native Android app (Jetpack Compose), onboarding works end to end as designed: first launch shows it, "Acessar" opens Home, later launches open Home directly. It is accessible, adapts to orientation and screen size, works offline, and is in en / pt-BR.
+On the native iOS app (SwiftUI), onboarding works end to end as designed: first launch shows it, "Acessar" opens Home, later launches open Home directly. It is accessible, adapts to orientation and screen size, works offline, and is in en / pt-BR.
 
 ## Scope
 ### In scope
 - Onboarding screen as in the design, edge-to-edge, with the gradient placeholder artwork and TMDB's official logo.
-- en and pt-BR copy (copy in design/onboarding.md).
+- en and pt-BR copy in the String Catalog (copy in design/onboarding.md).
 - Start screen chosen from the onboarding completed state, with no flash of the wrong screen.
 - "Acessar" records completion and replaces onboarding with Home; a placeholder Home until the Home feature exists.
-- Accessibility, large fonts, landscape / tablet, rotation and process death.
+- Accessibility (VoiceOver, Dynamic Type), landscape / iPad, state restoration.
 - App: `apps/native` (on `main`).
 ### Out of scope (handled later)
-- iOS -> 07-native-ios-onboarding
+- Android -> 08-native-android-onboarding
 - The real Home screen -> Home feature
 
 ## Acceptance criteria
@@ -72,10 +72,10 @@ On the native Android app (Jetpack Compose), onboarding works end to end as desi
 - **EC-6** Device language is neither en nor pt-BR -> English copy is shown.
 
 ## Layers touched
-- UI (Jetpack Compose screen, design-system pieces it needs)
+- UI (SwiftUI view, design-system pieces it needs)
 - State holder (ViewModel)
-- Navigation / start screen
-- Android resources (strings en + pt-BR, artwork, logo)
+- Start screen / navigation
+- iOS resources (String Catalog en + pt-BR, artwork, logo)
 
 ## How to test
 1. Fresh install, launch: onboarding shows artwork, logo, headline, body and the button, matching the design (AC-1).
@@ -92,10 +92,12 @@ On the native Android app (Jetpack Compose), onboarding works end to end as desi
 10. Largest system font size: text wraps, the content scrolls if needed, the button stays reachable (AC-7, EC-5).
 11. Phone and tablet, portrait and landscape: artwork fills the screen with a cover crop; text and button are
    visible or reachable (AC-8).
-12. Rotate on onboarding, and trigger process death ("Don't keep activities"): onboarding is restored as it was (EC-4).
+12. Rotate on onboarding, and trigger process death (kill the app in the background after
+   the state is saved): onboarding is restored as it was (EC-4).
 
-Run on an Android emulator or device (TalkBack for accessibility).
+Run on the iOS simulator (iPhone and iPad; VoiceOver via Accessibility Inspector).
 
 ## Change log
 - 2026-11-10: Initial version.
-- 2026-11-11: Renumbered from 05; apps are directories on `main`; copy and assets resolved.
+- 2026-11-11: Renumbered from 06; apps are directories on `main`; copy and assets resolved.
+- 2026-11-12: Renumbered from 07; depends on 07-native-ios-app-shell.

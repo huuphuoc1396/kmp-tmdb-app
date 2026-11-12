@@ -45,6 +45,7 @@ class ModuleTypeTest {
     @Test
     fun androidAppPathIsAndroidApp() {
         assertEquals(ModuleType(ModuleKind.ANDROID_APP, app = "cmp"), moduleTypeOf(":apps:cmp:androidApp"))
+        assertEquals(ModuleType(ModuleKind.ANDROID_APP, app = "native"), moduleTypeOf(":apps:native:androidApp"))
     }
 
     @Test

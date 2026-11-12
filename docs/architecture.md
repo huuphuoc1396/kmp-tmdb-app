@@ -166,7 +166,7 @@ The **public API of the shared core** is the set of `service/*/domain` modules. 
 | `service/<ctx>/domain` | domain | Context models, repository interfaces, use cases |
 | `service/<ctx>/data` | data | Repository implementations, endpoints + DTOs, mappers, queries, Koin module |
 | `service/<ctx>/fake` | fake | In-memory repository fakes + the repository contract test |
-| `apps/<app>/designsystem` | designsystem | Theme, stateless components used by two or more features, image loading, string resources |
+| `apps/<app>/designsystem` | designsystem | Theme, stateless components used by two or more features, image loading, string resources (in `apps/native`: an Android library with Jetpack Compose) |
 | `…/feature/<x>/nav` | nav | Route, Args, Result only |
 | `…/feature/<x>/api` | api | `nav` plus entry interfaces (for example a `@Composable` entry); replaces `nav` when needed |
 | `…/feature/<x>/ui` | ui | ViewModel, screen, implementations of the feature's entries |
@@ -355,8 +355,10 @@ Module paths recognised by `moduleTypeOf`: `:core:<name>`, `:service:<ctx>:domai
 
 > **Status:** `apps/cmp` exists: `tmdb.module` configures `composeApp` as a KMP library with the iOS framework,
 > `androidApp` as an Android application, and adds Compose Multiplatform to the `designsystem`, `ui` and `composeApp`
-> modules of `apps/cmp`. `apps/native` (`app`, `shared`, Android-only modules) is added with that app; until then its
-> modules would be configured as KMP libraries.
+> modules of `apps/cmp`. In `apps/native`, `androidApp` is an Android application and `designsystem`, `nav`, `api`
+> and `ui` are Android libraries, all with Jetpack Compose (androidx BOM). `native` is a Java keyword, so the package
+> and namespace segment of `apps/native` is `nativeapp` (`com.banhmilabs.tmdb.apps.nativeapp.…`, applicationId
+> `com.banhmilabs.tmdb.nativeapp`). `apps/native/shared` (iOS) comes with the native iOS shell.
 
 ---
 
@@ -427,7 +429,7 @@ ViewModel, screen and `component/`. Tests mirror the packages.
 apps/native/
 ├── designsystem/         # Android: Jetpack Compose theme + components
 ├── feature/<x>/{nav,api,ui}/   # Android feature modules
-├── app/                  # Android: Activity, navigation graph, Koin start
+├── androidApp/           # Android: Application, Activity, navigation graph, Koin start
 ├── shared/               # iOS umbrella framework: exports core:common, core:model, service/*/domain
 │                         # (debug builds also export service/*/fake for previews and tests); SKIE; KoinHelper
 └── iosApp/
@@ -437,7 +439,8 @@ apps/native/
     └── Localizable.xcstrings
 ```
 
-Gradle modules in `apps/native` are the Android app; iOS code lives in `iosApp/` (Xcode, Swift packages) and
+Gradle modules in `apps/native` are the Android app (Android libraries and the `androidApp` application with
+Jetpack Compose; Kotlin packages use the segment `nativeapp`, because `native` is a Java keyword); iOS code lives in `iosApp/` (Xcode, Swift packages) and
 reaches Kotlin only through `shared/`. Both apps therefore use the same module paths. Feature rules are the same on
 both platforms. On iOS, SKIE turns `Flow<T>` into `AsyncSequence`, `suspend` into
 `async throws`, `sealed` hierarchies into exhaustive `switch onEnum(of:)`, and Kotlin enums into Swift enums. An iOS

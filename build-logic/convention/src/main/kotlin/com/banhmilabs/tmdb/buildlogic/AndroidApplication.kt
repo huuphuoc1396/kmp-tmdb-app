@@ -8,6 +8,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 private const val VERSION_CODE = 1
 private const val VERSION_NAME = "0.1.0"
 
+/** The app whose Android modules use Jetpack Compose instead of Compose Multiplatform. */
+internal const val NATIVE_APP = "native"
+
 /** Android application of an app shell (`:apps:<app>:androidApp`), with Compose and AGP's built-in Kotlin. */
 internal fun Project.configureAndroidApplication(app: String) {
     pluginManager.apply("com.android.application")
@@ -19,7 +22,7 @@ internal fun Project.configureAndroidApplication(app: String) {
         namespace = derivedNamespace()
         compileSdk = libs.version("android-compileSdk").toInt()
         defaultConfig {
-            applicationId = "com.banhmilabs.tmdb.$app"
+            applicationId = "com.banhmilabs.tmdb.${packageSegment(app)}"
             minSdk = libs.version("android-minSdk").toInt()
             targetSdk = libs.version("android-targetSdk").toInt()
             versionCode = VERSION_CODE
@@ -30,4 +33,5 @@ internal fun Project.configureAndroidApplication(app: String) {
     extensions.configure<KotlinAndroidProjectExtension> {
         jvmToolchain(libs.version("jvmToolchain").toInt())
     }
+    if (app == NATIVE_APP) configureJetpackCompose()
 }

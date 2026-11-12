@@ -22,7 +22,7 @@ visible yet; 04 adds the onboarding screen on top of this shell.
 ### Out of scope (handled later)
 - The onboarding screen, start-screen choice and "Acessar" -> 04-cmp-onboarding-happy-path
 - The real Home screen -> Home feature
-- `apps/native` shells -> before 06 / 07 (prerequisite noted there)
+- `apps/native` shells -> 06-native-android-app-shell, 07-native-ios-app-shell
 
 ## Acceptance criteria
 None from task.md directly: this subtask is the prerequisite for AC-1–AC-8 on the cmp app. It provides the

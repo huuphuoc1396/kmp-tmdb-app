@@ -36,4 +36,6 @@ include(
     ":apps:cmp:feature:onboarding:ui",
     ":apps:cmp:composeApp",
     ":apps:cmp:androidApp",
+    ":apps:native:designsystem",
+    ":apps:native:androidApp",
 )

@@ -16,8 +16,16 @@ internal fun KoFileDeclaration.modulePath(): String? = MODULE_DIR.find(path)?.gr
 /** `apps/cmp/feature/home/ui` -> `cmp`; `null` for the shared core. */
 internal fun appOf(modulePath: String): String? = modulePath.split('/').takeIf { it[0] == "apps" }?.get(1)
 
-/** `service/title/domain` -> `com.banhmilabs.tmdb.service.title.domain`, the same as the derived namespace. */
-internal fun packageOf(modulePath: String): String = "$ROOT_PACKAGE." + modulePath.replace('/', '.').replace("-", "")
+private val PACKAGE_SEGMENT_ALIASES = mapOf("native" to "nativeapp")
+
+/**
+ * `service/title/domain` -> `com.banhmilabs.tmdb.service.title.domain`, the same as the derived namespace
+ * (`apps/native/...` -> `...apps.nativeapp...`, because `native` is a Java keyword).
+ */
+internal fun packageOf(modulePath: String): String = "$ROOT_PACKAGE." +
+    modulePath.split('/').joinToString(".") { segment ->
+        segment.replace("-", "").let { PACKAGE_SEGMENT_ALIASES[it] ?: it }
+    }
 
 /** Files whose module path matches [regex], for example `Regex("service/[^/]+/domain")`. */
 internal fun KoScope.filesMatching(regex: Regex): List<KoFileDeclaration> =

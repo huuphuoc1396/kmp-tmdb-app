@@ -1,7 +1,9 @@
 import com.banhmilabs.tmdb.buildlogic.DependencyRules
 import com.banhmilabs.tmdb.buildlogic.ModuleKind
 import com.banhmilabs.tmdb.buildlogic.ModuleType
+import com.banhmilabs.tmdb.buildlogic.NATIVE_APP
 import com.banhmilabs.tmdb.buildlogic.configureAndroidApplication
+import com.banhmilabs.tmdb.buildlogic.configureAndroidLibrary
 import com.banhmilabs.tmdb.buildlogic.configureComposeMultiplatform
 import com.banhmilabs.tmdb.buildlogic.configureKotlinMultiplatform
 import com.banhmilabs.tmdb.buildlogic.configureKover
@@ -35,13 +37,18 @@ class ModuleConventionPlugin : Plugin<Project> {
             enforceAndroidDependencyRules(path, type)
             return
         }
+        if (type.app == NATIVE_APP && type.kind in NATIVE_ANDROID_KINDS) {
+            configureAndroidLibrary()
+            enforceAndroidDependencyRules(path, type)
+            return
+        }
         configureKotlinMultiplatform(iosFramework = if (type.kind == ModuleKind.APP) IOS_FRAMEWORK else null)
         if (type.app == "cmp" && type.kind in COMPOSE_KINDS) configureComposeMultiplatform()
         if (type.kind == ModuleKind.DOMAIN || type.kind == ModuleKind.DATA) configureKover()
         enforceDependencyRules(path, type)
     }
 
-    /** Same check for the Android-only app shell: its own and its test dependency configurations. */
+    /** Same check for Android-only modules (app shells, `apps/native`): their own and test configurations. */
     private fun Project.enforceAndroidDependencyRules(fromPath: String, from: ModuleType) {
         configurations.matching { it.name in ANDROID_MAIN_CONFIGURATIONS || it.name.endsWith("TestImplementation") }
             .configureEach {
@@ -63,6 +70,7 @@ class ModuleConventionPlugin : Plugin<Project> {
     private companion object {
         const val IOS_FRAMEWORK = "ComposeApp"
         val COMPOSE_KINDS = setOf(ModuleKind.DESIGNSYSTEM, ModuleKind.UI, ModuleKind.APP)
+        val NATIVE_ANDROID_KINDS = setOf(ModuleKind.DESIGNSYSTEM, ModuleKind.NAV, ModuleKind.API, ModuleKind.UI)
         val ANDROID_MAIN_CONFIGURATIONS = setOf("implementation", "api", "compileOnly", "runtimeOnly")
     }
 
