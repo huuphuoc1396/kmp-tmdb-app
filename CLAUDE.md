@@ -35,6 +35,7 @@ skeleton or existing examples.
 - Coverage: `./gradlew koverVerify` (80% line on every `service/*/domain` and `service/*/data`; the root project has a rule-less `koverVerify` so the command works with none); report: `:<module>:koverHtmlReport`
 - Architecture rules: `./gradlew :architecture-test:test`
 - Compile every target (Android, iOS, JVM; macOS + Xcode): `./gradlew assemble`
+- Publish the shared core: `./gradlew publishSharedCore` writes every production module of `core/` and `service/` that has code (not `fake`, `core:testing` or app modules) to `build/maven-repo`, as `com.banhmilabs.tmdb:<path-with-dashes>:0.1.0-SNAPSHOT` (e.g. `core-di`, `service-settings-domain`). All targets; iOS klibs need macOS + Xcode. Republishing replaces the snapshot.
 - Run the cmp app: Android `./gradlew :apps:cmp:androidApp:installDebug` (emulator/device); iOS: open `apps/cmp/iosApp/iosApp.xcodeproj` in Xcode, or build with `xcodebuild -project apps/cmp/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`. The Xcode project repeats the iOS deployment target (16.0) because it can't read the version catalog.
 
 ## Before finishing a code change

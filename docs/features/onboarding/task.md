@@ -123,6 +123,8 @@ There is no loading, empty or error state: everything on the screen is bundled w
 - 2026-11-10: Linked designs: onboarding.
 - 2026-11-11: Resolved open questions (English copy, placeholder artwork, official TMDB logo); added subtask
   03 (cmp app shell) and renumbered the later subtasks.
+- 2026-11-12: Subtasks 06 / 07 now target the standalone apps `native-android/` (feature native-android-app) and
+  `native-ios/` (feature native-ios-app, to be specced) instead of `apps/native`.
 
 ## Subtasks
 1. [01 - Encrypted settings storage](subtasks/01-encrypted-settings-storage.md)
