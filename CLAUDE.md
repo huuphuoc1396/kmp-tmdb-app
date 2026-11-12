@@ -19,7 +19,7 @@ skeleton or existing examples.
 
 ## Setup
 - JDK 21 (toolchain from `jvmToolchain` in `gradle/libs.versions.toml`). Gradle wrapper only.
-- Android SDK via `local.properties` (`sdk.dir`), git-ignored. compileSdk 37, targetSdk 36, minSdk 24, iOS 16.
+- Android SDK via `local.properties` (`sdk.dir`), git-ignored. compileSdk 37, targetSdk 37, minSdk 24, iOS 16.
 - iOS targets need macOS + Xcode; `kotlin.native.ignoreDisabledTargets=true` lets JVM work proceed without them.
 - Configuration cache and build cache are on (`gradle.properties`). Keep build logic config-cache safe.
 - Secrets (TMDB token) go in git-ignored `secrets.properties`; not wired up yet (planned in the network task).

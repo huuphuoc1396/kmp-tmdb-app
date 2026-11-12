@@ -316,7 +316,8 @@ both, check that the placeholder Home shows in the dark theme (subtask "How to t
 
 ## Deviations
 - `android-compileSdk` 36 → 37 for every module (from user): Compose Multiplatform 1.12.2 pulls AndroidX Compose
-  1.12.1, Navigation 2.10 and Lifecycle 2.11, which require compileSdk 37. `targetSdk` stays 36. `CLAUDE.md` updated.
+  1.12.1, Navigation 2.10 and Lifecycle 2.11, which require compileSdk 37. `CLAUDE.md` updated.
+- `android-targetSdk` 36 → 37 (from user, after the plan was done), matching compileSdk.
 - `org.gradle.jvmargs` `-Xmx4g` → `-Xmx6g`: `assemble` ran out of heap linking the release `ComposeApp` frameworks
   for both iOS targets.
 - `MainActivity` pins light system bar icons (`SystemBarStyle.dark(TRANSPARENT)`): with plain `enableEdgeToEdge()`
