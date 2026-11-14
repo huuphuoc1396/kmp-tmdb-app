@@ -1,0 +1,38 @@
+[versions]
+agp = "9.5.1"
+kotlin = "2.4.21"
+detekt = "2.0.0-alpha.6"
+jvmToolchain = "21"
+android-compileSdk = "37"
+android-targetSdk = "37"
+android-minSdk = "24"
+compose-bom = "2026.09.00"
+navigation = "2.10.2"
+activity = "1.13.0"
+koin = "4.2.2"
+kotlinx-serialization = "1.12.0"
+kotlinx-coroutines = "1.11.0"
+mockk = "1.14.12"
+shared-core = "0.1.0-SNAPSHOT"
+
+[libraries]
+shared-core-di = { module = "com.banhmilabs.tmdb:core-di", version.ref = "shared-core" }
+shared-core-settings-domain = { module = "com.banhmilabs.tmdb:service-settings-domain", version.ref = "shared-core" }
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+detekt-rules-ktlint-wrapper = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
