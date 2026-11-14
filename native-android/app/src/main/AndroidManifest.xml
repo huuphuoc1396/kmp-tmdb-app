@@ -4,7 +4,7 @@
     <application
         android:name=".TmdbApplication"
         android:label="TMDB Native"
-        android:theme="@android:style/Theme.Material.NoActionBar">
+        android:theme="@style/Theme.Tmdb.Starting">
         <activity
             android:name=".MainActivity"
             android:exported="true">
