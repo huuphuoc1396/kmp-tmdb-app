@@ -13,9 +13,6 @@ private val MODULE_DIR = Regex(
 /** `…/service/title/domain/src/…` -> `service/title/domain`; `null` outside shared modules. */
 internal fun KoFileDeclaration.modulePath(): String? = MODULE_DIR.find(path)?.groupValues?.get(1)
 
-/** `apps/cmp/feature/home/ui` -> `cmp`; `null` for the shared core. */
-internal fun appOf(modulePath: String): String? = modulePath.split('/').takeIf { it[0] == "apps" }?.get(1)
-
 /** `service/title/domain` -> `com.banhmilabs.tmdb.service.title.domain`, the same as the derived namespace. */
 internal fun packageOf(modulePath: String): String = "$ROOT_PACKAGE." + modulePath.replace('/', '.').replace("-", "")
 

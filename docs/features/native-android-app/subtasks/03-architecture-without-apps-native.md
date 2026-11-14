@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Depends on: 02-standalone-native-android-app
-Status: Todo
+Status: Done
 
 ## Goal
 The KMP build and its docs describe the new setup:

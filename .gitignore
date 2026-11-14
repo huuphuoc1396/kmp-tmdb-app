@@ -10,7 +10,7 @@
 build/
 .kotlin/
 local.properties
-gradle/gradle-daemon-jvm.properties
+**/gradle/gradle-daemon-jvm.properties
 
 # Secrets (never commit)
 secrets.properties

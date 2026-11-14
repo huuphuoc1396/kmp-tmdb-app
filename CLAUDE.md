@@ -1,8 +1,9 @@
 # kmp-tmdb-app
 
 Kotlin Multiplatform shared core for a TMDB discovery app (films, series, anime, novelas; en + pt-BR).
-Everything lives on `main` in directories: shared core (`core/`, `service/`) and, once built, the apps under
-`apps/cmp` and `apps/native`. Full design: `docs/architecture.md`.
+Everything lives on `main` in directories: shared core (`core/`, `service/`), the Compose Multiplatform app
+`apps/cmp`, and the standalone native Android app `native-android/` (a standalone `native-ios/` is planned).
+Full design: `docs/architecture.md`.
 Per-layer rules (build logic, tests, architecture tests) are in `.claude/rules/` and load by path.
 
 Current state: early. Production code exists in `core:common` (`AppResult`, `AppError`, `DispatcherProvider`),
@@ -14,8 +15,9 @@ needs them. New code follows `docs/architecture.md` (sections 5–8), not the
 skeleton or existing examples.
 
 ## Repository layout
-- One branch (`main`); apps are directories, not branches. `apps/cmp` (Compose Multiplatform: shared ViewModel + UI) and `apps/native` (Jetpack Compose + SwiftUI/SKIE) both build on `core/*` and `service/*`. `apps/cmp` has its shell (`designsystem`, `composeApp`, `androidApp`, Xcode `iosApp`), the onboarding screen and a placeholder Home; `apps/native` is created with its first screen.
-- `apps/cmp` and `apps/native` never depend on each other.
+- One branch (`main`); apps are directories, not branches. The KMP build holds the shared core and `apps/cmp` (Compose Multiplatform: shared ViewModel + UI), which has its shell (`designsystem`, `composeApp`, `androidApp`, Xcode `iosApp`), the onboarding screen and a placeholder Home.
+- `native-android/` is a standalone Gradle project (own settings, wrapper, catalog, Detekt; one `:app` module, Jetpack Compose) that is not part of the KMP build. It uses the shared core only through the libraries published to `build/maven-repo` (`com.banhmilabs.tmdb:core-di`, `service-<ctx>-domain`), like an outside SDK consumer. See `native-android/README.md`.
+- `native-*` never depends on `apps/cmp`, and the KMP build never includes or references `native-*`.
 - CI runs JVM checks only; app builds and platform tests run locally.
 
 ## Setup
@@ -36,6 +38,7 @@ skeleton or existing examples.
 - Architecture rules: `./gradlew :architecture-test:test`
 - Compile every target (Android, iOS, JVM; macOS + Xcode): `./gradlew assemble`
 - Publish the shared core: `./gradlew publishSharedCore` writes every production module of `core/` and `service/` that has code (not `fake`, `core:testing` or app modules) to `build/maven-repo`, as `com.banhmilabs.tmdb:<path-with-dashes>:0.1.0-SNAPSHOT` (e.g. `core-di`, `service-settings-domain`). All targets; iOS klibs need macOS + Xcode. Republishing replaces the snapshot.
+- Native Android app (standalone; publish first, then from `native-android/`): `./gradlew publishSharedCore`, then `cd native-android && ./gradlew :app:installDebug`. Checks: `./gradlew :app:detekt :app:testDebugUnitTest` (in `native-android/`). Not run by CI.
 - Run the cmp app: Android `./gradlew :apps:cmp:androidApp:installDebug` (emulator/device); iOS: open `apps/cmp/iosApp/iosApp.xcodeproj` in Xcode, or build with `xcodebuild -project apps/cmp/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`. The Xcode project repeats the iOS deployment target (16.0) because it can't read the version catalog.
 
 ## Before finishing a code change
@@ -95,8 +98,7 @@ app shell → an entry interface in B's `api` bound with Koin (5.4).
 
 Enforced by `tmdb.module` (`build-logic/convention/.../buildlogic/DependencyRules.kt`): an unknown module path or a
 forbidden `project(...)` dependency fails configuration with `Rule: <from> -> <to>: …`; the `domain → domain`
-allowlist is `DependencyRules.domainAllowlist` (one level, checked); the shared core never depends on an app and apps
-never depend on each other. Enforced by Konsist (`architecture-test/`, over
+allowlist is `DependencyRules.domainAllowlist` (one level, checked); the shared core never depends on an app. Enforced by Konsist (`architecture-test/`, over
 `core/`, `service/`, `apps/`): `core:model`, `service/*/domain`, `apps/*/feature/*/nav` import no frameworks (Ktor,
 SQLDelight, `androidx.`, Compose, Koin, `android.`, `platform.`); `domain` imports no `data`/`fake`/infrastructure/`di`;
 `network`/`database`/`datastore` import no `service`/`di`; feature `ui` imports no other `ui` and no `data`; every
@@ -148,6 +150,7 @@ create them in these modules when first needed.)
 - Don't use `EncryptedSharedPreferences` (deprecated); use `core:datastore` with the AES-GCM serializer.
 - Don't put the TMDB token in source or committed files; use `secrets.properties` / CI secrets.
 - Don't log request/response bodies in release builds.
-- Don't make `apps/cmp` and `apps/native` depend on each other, or put UI in `core/` or `service/`.
+- Don't make `native-android/` depend on `apps/cmp` or reference the KMP build (no `includeBuild`, `project(...)` or source paths); it uses only the published shared core.
+- Don't put UI in `core/` or `service/`.
 - Don't hardcode versions or SDK levels in module build files; read them from `libs.versions.toml`.
 - Don't add `GlobalScope` or hardcoded `Dispatchers.*`; inject `DispatcherProvider`.

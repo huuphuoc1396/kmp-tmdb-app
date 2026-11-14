@@ -12,7 +12,7 @@ paths:
 
 ## Pattern
 - One test class per rule group: `DependencyRulesTest` (imports between layers), `PackageRulesTest` (package names).
-- Shared helpers live in `ModulePaths.kt`: `ROOT_PACKAGE`, `KoFileDeclaration.modulePath()` (`core/<m>`, `service/<ctx>/<type>`, `apps/<app>/designsystem`, `apps/<app>/feature/<x>/<type>` from the file path), `appOf(modulePath)`, `packageOf(modulePath)`, `KoScope.filesMatching(regex)` (by module path), `importsAnyOf(prefixes)`, `importsMatching(regex)`.
+- Shared helpers live in `ModulePaths.kt`: `ROOT_PACKAGE`, `KoFileDeclaration.modulePath()` (`core/<m>`, `service/<ctx>/<type>`, `apps/<app>/designsystem`, `apps/<app>/feature/<x>/<type>` from the file path), `packageOf(modulePath)`, `KoScope.filesMatching(regex)` (by module path), `importsAnyOf(prefixes)`, `importsMatching(regex)`.
 - Scope: `Konsist.scopeFromProduction()` for dependency rules (tests may import anything); `Konsist.scopeFromProject()` when tests must follow the rule too (package rule).
 - Assert with `assertFalse` / `assertTrue(additionalMessage = "Rule: <same text as the test name>") { ... }`.
 - Test names are backtick sentences stating the rule: `` `domain imports no data, fake or infrastructure` ``.
@@ -35,7 +35,7 @@ paths:
 - `service/*/domain` imports no `service.*.data|fake` and no `core.network|database|datastore|security|di`.
 - `core/model` imports nothing else in the app; `core/network|database|datastore` import no `service.*` and no `core.di`.
 - `apps/*/feature/*/ui` imports no other feature's `ui` and no `service.*.data`.
-- `core/` and `service/` import nothing from `apps.*`; a file in one app imports nothing from another app.
+- `core/` and `service/` import nothing from `apps.*`.
 
 ## Do / Don't
 - Don't add project dependencies to this module; Konsist reads sources by path.

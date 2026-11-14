@@ -27,14 +27,13 @@ class ModuleTypeTest {
     @Test
     fun featureModulesCarryTheirFeatureAndApp() {
         assertEquals(ModuleType(ModuleKind.NAV, "details", "cmp"), moduleTypeOf(":apps:cmp:feature:details:nav"))
-        assertEquals(ModuleType(ModuleKind.API, "cart", "native"), moduleTypeOf(":apps:native:feature:cart:api"))
+        assertEquals(ModuleType(ModuleKind.API, "cart", "cmp"), moduleTypeOf(":apps:cmp:feature:cart:api"))
         assertEquals(ModuleType(ModuleKind.UI, "home", "cmp"), moduleTypeOf(":apps:cmp:feature:home:ui"))
     }
 
     @Test
     fun designsystemBelongsToAnApp() {
         assertEquals(ModuleType(ModuleKind.DESIGNSYSTEM, app = "cmp"), moduleTypeOf(":apps:cmp:designsystem"))
-        assertEquals(ModuleType(ModuleKind.DESIGNSYSTEM, app = "native"), moduleTypeOf(":apps:native:designsystem"))
     }
 
     @Test
@@ -62,7 +61,7 @@ class ModuleTypeTest {
             ":apps:cmp",
             ":apps:cmp:feature:home",
             ":apps:cmp:feature:home:impl",
-            ":apps:native:android:feature:home:ui",
+            ":apps:cmp:android:feature:home:ui",
             ":apps:cmp:desktopApp",
             ":tools:x",
             ":architecture-test",
