@@ -75,13 +75,4 @@ class DependencyRulesTest {
                 it.importsAnyOf(listOf("$ROOT_PACKAGE.apps."))
             }
     }
-
-    @Test
-    fun `apps import no other app`() {
-        production.filesMatching(Regex("apps/.+"))
-            .assertFalse(additionalMessage = "Rule: apps import no other app") { file ->
-                val own = "$ROOT_PACKAGE.apps.${file.modulePath()?.let(::appOf)}."
-                file.imports.any { it.name.startsWith("$ROOT_PACKAGE.apps.") && !it.name.startsWith(own) }
-            }
-    }
 }

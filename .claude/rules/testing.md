@@ -43,7 +43,7 @@ paths:
 - Behavior shared by every platform's `actual` goes in one `commonTest` class; it runs in `jvmTest`, `connectedAndroidDeviceTest` (real Keystore) and `iosSimulatorArm64Test` (real Keychain). Platform-only checks go in `src/androidDeviceTest/` or `src/iosTest/`.
 - Test helpers that need platform APIs (for example deleting a stored key) are an `internal expect fun` in `commonTest` with `actual`s in `jvmTest`, `androidDeviceTest` and `iosTest`.
 - Reference: `core/security/src/commonTest/kotlin/com/banhmilabs/tmdb/core/security/MasterKeyCipherTest.kt`.
-- Known limitation: `iosSimulatorArm64Test` runs a standalone test binary with no app bundle, so the Keychain is unavailable (`errSecNotAvailable`, -25291) and Keychain-backed tests (`core:security`) fail there. They need an Xcode test host, which comes with `apps/native`; until then they are verified on JVM and on an Android device only. Don't skip or weaken them on iOS.
+- Known limitation: `iosSimulatorArm64Test` runs a standalone test binary with no app bundle, so the Keychain is unavailable (`errSecNotAvailable`, -25291) and Keychain-backed tests (`core:security`) fail there. They need an Xcode test host, which comes with `native-ios/` or an `iosApp` test target; until then they are verified on JVM and on an Android device only. Don't skip or weaken them on iOS.
 
 ## Do / Don't
 - Prefer `src/jvmTest/`. Use `src/commonTest/` only for tests that need no MockK or JVM-only API and are worth running on Kotlin/Native (concurrency, `Flow` timing, formatting, parsing); they also run in `jvmTest`. `commonTest` has `kotlin-test`; add Turbine / Kotest assertions to it in `configureKotlinMultiplatform()` when a test needs them. MockK stays on `jvmTest` only.

@@ -96,21 +96,6 @@ class DependencyRulesTest {
     }
 
     @Test
-    fun uiUsesOnlyItsOwnAppFeaturesAndDesignsystem() {
-        assertRejected(":apps:cmp:feature:home:ui", ":apps:native:feature:details:nav")
-        assertRejected(":apps:cmp:feature:home:ui", ":apps:native:feature:cart:api")
-        assertRejected(":apps:cmp:feature:home:ui", ":apps:native:designsystem")
-        assertAllowed(":apps:native:feature:home:ui", ":apps:native:designsystem")
-        assertAllowed(":apps:native:feature:home:ui", ":service:title:domain")
-    }
-
-    @Test
-    fun appsNeverDependOnEachOther() {
-        assertRejected(":apps:native:designsystem", ":apps:cmp:designsystem")
-        assertRejected(":apps:native:feature:home:ui", ":apps:cmp:feature:home:ui")
-    }
-
-    @Test
     fun sharedCoreNeverDependsOnAnApp() {
         assertRejected(":core:di", ":apps:cmp:feature:home:ui")
         assertRejected(":core:model", ":apps:cmp:designsystem")
@@ -130,12 +115,6 @@ class DependencyRulesTest {
         assertAllowed(":apps:cmp:composeApp", ":core:di")
         assertAllowed(":apps:cmp:androidApp", ":core:di")
         assertAllowed(":apps:cmp:composeApp", ":service:settings:domain")
-    }
-
-    @Test
-    fun appShellMayNotDependOnOtherApp() {
-        assertRejected(":apps:cmp:composeApp", ":apps:native:designsystem")
-        assertRejected(":apps:cmp:androidApp", ":apps:native:feature:home:ui")
     }
 
     @Test
