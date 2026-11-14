@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Depends on: 01-publish-shared-core
-Status: Todo
+Status: Done
 
 ## Goal
 `native-android/` is a standalone Android project that builds against the published shared core only. The app
