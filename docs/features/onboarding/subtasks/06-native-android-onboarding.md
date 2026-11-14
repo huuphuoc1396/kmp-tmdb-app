@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Onboarding](../design/onboarding.md)
 Depends on: 02-onboarding-completed-state. Prerequisite outside this feature: the standalone native Android app ([native-android-app](../../native-android-app/task.md): published shared core and the `native-android/` shell).
-Status: Todo
+Status: Done
 
 ## Goal
 On the native Android app (Jetpack Compose), onboarding works end to end as designed: first launch shows it, "Acessar" opens Home, later launches open Home directly. It is accessible, adapts to orientation and screen size, works offline, and is in en / pt-BR.

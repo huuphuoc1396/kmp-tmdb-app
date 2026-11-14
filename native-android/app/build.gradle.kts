@@ -42,6 +42,10 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.activity.compose)
     implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.core.splashscreen)
     implementation(libs.kotlinx.serialization.core)
 
     testImplementation(libs.kotlin.test.junit)

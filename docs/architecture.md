@@ -317,7 +317,7 @@ UI ◄── ViewModel ◄── (UseCase) ◄── Repository.observe()  ◄�
 | Repository fakes | Contract test shared by `data` and `fake` | `jvmTest` |
 | Shared ViewModels (`apps/cmp`) | `kotlinx-coroutines-test`, Turbine, service fakes, MockK | `jvmTest` |
 | Compose UI and screenshots (`apps/cmp`) | `runComposeUiTest` from `androidx.compose.ui.test.v2` (the v1 one is deprecated), Roborazzi | JVM |
-| Native Android (`native-android/`) | JUnit 4 + MockK against the published domain API; Compose UI tests with the first real screen | JVM, run locally |
+| Native Android (`native-android/`) | JUnit 4 + MockK ViewModel tests against the published domain API; UI checked manually on device | JVM, run locally |
 | Native iOS (`native-ios/`, planned) | XCTest for Swift ViewModels; XCUITest for flows | simulator |
 | Architecture | Konsist | JVM |
 | Coverage and static analysis | Kover (80% line on `domain` and `data`), Detekt | CI |

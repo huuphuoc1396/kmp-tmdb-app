@@ -1,0 +1,5 @@
+<resources>
+    <string name="onboarding_headline">All about movies, series, anime and much more.</string>
+    <string name="onboarding_body">Stay up to date on movies, series, anime and much more.</string>
+    <string name="onboarding_get_started">Get started</string>
+</resources>
