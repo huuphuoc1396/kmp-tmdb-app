@@ -85,7 +85,7 @@ Not applicable (no UI).
 - Use current stable versions of the toolchain and libraries.
 
 ## Open questions
-- [ ] Swift ViewModels: the architecture document says `@Observable`, which requires iOS 17, but the minimum is iOS 16. Choose between `ObservableObject` and raising the minimum to iOS 17. (owner: Alex, needed before the `native` branch)
+- [x] Swift ViewModels: the architecture document says `@Observable`, which requires iOS 17, but the minimum is iOS 16. Choose between `ObservableObject` and raising the minimum to iOS 17. (owner: Alex, needed before the `native` branch) Answer: `ObservableObject`, iOS 16 kept (decided in native-ios-app 03, 2026-11-16).
 
 ## Change log
 - 2026-11-10: Initial version.
