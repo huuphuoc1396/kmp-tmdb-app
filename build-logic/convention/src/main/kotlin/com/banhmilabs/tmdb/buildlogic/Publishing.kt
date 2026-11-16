@@ -10,9 +10,9 @@ private const val PUBLISH_GROUP = "com.banhmilabs.tmdb"
 private const val LOCAL_REPOSITORY = "local"
 private const val MAVEN_REPO_DIR = "build/maven-repo"
 
-private val UNPUBLISHED_KINDS = setOf(ModuleKind.FAKE, ModuleKind.TESTING)
+private val UNPUBLISHED_KINDS = setOf(ModuleKind.FAKE, ModuleKind.TESTING, ModuleKind.IOS_SDK)
 
-/** Production modules of the shared core; test-only and app modules are never published. */
+/** Production modules of the shared core; test-only, iOS SDK and app modules are never published to Maven. */
 internal fun isPublished(type: ModuleType): Boolean = type.app == null && type.kind !in UNPUBLISHED_KINDS
 
 /** A module without Kotlin sources in a `*Main` source set (a skeleton) has nothing to publish. */

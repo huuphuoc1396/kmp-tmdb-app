@@ -10,6 +10,7 @@ import com.banhmilabs.tmdb.buildlogic.ModuleKind.DI
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.DOMAIN
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.FAKE
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.INFRA
+import com.banhmilabs.tmdb.buildlogic.ModuleKind.IOS_SDK
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.MODEL
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.NAV
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.SECURITY
@@ -32,6 +33,7 @@ internal object DependencyRules {
         allowlist: Set<Pair<String, String>> = domainAllowlist,
     ): String? {
         appViolation(from, to)?.let { return it }
+        if (to.kind == IOS_SDK) return "core:ios is an entry point for iOS apps; no module depends on it"
         if (to.kind in TEST_ONLY && from.kind != DI) {
             return if (testScope) null else "fake and core:testing are allowed only in test source sets"
         }
@@ -40,7 +42,7 @@ internal object DependencyRules {
             SECURITY, TESTING -> to.kind in KERNEL
             INFRA -> to.kind in KERNEL || to.kind == SECURITY
             DESIGNSYSTEM, NAV, API -> to.kind == MODEL
-            DI, APP, ANDROID_APP -> true
+            DI, IOS_SDK, APP, ANDROID_APP -> true
             DOMAIN -> to.kind in KERNEL || (to.kind == DOMAIN && (from.owner to to.owner) in allowlist)
             DATA -> to.kind in KERNEL || to.kind in setOf(SECURITY, INFRA) || isOwnDomain(from, to)
             FAKE -> to.kind in KERNEL || isOwnDomain(from, to)
@@ -71,6 +73,7 @@ internal object DependencyRules {
         INFRA -> "infrastructure depends only on the kernel and core:security"
         DESIGNSYSTEM, NAV, API -> "${kind.label} depends only on core:model"
         DI -> "core:di may depend on anything"
+        IOS_SDK -> "core:ios may depend on anything in the shared core"
         APP, ANDROID_APP -> "an app shell may depend on its own app and the shared core"
         DOMAIN -> "domain depends only on the kernel and allowlisted domains of other contexts"
         DATA -> "data depends only on its own context's domain, the kernel and infrastructure"

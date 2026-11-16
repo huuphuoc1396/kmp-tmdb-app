@@ -15,6 +15,7 @@ class ModuleTypeTest {
         assertEquals(ModuleType(ModuleKind.INFRA), moduleTypeOf(":core:datastore"))
         assertEquals(ModuleType(ModuleKind.TESTING), moduleTypeOf(":core:testing"))
         assertEquals(ModuleType(ModuleKind.DI), moduleTypeOf(":core:di"))
+        assertEquals(ModuleType(ModuleKind.IOS_SDK), moduleTypeOf(":core:ios"))
     }
 
     @Test

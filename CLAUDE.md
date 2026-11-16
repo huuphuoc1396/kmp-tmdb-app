@@ -37,7 +37,7 @@ skeleton or existing examples.
 - Coverage: `./gradlew koverVerify` (80% line on every `service/*/domain` and `service/*/data`; the root project has a rule-less `koverVerify` so the command works with none); report: `:<module>:koverHtmlReport`
 - Architecture rules: `./gradlew :architecture-test:test`
 - Compile every target (Android, iOS, JVM; macOS + Xcode): `./gradlew assemble`
-- Publish the shared core: `./gradlew publishSharedCore` writes every production module of `core/` and `service/` that has code (not `fake`, `core:testing` or app modules) to `build/maven-repo`, as `com.banhmilabs.tmdb:<path-with-dashes>:0.1.0-SNAPSHOT` (e.g. `core-di`, `service-settings-domain`). All targets; iOS klibs need macOS + Xcode. Republishing replaces the snapshot.
+- Publish the shared core: `./gradlew publishSharedCore` writes every production module of `core/` and `service/` that has code (not `fake`, `core:testing` or app modules) to `build/maven-repo`, as `com.banhmilabs.tmdb:<path-with-dashes>:0.1.0-SNAPSHOT` (e.g. `core-di`, `service-settings-domain`). All targets; iOS klibs need macOS + Xcode. Republishing replaces the snapshot. On macOS it also writes the iOS Swift Package `build/swift-package/TmdbCore` (`Package.swift` + a static release XCFramework `TmdbCore`, slices `iosArm64` and `iosSimulatorArm64`, with SKIE) from `core:ios`, which is not on Maven.
 - Native Android app (standalone; publish first, then from `native-android/`): `./gradlew publishSharedCore`, then `cd native-android && ./gradlew :app:installDebug`. Checks: `./gradlew :app:detekt :app:testDebugUnitTest` (in `native-android/`). Not run by CI.
 - Run the cmp app: Android `./gradlew :apps:cmp:androidApp:installDebug` (emulator/device); iOS: open `apps/cmp/iosApp/iosApp.xcodeproj` in Xcode, or build with `xcodebuild -project apps/cmp/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`. The Xcode project repeats the iOS deployment target (16.0) because it can't read the version catalog.
 
@@ -80,6 +80,7 @@ and sets targets `android` (with host tests), `jvm`, `iosArm64`, `iosSimulatorAr
 | `core:datastore` | DataStore KMP + encrypted serializer | `security`, kernel |
 | `core:testing` | Test dispatchers | kernel |
 | `core:di` | `initKoin()`, collects every `service/*/data` Koin module | everything |
+| `core:ios` | iOS entry point `SharedCore` (start, repositories); exports its `api` dependencies (kernel, service domains) in the `TmdbCore` XCFramework, with SKIE | the shared core; nothing depends on it |
 | `service/<ctx>/domain` (on demand) | Context models, repository interfaces, use cases | kernel; another context's `domain` (one level, registered in `DependencyRules.domainAllowlist`) |
 | `service/<ctx>/data` (on demand) | Repository impls, endpoints + DTOs, mappers, its own SQLDelight database, refresh policy, Koin module | own `domain`, kernel, `network`/`database`/`datastore` |
 | `service/<ctx>/fake` (on demand) | In-memory repository fakes + repository contract test | own `domain`, kernel |

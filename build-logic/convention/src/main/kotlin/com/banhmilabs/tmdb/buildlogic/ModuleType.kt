@@ -9,6 +9,7 @@ internal enum class ModuleKind {
     DESIGNSYSTEM,
     TESTING,
     DI,
+    IOS_SDK,
     DOMAIN,
     DATA,
     FAKE,
@@ -34,6 +35,7 @@ private val CORE_KINDS = mapOf(
     "datastore" to ModuleKind.INFRA,
     "testing" to ModuleKind.TESTING,
     "di" to ModuleKind.DI,
+    "ios" to ModuleKind.IOS_SDK,
 )
 
 private val SERVICE_KINDS = mapOf(

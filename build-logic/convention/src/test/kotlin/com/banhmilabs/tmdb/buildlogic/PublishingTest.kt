@@ -22,8 +22,8 @@ class PublishingTest {
     }
 
     @Test
-    fun testOnlyModulesAreNotPublished() {
-        listOf(":core:testing", ":service:settings:fake")
+    fun testOnlyAndIosModulesAreNotPublished() {
+        listOf(":core:testing", ":service:settings:fake", ":core:ios")
             .forEach { assertFalse(isPublished(requireNotNull(moduleTypeOf(it))), it) }
     }
 

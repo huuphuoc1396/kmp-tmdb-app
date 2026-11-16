@@ -9,6 +9,7 @@ android-targetSdk = "37"
 ios-deploymentTarget = "16.0"
 detekt = "2.0.0-alpha.6"
 kover = "0.9.11"
+skie = "0.10.16"
 konsist = "0.18.1"
 junit = "6.1.3"
 mockk = "1.14.12"
@@ -67,6 +68,7 @@ kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", ve
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 detekt-gradlePlugin = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 kover-gradlePlugin = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
+skie-gradlePlugin = { module = "co.touchlab.skie:gradle-plugin", version.ref = "skie" }
 compose-gradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-multiplatform" }
 compose-compiler-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 
@@ -80,6 +82,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+skie = { id = "co.touchlab.skie", version.ref = "skie" }
 
 # Convention plugins (build-logic)
 tmdb-detekt = { id = "tmdb.detekt" }
