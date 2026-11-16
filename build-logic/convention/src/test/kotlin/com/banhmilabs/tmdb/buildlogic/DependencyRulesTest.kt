@@ -24,6 +24,24 @@ class DependencyRulesTest {
     }
 
     @Test
+    fun iosSdkMayDependOnSharedCore() {
+        assertAllowed(":core:ios", ":core:di")
+        assertAllowed(":core:ios", ":service:settings:domain")
+        assertAllowed(":core:ios", ":core:common")
+    }
+
+    @Test
+    fun nothingDependsOnIosSdk() {
+        assertRejected(":core:di", ":core:ios")
+        assertRejected(":apps:cmp:composeApp", ":core:ios")
+    }
+
+    @Test
+    fun iosSdkNeverDependsOnAnApp() {
+        assertRejected(":core:ios", ":apps:cmp:designsystem")
+    }
+
+    @Test
     fun uiToUiIsRejected() {
         assertRejected(":apps:cmp:feature:home:ui", ":apps:cmp:feature:details:ui")
     }

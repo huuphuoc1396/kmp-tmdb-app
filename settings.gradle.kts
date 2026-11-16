@@ -28,6 +28,7 @@ include(
     ":core:datastore",
     ":core:security",
     ":core:di",
+    ":core:ios",
     ":core:testing",
     ":service:settings:domain",
     ":service:settings:data",
