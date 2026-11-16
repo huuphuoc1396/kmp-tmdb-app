@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Depends on: 01-publish-shared-core-ios
-Status: Todo
+Status: Done
 
 ## Goal
 `native-ios/` is a standalone iOS project that builds against the published Swift Package only. The app launches
@@ -15,8 +15,8 @@ on a placeholder Home in the dark theme, starts the shared core, and installs ne
 - The app shell: dark theme, edge-to-edge with light status bar content, a placeholder Home, and the shared core
   started at launch through the framework's entry point.
 - Bundle identifier `com.banhmilabs.tmdb.nativeapp`, display name "TMDB Native".
-- A unit test target that reads the onboarding completed state through the published API, with a test double
-  written in Swift.
+- A unit test target that reads the onboarding completed state through the published API, using the real shared
+  core in the app's test host.
 - A short README in `native-ios/` with the publish-then-build workflow.
 ### Out of scope (handled later)
 - Architecture docs, project guide and rules -> 03-architecture-with-native-ios
@@ -35,8 +35,8 @@ on a placeholder Home in the dark theme, starts the shared core, and installs ne
 - **AC-4** App uses the shared core
   - Given the app is launched
   - Then the shared core is started without errors
-  - And a unit test in the app reads the onboarding completed state through the published API, using a test
-    double written in Swift (no published fakes)
+  - And a unit test in the app reads the onboarding completed state through the published API, using the real
+    shared core in the app's test host (no published fakes)
 - **AC-5** Installs next to the cmp app
   - Given the cmp iOS app is installed
   - When the native iOS app is installed
@@ -72,3 +72,4 @@ on a placeholder Home in the dark theme, starts the shared core, and installs ne
 
 ## Change log
 - 2026-11-14: Initial version.
+- 2026-11-16: AC-4 test uses the real shared core in the test host (Swift cannot implement a Kotlin `Flow`).

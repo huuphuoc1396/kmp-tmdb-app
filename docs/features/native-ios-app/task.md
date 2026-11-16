@@ -29,8 +29,8 @@ published framework.
   - Starts the shared core at launch and can read data through the shared core's domain API.
   - Bundle identifier `com.banhmilabs.tmdb.nativeapp`, display name "TMDB Native", so it installs next to the cmp
     iOS app.
-- A unit test reads the onboarding completed state through the published API, with a test double written in
-  Swift.
+- A unit test reads the onboarding completed state through the published API, using the real shared core in the
+  app's test host.
 - A short README in `native-ios/` describing the publish-then-build workflow.
 - The architecture docs, the project guide and the rules describe `native-ios/` and the iOS publishing.
 
@@ -81,8 +81,8 @@ For an app user:
 - **AC-4** App uses the shared core
   - Given the app is launched
   - Then the shared core is started without errors
-  - And a unit test in the app reads the onboarding completed state through the published API, using a test
-    double written in Swift (no published fakes)
+  - And a unit test in the app reads the onboarding completed state through the published API, using the real
+    shared core in the app's test host (no published fakes)
 
 - **AC-5** Installs next to the cmp app
   - Given the cmp iOS app is installed
@@ -120,6 +120,8 @@ For an app user:
 
 ## Change log
 - 2026-11-14: Initial version.
+- 2026-11-16: AC-4 test uses the real shared core in the test host; Kotlin rejects a `Flow` implemented in Swift
+  (user decision during 02).
 
 ## Subtasks
 1. [01 - Publish shared core for iOS](subtasks/01-publish-shared-core-ios.md)
