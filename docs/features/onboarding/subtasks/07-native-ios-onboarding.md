@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Onboarding](../design/onboarding.md)
 Depends on: 02-onboarding-completed-state. Prerequisite outside this feature: the standalone native iOS app (feature native-ios-app, not specced yet: a `native-ios/` Xcode project using the shared core as a published XCFramework, with its shell).
-Status: Todo
+Status: Done
 
 ## Goal
 On the native iOS app (SwiftUI), onboarding works end to end as designed: first launch shows it, "Acessar" opens Home, later launches open Home directly. It is accessible, adapts to orientation and screen size, works offline, and is in en / pt-BR.

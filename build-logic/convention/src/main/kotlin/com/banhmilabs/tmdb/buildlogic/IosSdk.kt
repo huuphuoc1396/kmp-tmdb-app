@@ -27,7 +27,7 @@ internal fun swiftPackageManifest(iosMajor: Int): String =
     """.trimIndent() + "\n"
 
 /**
- * iOS entry point of the shared core: SKIE (analytics off), a static release XCFramework `TmdbCore` (device + Apple Silicon
+ * iOS entry point of the shared core: SKIE (analytics off), a dynamic release XCFramework `TmdbCore` (device + Apple Silicon
  * simulator) that exports the module's `commonMain` `api` dependencies, and `publishSharedCore`, which syncs it
  * with its `Package.swift` into `build/swift-package/TmdbCore` at the repo root (macOS only).
  */
@@ -45,7 +45,8 @@ internal fun Project.configureIosSdk() {
         listOf(iosArm64(), iosSimulatorArm64()).forEach { target ->
             target.binaries.framework {
                 baseName = IOS_SDK_NAME
-                isStatic = true
+                isStatic = false
+                binaryOption("bundleId", "com.banhmilabs.tmdb.$IOS_SDK_NAME")
                 configurations.getByName(exportConfigurationName)
                     .extendsFrom(configurations.getByName("commonMainApi"))
                 xcFramework.add(this)
