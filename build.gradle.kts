@@ -11,7 +11,7 @@ plugins {
     alias(libs.plugins.kover)
 }
 
-// Run build-logic unit tests as part of `./gradlew jvmTest`.
-tasks.register("jvmTest") {
+// Run build-logic unit tests as part of `./gradlew testAndroidHostTest`.
+tasks.register("testAndroidHostTest") {
     dependsOn(gradle.includedBuild("build-logic").task(":convention:test"))
 }

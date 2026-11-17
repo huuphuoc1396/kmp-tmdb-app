@@ -13,7 +13,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.core)
             implementation(libs.koin.compose.viewmodel)
         }
-        jvmTest.dependencies {
+        androidHostTest.dependencies {
             implementation(projects.service.settings.fake)
             implementation(projects.core.testing)
             implementation(libs.turbine)

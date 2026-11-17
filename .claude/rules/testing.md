@@ -47,6 +47,6 @@ paths:
 
 ## Do / Don't
 - Prefer `src/jvmTest/`. Use `src/commonTest/` only for tests that need no MockK or JVM-only API and are worth running on Kotlin/Native (concurrency, `Flow` timing, formatting, parsing); they also run in `jvmTest`. `commonTest` has `kotlin-test`; add Turbine / Kotest assertions to it in `configureKotlinMultiplatform()` when a test needs them. MockK stays on `jvmTest` only.
-- Don't create files under `src/androidHostTest/` (the Android host test was removed).
+- Unit tests go in `src/androidHostTest/` (MockK available); tests that need the real Keystore go in `src/androidDeviceTest/`.
 - Don't write ad-hoc `Fake*` classes in test code; fakes live only in `service/<ctx>/fake` with a contract test. Otherwise use MockK or a real in-memory engine (SQLDelight in-memory driver, Ktor `MockEngine`).
 - Don't weaken or delete a failing test to make a check pass; fix the cause.

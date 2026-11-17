@@ -11,7 +11,10 @@ kotlin {
             api(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.core)
         }
-        jvmTest.dependencies {
+        androidHostTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+        }
+        androidDeviceTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
         }
     }
