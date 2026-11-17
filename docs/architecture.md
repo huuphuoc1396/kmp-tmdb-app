@@ -324,7 +324,7 @@ UI ◄── ViewModel ◄── (UseCase) ◄── Repository.observe()  ◄�
 | Shared ViewModels (`apps/cmp`) | `kotlinx-coroutines-test`, Turbine, service fakes, MockK | `jvmTest` |
 | Compose UI and screenshots (`apps/cmp`) | `runComposeUiTest` from `androidx.compose.ui.test.v2` (the v1 one is deprecated), Roborazzi | JVM |
 | Native Android (`native-android/`) | JUnit 4 + MockK ViewModel tests against the published domain API; UI checked manually on device | JVM, run locally |
-| Native iOS (`native-ios/`) | XCTest in the app's test host against the real shared core through the published API (Swift can't implement a Kotlin `Flow`, so no Swift fakes); UI checked manually on the simulator | simulator, run locally |
+| Native iOS (`native-ios/`) | XCTest: ViewModels against small Swift protocols with Swift test doubles; the adapters over `SharedCore` in the app's test host against the real shared core (Swift can't implement a Kotlin `Flow`); UI checked manually on the simulator | simulator, run locally |
 | Architecture | Konsist | JVM |
 | Coverage and static analysis | Kover (80% line on `domain` and `data`), Detekt | CI |
 
@@ -468,7 +468,8 @@ native-ios/
 - Interop (SKIE): `Flow<T>` becomes `SkieSwiftFlow<T>`, an `AsyncSequence` read with `for await`; `suspend` becomes
   `async throws`; sealed types get `onEnum(of:)` for an exhaustive `switch`.
 - ViewModels are `@MainActor` `ObservableObject`s with `@Published` state, held with `@StateObject` (iOS 16; no
-  `@Observable`, which needs iOS 17). The feature rules are the same as in the other apps.
+  `@Observable`, which needs iOS 17). They depend on small Swift protocols, which adapters implement over
+  `SharedCore`'s repositories. The feature rules are the same as in the other apps.
 - Workflow: `./gradlew publishSharedCore` at the root, then build in `native-ios/` (its `README.md`).
 
 ### Localization

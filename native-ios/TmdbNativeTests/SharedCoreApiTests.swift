@@ -1,3 +1,4 @@
+@testable import TmdbNative
 import TmdbCore
 import XCTest
 
@@ -19,6 +20,16 @@ final class SharedCoreApiTests: XCTestCase {
         XCTAssertTrue(result is AppResultSuccess<AnyObject>)
         let completed = await firstValue(of: repository.observeOnboardingCompleted())
         XCTAssertEqual(completed, true)
+    }
+
+    @MainActor
+    func testAdapterReadsCompletionThroughSharedCore() async throws {
+        let settings = SharedCoreOnboardingSettings()
+
+        try await settings.completeOnboarding()
+
+        let completed = await settings.isOnboardingCompleted()
+        XCTAssertTrue(completed)
     }
 
     private func firstValue(of flow: SkieSwiftFlow<KotlinBoolean>) async -> Bool? {
