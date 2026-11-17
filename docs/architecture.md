@@ -549,7 +549,7 @@ The KMP build publishes the shared core so that standalone apps can use it like 
 - **Consumer:** declares `maven("../build/maven-repo")` restricted to the group `com.banhmilabs.tmdb`, and excludes
   that group from the remote repositories. A build before publishing then fails with a clear "Could not find
   com.banhmilabs.tmdb:…". It depends on the root coordinates; Gradle metadata picks the platform variant.
-- **iOS:** on macOS, `publishSharedCore` also builds `core:ios` into a static release XCFramework `TmdbCore`
+- **iOS:** on macOS, `publishSharedCore` also builds `core:ios` into a dynamic release XCFramework `TmdbCore`
   (`iosArm64`, `iosSimulatorArm64`, with SKIE) and writes it with a generated `Package.swift` (iOS major version from
   the catalog) to the git-ignored `build/swift-package/TmdbCore`. `core:ios` is not published to Maven. A consumer
   adds the folder as a local Swift Package; a build before publishing fails with "the package … cannot be accessed".
