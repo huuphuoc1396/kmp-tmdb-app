@@ -26,7 +26,8 @@ one product.
   features grow.
 - **Rules are checked by the build, not by review.** A forbidden dependency or import fails the build (section 9).
 - **Offline-first.** The local database is the single source of truth; the network only refreshes it.
-- **Fast feedback.** Almost every test runs on the JVM, without an emulator or Xcode.
+- **Fast feedback.** Almost every test runs on the developer's machine (Android host tests), without an emulator or
+  Xcode.
 
 ---
 
@@ -91,10 +92,10 @@ How the example uses each rule:
 
 ## 4. Targets
 
-All shared modules target `androidTarget`, `iosArm64`, `iosSimulatorArm64` and `jvm`.
+All shared modules target `androidTarget`, `iosArm64` and `iosSimulatorArm64`. There is no JVM or desktop target:
+the product ships on Android and iOS only.
 
-`jvm` exists mainly for **fast tests** (section 8). `cmp/` can also ship a desktop app from it at almost no extra
-cost.
+Fast unit tests run as **Android host tests** (section 8): they run on the developer's JVM, without an emulator.
 
 ---
 
@@ -117,7 +118,7 @@ core/
 ├── network/     # HTTP client factory, auth, error mapping (no endpoints)
 ├── database/    # SQLDelight driver factory (expect/actual), passphrase handling; no tables
 ├── datastore/   # DataStore KMP with an encrypted serializer
-├── security/    # Master key: Android Keystore / iOS Keychain / JVM fake; AES-GCM
+├── security/    # Master key: Android Keystore / iOS Keychain; AES-GCM
 ├── testing/     # Test dispatchers
 ├── di/          # initKoin(); collects the Koin module of every service/*/data
 └── ios/         # iOS entry point SharedCore; builds the TmdbCore XCFramework
@@ -143,12 +144,12 @@ service/catalog/
 │   │   ├── RefreshPolicy.kt
 │   │   ├── CatalogRepositoryImpl.kt
 │   │   └── di/CatalogDataModule.kt
-│   └── jvmTest/      CatalogRepositoryImplTest.kt (extends the contract), resources/fixtures/*.json
+│   └── androidHostTest/  CatalogRepositoryImplTest.kt (extends the contract), resources/fixtures/*.json
 └── fake/src/
     ├── commonMain/kotlin/<root>/service/catalog/fake/
     │   ├── FakeCatalogRepository.kt
     │   └── CatalogRepositoryContract.kt
-    └── jvmTest/      FakeCatalogRepositoryTest.kt (extends the contract)
+    └── androidHostTest/  FakeCatalogRepositoryTest.kt (extends the contract)
 ```
 
 Gradle paths, accessors and packages follow the directory: `service/catalog/domain` → `:service:catalog:domain` →
@@ -314,14 +315,15 @@ UI ◄── ViewModel ◄── (UseCase) ◄── Repository.observe()  ◄�
 
 | Level | Tools | Source set |
 |---|---|---|
-| Domain and data unit tests | `kotlin.test`, Turbine, Kotest assertions, service fakes, MockK | `jvmTest` (default) |
-| Pure multiplatform logic that should also run on Kotlin/Native | `kotlin.test`, Turbine, Kotest assertions, service fakes (no MockK) | `commonTest` (allowed) |
-| Network | HTTP client mock engine + fixture JSON (each `data` module's test resources) | `jvmTest` |
-| Database | SQLDelight in-memory driver, real database, not mocked | `jvmTest` |
-| Platform code (`actual`) | Android: instrumented tests. iOS: `kotlin.test`, no mocks | device / simulator, local |
-| Repository fakes | Contract test shared by `data` and `fake` | `jvmTest` |
-| Shared ViewModels (`cmp/`) | `kotlinx-coroutines-test`, Turbine, service fakes, MockK | `jvmTest` |
-| Compose UI and screenshots (`cmp/`) | `runComposeUiTest` from `androidx.compose.ui.test.v2` (the v1 one is deprecated), Roborazzi | JVM |
+| Domain and data unit tests | `kotlin.test`, Turbine, Kotest assertions, service fakes, MockK | `androidHostTest` (default) |
+| Pure multiplatform logic that should also run on Kotlin/Native | `kotlin.test`, Turbine, Kotest assertions, service fakes (no MockK) | `commonTest` (allowed; Android host, device, iOS simulator) |
+| Network | HTTP client mock engine + fixture JSON (each `data` module's test resources) | `androidHostTest` |
+| Database | SQLDelight in-memory driver, real database, not mocked | `androidHostTest` |
+| Encrypted storage on the host | A MockK cipher that returns its input; the real cipher is never called on the host | `androidHostTest` |
+| Platform code (`actual`) | Android: device tests (real Keystore). iOS: `kotlin.test`, no mocks; the Keychain path through the `native-ios` tests | `androidDeviceTest` / `iosTest`, local |
+| Repository fakes | Contract test shared by `data` and `fake` | `androidHostTest` |
+| Shared ViewModels (`cmp/`) | `kotlinx-coroutines-test`, Turbine, service fakes, MockK | `androidHostTest` |
+| Compose UI (`cmp/`) | Checked manually on device and simulator | — |
 | Native Android (`native-android/`) | JUnit 4 + MockK ViewModel tests against the published domain API; UI checked manually on device | JVM, run locally |
 | Native iOS (`native-ios/`) | XCTest: ViewModels against small Swift protocols with Swift test doubles; the adapters over `SharedCore` in the app's test host against the real shared core (Swift can't implement a Kotlin `Flow`); UI checked manually on the simulator | simulator, run locally |
 | Architecture | Konsist | JVM |
@@ -329,20 +331,24 @@ UI ◄── ViewModel ◄── (UseCase) ◄── Repository.observe()  ◄�
 
 Rules:
 
-- **`jvmTest` is the default** for unit tests: fast, and it can use MockK and JVM-only tooling.
+- **`androidHostTest` is the default** for unit tests: Android host tests run on the developer's JVM and on CI, are
+  fast, and can use MockK. They never reach the real Keystore or Keychain: code that needs a cipher gets a MockK
+  cipher that returns its input.
 - **`commonTest` is allowed** for tests that use only multiplatform libraries (no MockK) and are worth running on
-  Kotlin/Native too: concurrency and `Flow` timing, formatting, parsing, date and time. `commonTest` tests also run in
-  the `jvmTest` task, so they cost nothing on CI and can be run on the iOS simulator locally.
+  Kotlin/Native too: concurrency and `Flow` timing, formatting, parsing, date and time. `commonTest` tests run on the
+  Android host (so on CI), in Android device tests and on the iOS simulator.
 - **Test doubles across modules are the service fakes.** Each `service/<ctx>/fake` holds an in-memory, controllable
   fake per repository interface. ViewModel and use case tests run the real use cases on top of a fake repository.
 - **Fakes are kept honest by contract tests.** An abstract `<Repository>Contract` in the `fake` module describes the
   behavior; both `<Repository>ImplTest` (in `data`) and `Fake<Repository>Test` (in `fake`) extend it.
-- **MockK** is for collaborators inside the same module and for verifying interactions, in `jvmTest` only. No other
+- **MockK** is for collaborators inside the same module and for verifying interactions, in `androidHostTest` only. No other
   hand-written fakes, no Mokkery.
 - The HTTP mock engine and the in-memory database driver are test engines, not fakes; the database and HTTP client
   are never mocked.
-- **Platform code is tested on its platform**, locally: Android `actual` code with instrumented tests, iOS `actual`
-  code on the simulator with `kotlin.test`. Never MockK there.
+- **Platform code is tested on its platform**, locally: Android `actual` code with device tests (`androidDeviceTest`,
+  for example the real Keystore cipher), iOS `actual` code on the simulator with `kotlin.test`. Kotlin iOS tests run
+  without an app bundle, so they can't reach the Keychain; that path is covered by the `native-ios` Swift tests in the
+  app's test host. Never MockK there.
 
 ---
 
@@ -382,8 +388,7 @@ tests.
   the app when that party rotates it.
 - **Encrypted settings:** `core:security` provides AES-256-GCM with a per-device master key: on Android a
   non-exportable Android Keystore key used through `javax.crypto` (the key never leaves the Keystore); on iOS a key in
-  the Keychain with `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` and on JVM (tests) an in-memory key, both
-  through `cryptography-kotlin`. `core:datastore` stores `@Serializable` values as JSON encrypted with it. If the key is
+  the Keychain with `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`, through `cryptography-kotlin`. `core:datastore` stores `@Serializable` values as JSON encrypted with it. If the key is
   lost (backup restore, device reset), decryption fails and the store is reset to defaults instead of crashing. `EncryptedSharedPreferences` is not used (deprecated).
 - **Database encryption (planned):** the database is plain SQLDelight for now. `DatabaseDriverFactory.create(passphrase:
   ByteArray?)` already takes a passphrase so SQLCipher can be added without changing the architecture.
@@ -401,7 +406,6 @@ cmp/
 ├── composeApp/           # App(), type-safe navigation graph, slots between features, MainViewController()
 ├── androidApp/           # Activity, Application
 ├── iosApp/               # Hosts ComposeUIViewController only
-└── desktopApp/           # optional
 ```
 
 ViewModels use androidx.lifecycle KMP and follow MVI:
@@ -492,20 +496,21 @@ native-ios/
 | DI | Koin |
 | Networking | Ktor Client, kotlinx.serialization |
 | Database | SQLDelight (SQLCipher planned) |
-| Settings | DataStore KMP + AES-GCM (Android Keystore; `cryptography-kotlin` on iOS / JVM) |
+| Settings | DataStore KMP + AES-GCM (Android Keystore; `cryptography-kotlin` on iOS) |
 | Images | Coil 3 (Compose); a disk-caching image library on SwiftUI |
 | iOS interop | SKIE (in the `TmdbCore` XCFramework) |
-| Testing | `kotlin.test`, MockK, Turbine, Kotest assertions; Konsist; Kover |
+| Testing | Android host tests with `kotlin.test`, MockK, Turbine, Kotest assertions; Android device tests; Konsist; Kover |
 | Build | Gradle version catalog, convention plugins in `build-logic` |
 
 ---
 
 ## 13. CI
 
-CI runs on `main` and on pull requests to it, on Ubuntu, JVM only, for the KMP build:
+CI runs on `main` and on pull requests to it, on Ubuntu, for the KMP build: static analysis, Android host tests,
+coverage and architecture tests.
 
 ```bash
-./gradlew detekt jvmTest koverVerify :architecture-test:test
+./gradlew detekt testAndroidHostTest koverVerify :architecture-test:test
 ```
 
 Android and iOS targets, the app builds and platform tests run locally:
@@ -539,9 +544,9 @@ The KMP build publishes the shared core so that standalone apps can use it like 
 
 - **What:** every production module of `core/` and `service/` that has code. Never `service/*/fake`, `core:testing`
   or app modules. Each module publishes all its Kotlin Multiplatform publications: the root Gradle metadata module,
-  Android (AAR), JVM and the iOS klibs (macOS + Xcode).
+  Android (AAR) and the iOS klibs (macOS + Xcode).
 - **Coordinates:** `com.banhmilabs.tmdb:<path-with-dashes>:0.1.0-SNAPSHOT`, for example `core-di` and
-  `service-settings-domain`, with the platform suffixes `-android`, `-jvm` and `-iosarm64`. The POM and Gradle
+  `service-settings-domain`, with the platform suffixes `-android`, `-iosarm64` and `-iossimulatorarm64`. The POM and Gradle
   metadata name inter-module dependencies with the same coordinates, so a consumer declares only what it uses.
 - **Where:** the git-ignored Maven repository `build/maven-repo` at the repo root, written by
   `./gradlew publishSharedCore`. Publishing again at the same SNAPSHOT version replaces the artifacts.

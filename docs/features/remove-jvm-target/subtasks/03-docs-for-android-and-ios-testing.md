@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Depends on: 02-remove-jvm-target
-Status: Todo
+Status: Done
 
 ## Goal
 The architecture doc, the project guide and the rules describe the Android and iOS targets, where each kind of
