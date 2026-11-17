@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Depends on: 01-unit-tests-on-android-host
-Status: Todo
+Status: Done
 
 ## Goal
 The KMP build targets only Android and iOS. The JVM-only production code (in-memory master key, JVM settings file

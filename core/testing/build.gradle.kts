@@ -8,9 +8,6 @@ kotlin {
             api(libs.kotlin.test)
             api(libs.kotlinx.coroutines.test)
         }
-        jvmMain.dependencies {
-            implementation(libs.kotlin.test.junit)
-        }
         androidMain.dependencies {
             implementation(libs.kotlin.test.junit)
         }
