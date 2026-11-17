@@ -90,3 +90,17 @@ struct OnboardingContent: View {
         }
     }
 }
+
+#Preview("English") {
+    OnboardingContent(state: OnboardingUiState(), onIntent: { _ in })
+}
+
+#Preview("Portuguese") {
+    OnboardingContent(state: OnboardingUiState(), onIntent: { _ in })
+        .environment(\.locale, Locale(identifier: "pt-BR"))
+}
+
+#Preview("Largest text") {
+    OnboardingContent(state: OnboardingUiState(), onIntent: { _ in })
+        .environment(\.dynamicTypeSize, .accessibility5)
+}
