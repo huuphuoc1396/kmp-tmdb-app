@@ -4,6 +4,6 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Security.SecItemDelete
 
 @OptIn(ExperimentalForeignApi::class)
-internal actual fun deleteMasterKeyForTest(alias: String) {
+internal fun deleteMasterKeyForTest(alias: String) {
     withKeychainQuery(alias) { query -> SecItemDelete(query) }
 }

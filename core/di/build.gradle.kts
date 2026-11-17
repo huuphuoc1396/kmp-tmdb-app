@@ -9,8 +9,9 @@ kotlin {
             implementation(projects.core.common)
             implementation(projects.service.settings.data)
         }
-        jvmTest.dependencies {
+        androidDeviceTest.dependencies {
             implementation(projects.service.settings.domain)
+            implementation(libs.koin.android)
         }
     }
 }

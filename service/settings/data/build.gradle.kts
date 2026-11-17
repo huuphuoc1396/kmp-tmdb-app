@@ -12,7 +12,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.koin.android)
         }
-        jvmTest.dependencies {
+        androidHostTest.dependencies {
             implementation(projects.service.settings.fake)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)

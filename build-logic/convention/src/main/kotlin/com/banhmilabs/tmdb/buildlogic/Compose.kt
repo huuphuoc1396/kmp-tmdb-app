@@ -5,7 +5,6 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.compose.ComposeExtension
-import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
@@ -31,10 +30,6 @@ internal fun Project.configureComposeMultiplatform() {
                 "compose-material3",
                 "compose-components-resources",
             ).forEach { implementation(libs.findLibrary(it).get()) }
-        }
-        sourceSets.getByName("jvmTest").dependencies {
-            implementation(libs.findLibrary("compose-ui-test").get())
-            implementation(ComposePlugin.DesktopDependencies.currentOs)
         }
     }
 }

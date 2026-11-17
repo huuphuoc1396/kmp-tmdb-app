@@ -4,6 +4,8 @@ ktlint:
   active: true
 
 style:
+  MagicNumber:
+    excludes: ['**/test/**', '**/androidHostTest/**', '**/androidDeviceTest/**', '**/commonTest/**', '**/iosTest/**', '**/*.kts']
   MaxLineLength:
     active: true
     maxLineLength: 120
