@@ -21,7 +21,7 @@ internal enum class ModuleKind {
 }
 
 /**
- * A module's kind; for service and feature modules, the context or feature that owns it; for modules under `apps/`,
+ * A module's kind; for service and feature modules, the context or feature that owns it; for modules under `cmp/`,
  * the app they belong to (`null` for the shared core).
  */
 internal data class ModuleType(val kind: ModuleKind, val owner: String? = null, val app: String? = null)
@@ -44,6 +44,8 @@ private val SERVICE_KINDS = mapOf(
     "fake" to ModuleKind.FAKE,
 )
 
+private const val CMP_APP = "cmp"
+
 private val APP_KINDS = mapOf(
     "designsystem" to ModuleKind.DESIGNSYSTEM,
     "composeApp" to ModuleKind.APP,
@@ -57,7 +59,7 @@ private val FEATURE_KINDS = mapOf(
 )
 
 /**
- * `:service:title:domain` -> `ModuleType(DOMAIN, "title")`; `:apps:cmp:feature:home:ui` -> `ModuleType(UI, "home",
+ * `:service:title:domain` -> `ModuleType(DOMAIN, "title")`; `:cmp:feature:home:ui` -> `ModuleType(UI, "home",
  * "cmp")`; `null` when the path matches no known type.
  */
 internal fun moduleTypeOf(path: String): ModuleType? {
@@ -67,10 +69,10 @@ internal fun moduleTypeOf(path: String): ModuleType? {
             CORE_KINDS[segments[1]]?.let { ModuleType(it) }
         segments.size == 3 && segments[0] == "service" ->
             SERVICE_KINDS[segments[2]]?.let { ModuleType(it, segments[1]) }
-        segments.size == 3 && segments[0] == "apps" ->
-            APP_KINDS[segments[2]]?.let { ModuleType(it, app = segments[1]) }
-        segments.size == 5 && segments[0] == "apps" && segments[2] == "feature" ->
-            FEATURE_KINDS[segments[4]]?.let { ModuleType(it, segments[3], segments[1]) }
+        segments.size == 2 && segments[0] == CMP_APP ->
+            APP_KINDS[segments[1]]?.let { ModuleType(it, app = CMP_APP) }
+        segments.size == 4 && segments[0] == CMP_APP && segments[1] == "feature" ->
+            FEATURE_KINDS[segments[3]]?.let { ModuleType(it, segments[2], CMP_APP) }
         else -> null
     }
 }

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class DependencyRulesTest {
     private val production = Konsist.scopeFromProduction()
     private val forbiddenInUi =
-        Regex(Regex.escape(ROOT_PACKAGE) + """\.(apps\.[^.]+\.feature\.[^.]+\.ui|service\.[^.]+\.data)(\..*)?""")
+        Regex(Regex.escape(ROOT_PACKAGE) + """\.(cmp\.feature\.[^.]+\.ui|service\.[^.]+\.data)(\..*)?""")
 
     @Test
     fun `model, domain and nav use no frameworks`() {
@@ -21,7 +21,7 @@ class DependencyRulesTest {
             "android.",
             "platform.",
         )
-        production.filesMatching(Regex("core/model|service/[^/]+/domain|apps/[^/]+/feature/[^/]+/nav"))
+        production.filesMatching(Regex("core/model|service/[^/]+/domain|cmp/feature/[^/]+/nav"))
             .assertFalse(additionalMessage = "Rule: model, domain and nav use no frameworks") {
                 it.importsAnyOf(frameworks)
             }
@@ -59,7 +59,7 @@ class DependencyRulesTest {
 
     @Test
     fun `feature ui imports no other feature ui and no service data`() {
-        production.filesMatching(Regex("apps/[^/]+/feature/[^/]+/ui"))
+        production.filesMatching(Regex("cmp/feature/[^/]+/ui"))
             .assertFalse(
                 additionalMessage = "Rule: feature ui imports no other feature ui and no service data",
             ) { file ->
@@ -72,7 +72,7 @@ class DependencyRulesTest {
     fun `shared core imports no app`() {
         production.filesMatching(Regex("(core|service)/.+"))
             .assertFalse(additionalMessage = "Rule: shared core imports no app") {
-                it.importsAnyOf(listOf("$ROOT_PACKAGE.apps."))
+                it.importsAnyOf(listOf("$ROOT_PACKAGE.cmp."))
             }
     }
 }

@@ -30,10 +30,10 @@ class PublishingTest {
     @Test
     fun appModulesAreNotPublished() {
         listOf(
-            ":apps:cmp:designsystem",
-            ":apps:cmp:feature:onboarding:ui",
-            ":apps:cmp:composeApp",
-            ":apps:cmp:androidApp",
+            ":cmp:designsystem",
+            ":cmp:feature:onboarding:ui",
+            ":cmp:composeApp",
+            ":cmp:androidApp",
         )
             .forEach { assertFalse(isPublished(requireNotNull(moduleTypeOf(it))), it) }
     }
