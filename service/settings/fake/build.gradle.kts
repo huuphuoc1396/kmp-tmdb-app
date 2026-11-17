@@ -12,9 +12,6 @@ kotlin {
             implementation(libs.turbine)
         }
         // kotlin-test picks a JUnit variant only for test compilations; main code needs it explicitly.
-        jvmMain.dependencies {
-            implementation(libs.kotlin.test.junit)
-        }
         androidMain.dependencies {
             implementation(libs.kotlin.test.junit)
         }
