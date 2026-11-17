@@ -60,9 +60,9 @@ paths:
 
 ## Do / Don't
 - Keep build logic configuration-cache safe (`org.gradle.configuration-cache=true`): no `project` access inside task actions; declare extra inputs explicitly, like `inputs.files(...)` in `architecture-test/build.gradle.kts`.
-- Unit test deps are set in `configureKotlinMultiplatform()`: `commonTest` has `kotlin-test` (other multiplatform test libraries such as Turbine and Kotest assertions go there once a module needs them); `androidDeviceTest` has the AndroidX test runner; MockK and other JVM-only libraries only on `jvmTest`.
-- Root `build.gradle.kts` applies Kover with no rules (so `koverVerify` exists with no gated module) and makes the root `jvmTest` depend on `build-logic`'s `:convention:test`.
+- Unit test deps are set in `configureKotlinMultiplatform()`: `commonTest` has `kotlin-test` (other multiplatform test libraries such as Turbine and Kotest assertions go there once a module needs them); `androidHostTest` has `kotlin-test` and MockK (MockK and other JVM-only libraries only there); `androidDeviceTest` has the AndroidX test runner. Targets are Android (host and device tests) and iOS; there is no JVM target.
+- Root `build.gradle.kts` applies Kover with no rules (so `koverVerify` exists with no gated module) and registers a root `testAndroidHostTest` that depends on `build-logic`'s `:convention:test`, so `./gradlew testAndroidHostTest` runs every module's host tests and the build-logic tests.
 
 ## Testing
-- `./gradlew jvmTest` after any build-logic change (runs the `build-logic` unit tests too); `./gradlew compileTestKotlinJvm` after module build changes; `./gradlew assemble` (macOS + Xcode) when targets, Android config or plugins change.
+- `./gradlew testAndroidHostTest` after any build-logic change (runs the `build-logic` unit tests too); `./gradlew compileAndroidHostTest` after module build changes; `./gradlew assemble` (macOS + Xcode) when targets, Android config or plugins change.
 - When adding or removing tasks, confirm with `./gradlew :core:common:tasks --all | grep <task>`.

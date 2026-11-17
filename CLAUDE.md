@@ -19,25 +19,25 @@ skeleton or existing examples.
 - `native-android/` is a standalone Gradle project (own settings, wrapper, catalog, Detekt; one `:app` module, Jetpack Compose) that is not part of the KMP build. It uses the shared core only through the libraries published to `build/maven-repo` (`com.banhmilabs.tmdb:core-di`, `service-<ctx>-domain`), like an outside SDK consumer. See `native-android/README.md`.
 - `native-ios/` is a standalone Xcode project (SwiftUI, iOS 16, one app target plus a test target hosted by the app) that is not part of the KMP build. It uses the shared core only through the local Swift Package `build/swift-package/TmdbCore` (`SharedCore` entry point, SKIE interop). Swift ViewModels are `ObservableObject`s (no `@Observable`, which needs iOS 17). See `native-ios/README.md`.
 - `native-*` never depends on `cmp/`, and the KMP build never includes or references `native-*`.
-- CI runs JVM checks only; app builds and platform tests run locally.
+- CI runs on Ubuntu (static analysis, Android host tests, coverage, architecture tests); app builds and platform tests run locally.
 
 ## Setup
 - JDK 21 (toolchain from `jvmToolchain` in `gradle/libs.versions.toml`). Gradle wrapper only.
 - Android SDK via `local.properties` (`sdk.dir`), git-ignored. compileSdk 37, targetSdk 37, minSdk 24, iOS 16.
-- iOS targets need macOS + Xcode; `kotlin.native.ignoreDisabledTargets=true` lets JVM work proceed without them.
+- iOS targets need macOS + Xcode; `kotlin.native.ignoreDisabledTargets=true` lets Android work proceed without them.
 - Configuration cache and build cache are on (`gradle.properties`). Keep build logic config-cache safe.
 - Secrets (TMDB token) go in git-ignored `secrets.properties`; not wired up yet (planned in the network task).
 
 ## Commands
 `<module>` is a Gradle path such as `core:common` or `service:title:data`.
-- All CI checks: `./gradlew detekt jvmTest koverVerify :architecture-test:test`
-- One module's tests: `./gradlew :<module>:jvmTest` (root `jvmTest` also runs the `build-logic` unit tests)
+- All CI checks: `./gradlew detekt testAndroidHostTest koverVerify :architecture-test:test`
+- One module's tests: `./gradlew :<module>:testAndroidHostTest` (root `testAndroidHostTest` also runs the `build-logic` unit tests)
 - Platform tests (local only): iOS `./gradlew :<module>:iosSimulatorArm64Test` (macOS + Xcode); Android `./gradlew :<module>:connectedAndroidDeviceTest` (emulator/device). Both also run `commonTest`
 - Static analysis (Detekt + ktlint rules): `./gradlew detekt` or `./gradlew :<module>:detekt`
 - Auto-format (ktlint fixes): `./gradlew :<module>:detekt --auto-correct`
 - Coverage: `./gradlew koverVerify` (80% line on every `service/*/domain` and `service/*/data`; the root project has a rule-less `koverVerify` so the command works with none); report: `:<module>:koverHtmlReport`
 - Architecture rules: `./gradlew :architecture-test:test`
-- Compile every target (Android, iOS, JVM; macOS + Xcode): `./gradlew assemble`
+- Compile every target (Android, iOS; macOS + Xcode): `./gradlew assemble`
 - Publish the shared core: `./gradlew publishSharedCore` writes every production module of `core/` and `service/` that has code (not `fake`, `core:testing` or app modules) to `build/maven-repo`, as `com.banhmilabs.tmdb:<path-with-dashes>:0.1.0-SNAPSHOT` (e.g. `core-di`, `service-settings-domain`). All targets; iOS klibs need macOS + Xcode. Republishing replaces the snapshot. On macOS it also writes the iOS Swift Package `build/swift-package/TmdbCore` (`Package.swift` + a dynamic release XCFramework `TmdbCore`, bundle ID `com.banhmilabs.tmdb.TmdbCore`, slices `iosArm64` and `iosSimulatorArm64`, with SKIE) from `core:ios`, which is not on Maven.
 - Native Android app (standalone; publish first, then from `native-android/`): `./gradlew publishSharedCore`, then `cd native-android && ./gradlew :app:installDebug`. Checks: `./gradlew :app:detekt :app:testDebugUnitTest` (in `native-android/`). Not run by CI.
 - Native iOS app (standalone; macOS + Xcode; publish first, then from `native-ios/`): `./gradlew publishSharedCore`, then `xcodebuild -project TmdbNative.xcodeproj -scheme TmdbNative -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`. Tests: `xcodebuild -project TmdbNative.xcodeproj -scheme TmdbNative -destination 'platform=iOS Simulator,name=iPhone 17' test`. Not run by CI.
@@ -47,12 +47,12 @@ skeleton or existing examples.
 Applies only when source or build files changed. Docs-only changes (`*.md`): run nothing. Report results honestly.
 
 Default (after every code change):
-- `./gradlew :<module>:jvmTest :<module>:detekt` for each touched module (add `--auto-correct` first if ktlint fails).
+- `./gradlew :<module>:testAndroidHostTest :<module>:detekt` for each touched module (add `--auto-correct` first if ktlint fails).
 - `./gradlew :architecture-test:test` if imports or module dependencies changed.
 - `./gradlew koverVerify` if a coverage-gated module changed (`domain` or `data`).
 
 Full (when the user asks, or before opening a PR):
-- `./gradlew detekt jvmTest koverVerify :architecture-test:test --continue` (same as CI).
+- `./gradlew detekt testAndroidHostTest koverVerify :architecture-test:test --continue` (same as CI).
 - `./gradlew assemble` when `expect`/`actual`, platform source sets or build-logic changed (needs macOS + Xcode; say if skipped).
 - Platform tests for modules whose `androidMain` / `iosMain` changed (emulator or simulator; say if skipped).
 
@@ -69,14 +69,14 @@ Full (when the user asks, or before opening a PR):
 
 ## Modules
 All shared modules apply only `tmdb.module`, which reads the module type from the path (`docs/architecture.md` 5.2)
-and sets targets `android` (with host tests), `jvm`, `iosArm64`, `iosSimulatorArm64`, Detekt, and Kover for
+and sets targets `android` (with host and device tests), `iosArm64`, `iosSimulatorArm64` (no JVM target), Detekt, and Kover for
 `domain`/`data`. Modules marked *on demand* are created only when first needed (5.5).
 
 | Module | Purpose | May depend on |
 |---|---|---|
 | `core:common` | `AppResult`, `AppError`, `DispatcherProvider` | — |
 | `core:model` | Models shared by ≥ 2 contexts or a `nav` module (`TitleId`, `Title`, `Genre`, `Language`) | — |
-| `core:security` | Master key (Keystore / Keychain / JVM fake), AES-GCM | `common`, `model` |
+| `core:security` | Master key (Keystore / Keychain), AES-GCM | `common`, `model` |
 | `core:network` | Ktor client factory, auth, cert pinning, error mapping (no endpoints) | `security`, kernel |
 | `core:database` | `DatabaseDriverFactory` (no tables; each `service/*/data` owns its own SQLDelight database) | `security`, kernel |
 | `core:datastore` | DataStore KMP + encrypted serializer | `security`, kernel |
@@ -116,9 +116,10 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 - Coverage (80% line, DI/`*Dto`/generated excluded) is applied by `tmdb.module` to `domain` and `data` modules only.
 - Module dependencies use type-safe accessors: `implementation(projects.service.title.domain)`.
 - Every dependency and plugin version goes in `gradle/libs.versions.toml`; shared build config goes in a convention plugin in `build-logic/convention`.
-- Write unit tests in `jvmTest` by default (fast, MockK available). `commonTest` is allowed for tests that use only multiplatform libraries (no MockK) and are worth running on Kotlin/Native too (concurrency, `Flow` timing, formatting, parsing); they also run in `jvmTest`. Tools: `kotlin.test`, Turbine, Kotest assertions; Ktor `MockEngine` + fixture JSON for network; real SQLDelight in-memory `JdbcSqliteDriver` for database.
+- Write unit tests in `androidHostTest` by default (Android host tests on the JVM: fast, MockK available). Tests that need the real Keystore go in `androidDeviceTest`. `commonTest` is allowed for tests that use only multiplatform libraries (no MockK) and are worth running on Kotlin/Native too (concurrency, `Flow` timing, formatting, parsing); they run on the Android host, on a device and on the iOS simulator. Tools: `kotlin.test`, Turbine, Kotest assertions; Ktor `MockEngine` + fixture JSON for network; real SQLDelight in-memory `JdbcSqliteDriver` for database.
 - Test doubles: across modules use the repository fakes from `service/<ctx>/fake` (each kept honest by a contract test that both `data` and `fake` extend); MockK for collaborators in the same module and for `verify`. No other hand-written fakes, no Mokkery.
-- Platform `actual` code is tested on its platform, locally: Android instrumented tests; iOS `iosTest` with `kotlin.test` and no mocks.
+- Host tests never call `masterKeyCipher(…)`; they pass a MockK cipher that returns its input (encryption itself is tested on a device).
+- Platform `actual` code is tested on its platform, locally: Android device tests (`androidDeviceTest`); iOS `iosTest` with `kotlin.test` and no mocks. Kotlin iOS tests have no app bundle, so the Keychain path is covered by the `native-ios` Swift tests.
 - Inject dispatchers via `DispatcherProvider` (`core:common`) and time via `kotlin.time.Clock`.
 - Max line length 120 (`config/detekt/detekt.yml`).
 - Commits: short imperative subject, no prefix (`Split CI checks into separate steps`).
@@ -142,7 +143,8 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 create them in these modules when first needed.)
 
 ## Do not
-- Don't use MockK or JVM-only APIs in `commonTest`; such tests go in `jvmTest`.
+- Don't use MockK or JVM-only APIs in `commonTest`; such tests go in `androidHostTest`.
+- Don't call the real Keystore or Keychain from a host test; use a MockK cipher, or write a device test.
 - Don't write ad-hoc `Fake*` classes in test code; add the fake to `service/<ctx>/fake` with its contract test, or use MockK.
 - Don't use MockK in iOS or Android instrumented tests (JVM-only); test against the real platform API.
 - Don't mock the database or HTTP client; use the in-memory SQLDelight driver and Ktor `MockEngine`.
