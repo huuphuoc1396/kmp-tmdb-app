@@ -17,7 +17,7 @@ one product.
 
   | App | How it gets the core | Network, local, business logic | ViewModel | UI |
   |---|---|---|---|---|
-  | `apps/cmp` | modules of the KMP build | shared | **shared** (KMP ViewModel) | **shared** (Compose Multiplatform) |
+  | `cmp/` | modules of the KMP build | shared | **shared** (KMP ViewModel) | **shared** (Compose Multiplatform) |
   | `native-android/` | published Android libraries (AAR) | shared | Android ViewModel | Jetpack Compose |
   | `native-ios/` | published XCFramework (local Swift Package) | shared | Swift `ObservableObject` | SwiftUI |
 
@@ -39,22 +39,21 @@ build-logic/convention/   # tmdb.module (type from path + dependency rules), tmd
 architecture-test/        # Konsist rules for imports and packages (JVM only)
 core/                     # Libraries tier
 service/<context>/        # Services tier: domain, data, fake
-apps/
-└── cmp/                  # Compose Multiplatform app: designsystem, feature/*, app shells
+cmp/                      # Compose Multiplatform app: designsystem, feature/*, app shells
 native-android/           # Standalone Gradle project: native Android app on the published core
 native-ios/               # Standalone Xcode project: native iOS app on the published core
 docs/
 ```
 
-- The Kotlin Multiplatform build (root `settings.gradle.kts`) contains the shared core and `apps/cmp` only. It
+- The Kotlin Multiplatform build (root `settings.gradle.kts`) contains the shared core and `cmp/` only. It
   never includes or references a `native-*` project.
-- `apps/cmp` uses `core/` and `service/` as modules, so a change there is visible to it immediately.
+- `cmp/` uses `core/` and `service/` as modules, so a change there is visible to it immediately.
 - `native-android/` has its own settings, wrapper, version catalog and Detekt config. It reaches the core only
   through the libraries published to `build/maven-repo` (section 14), so it sees a core change after the core is
   published again.
 - `native-ios/` has its own committed Xcode project. It reaches the core only through the Swift Package
   `build/swift-package/TmdbCore` (section 14), so it also sees a core change after the core is published again.
-- `native-*` never depends on `apps/cmp`, and the shared core never depends on an app.
+- `native-*` never depends on `cmp/`, and the shared core never depends on an app.
 - An app directory is created when its first screen is built.
 
 ---
@@ -94,7 +93,7 @@ How the example uses each rule:
 
 All shared modules target `androidTarget`, `iosArm64`, `iosSimulatorArm64` and `jvm`.
 
-`jvm` exists mainly for **fast tests** (section 8). `apps/cmp` can also ship a desktop app from it at almost no extra
+`jvm` exists mainly for **fast tests** (section 8). `cmp/` can also ship a desktop app from it at almost no extra
 cost.
 
 ---
@@ -107,7 +106,7 @@ cost.
 |---|---|---|
 | Libraries | `core/` | Infrastructure and a small shared kernel; no business features |
 | Services | `service/<context>/` | One business capability (bounded context): `domain`, `data`, `fake` |
-| Features | `apps/<app>/feature/<feature>/` | Screens: `ui` (ViewModel + screen) and, when needed, `nav` / `api` |
+| Features | `cmp/feature/<feature>/` | Screens: `ui` (ViewModel + screen) and, when needed, `nav` / `api` |
 
 `core:di` and each app shell are the **composition roots**: the only modules that see every implementation.
 
@@ -170,12 +169,12 @@ The **public API of the shared core** is the set of `service/*/domain` modules. 
 | `core/testing` | testing | Shared test utilities |
 | `core/di` | root | Wiring of the shared core (`initKoin()`) |
 | `core/ios` | ios-sdk | `SharedCore` (start, repositories); exports its `api` dependencies (kernel, service domains) in the XCFramework |
-| `apps/<app>/composeApp` | root (app) | `App()`, navigation graph, slots between features; KMP library that also builds the iOS framework |
-| `apps/<app>/androidApp` | root (android-app) | Android application: `Application`, `Activity`, Koin start |
+| `cmp/composeApp` | root (app) | `App()`, navigation graph, slots between features; KMP library that also builds the iOS framework |
+| `cmp/androidApp` | root (android-app) | Android application: `Application`, `Activity`, Koin start |
 | `service/<ctx>/domain` | domain | Context models, repository interfaces, use cases |
 | `service/<ctx>/data` | data | Repository implementations, endpoints + DTOs, mappers, queries, Koin module |
 | `service/<ctx>/fake` | fake | In-memory repository fakes + the repository contract test |
-| `apps/<app>/designsystem` | designsystem | Theme, stateless components used by two or more features, image loading, string resources |
+| `cmp/designsystem` | designsystem | Theme, stateless components used by two or more features, image loading, string resources |
 | `…/feature/<x>/nav` | nav | Route, Args, Result only |
 | `…/feature/<x>/api` | api | `nav` plus entry interfaces (for example a `@Composable` entry); replaces `nav` when needed |
 | `…/feature/<x>/ui` | ui | ViewModel, screen, implementations of the feature's entries |
@@ -256,7 +255,7 @@ The target structure is fixed, but a module is created only when it is needed:
 | `service/<ctx>/fake` | Tests or a demo of another module need that context's fake repository |
 | `feature/<x>/nav` | Another feature navigates to this feature; until then the route lives in `ui` |
 | `feature/<x>/api` (rename of `nav`) | The feature must expose an entry component (5.4 rule 4) |
-| `apps/<app>/designsystem` | The first stateless component is used by two features |
+| `cmp/designsystem` | The first stateless component is used by two features |
 | An app directory | Its first screen is built |
 | A per-feature demo app | Building the full app slows down feature development |
 
@@ -321,8 +320,8 @@ UI ◄── ViewModel ◄── (UseCase) ◄── Repository.observe()  ◄�
 | Database | SQLDelight in-memory driver, real database, not mocked | `jvmTest` |
 | Platform code (`actual`) | Android: instrumented tests. iOS: `kotlin.test`, no mocks | device / simulator, local |
 | Repository fakes | Contract test shared by `data` and `fake` | `jvmTest` |
-| Shared ViewModels (`apps/cmp`) | `kotlinx-coroutines-test`, Turbine, service fakes, MockK | `jvmTest` |
-| Compose UI and screenshots (`apps/cmp`) | `runComposeUiTest` from `androidx.compose.ui.test.v2` (the v1 one is deprecated), Roborazzi | JVM |
+| Shared ViewModels (`cmp/`) | `kotlinx-coroutines-test`, Turbine, service fakes, MockK | `jvmTest` |
+| Compose UI and screenshots (`cmp/`) | `runComposeUiTest` from `androidx.compose.ui.test.v2` (the v1 one is deprecated), Roborazzi | JVM |
 | Native Android (`native-android/`) | JUnit 4 + MockK ViewModel tests against the published domain API; UI checked manually on device | JVM, run locally |
 | Native iOS (`native-ios/`) | XCTest: ViewModels against small Swift protocols with Swift test doubles; the adapters over `SharedCore` in the app's test host against the real shared core (Swift can't implement a Kotlin `Flow`); UI checked manually on the simulator | simulator, run locally |
 | Architecture | Konsist | JVM |
@@ -360,10 +359,10 @@ Every shared module applies only `alias(libs.plugins.tmdb.module)`; KMP targets,
 Kover come from its type. The rule table and type parsing have unit tests in `build-logic`.
 
 Module paths recognised by `moduleTypeOf`: `:core:<name>`, `:service:<ctx>:domain|data|fake`,
-`:apps:<app>:designsystem`, `:apps:<app>:composeApp`, `:apps:<app>:androidApp` and
-`:apps:<app>:feature:<x>:nav|api|ui`. The shared core (`core/`, `service/`) never depends on an app.
+`:cmp:designsystem`, `:cmp:composeApp`, `:cmp:androidApp` and
+`:cmp:feature:<x>:nav|api|ui`. The shared core (`core/`, `service/`) never depends on an app.
 
-`tmdb.module` configures `apps/cmp`: `composeApp` as a KMP library with the iOS framework, `androidApp` as an Android
+`tmdb.module` configures `cmp/`: `composeApp` as a KMP library with the iOS framework, `androidApp` as an Android
 application, and Compose Multiplatform on its `designsystem`, `ui` and `composeApp` modules.
 
 The standalone `native-*` projects are outside the KMP build, so neither `tmdb.module` nor Konsist checks them. Their
@@ -393,10 +392,10 @@ tests.
 
 ## 11. Presentation per app
 
-### `apps/cmp`: share everything
+### `cmp/`: share everything
 
 ```
-apps/cmp/
+cmp/
 ├── designsystem/         # Theme, typography, stateless components, image loading, Compose resources
 ├── feature/<x>/{nav,api,ui}/
 ├── composeApp/           # App(), type-safe navigation graph, slots between features, MainViewController()
@@ -415,13 +414,13 @@ ViewModels use androidx.lifecycle KMP and follow MVI:
 The stateful `<Feature>Screen(callbacks, viewModel = koinViewModel())` collects `state` and `effects` and turns
 effects into callbacks for the app shell. It draws the stateless `<Feature>Content(state, onIntent)`, which UI tests
 and previews use without Koin. The navigation entry only declares the destination and calls `<Feature>Screen`. There is no shared MVI base class until a second
-feature needs one. Reference: `apps/cmp/feature/onboarding/ui`.
+feature needs one. Reference: `cmp/feature/onboarding/ui`.
 
 Packages inside a feature `ui` module are organized by screen, not by layer; the module is already the feature and
 layer boundary. Only `navigation/` and `di/` are fixed packages:
 
 ```
-feature/<x>/ui/src/commonMain/kotlin/<root>/apps/cmp/feature/<x>/ui/
+feature/<x>/ui/src/commonMain/kotlin/<root>/cmp/feature/<x>/ui/
 ├── navigation/                   <X>Route, NavGraphBuilder.<x>Screen(callbacks)   (public API for the app shell)
 ├── di/                           Koin module (public)
 ├── <X>Contract.kt                <X>UiState, <X>Intent, <X>Effect
@@ -447,7 +446,7 @@ native-android/
   layer at runtime) and `com.banhmilabs.tmdb:service-<ctx>-domain` (repository interfaces, use cases, models).
   Gradle metadata selects the Android variant.
 - ViewModels and UI are Android-only (Android ViewModel, Jetpack Compose). The feature rules are the same as in
-  `apps/cmp`: a screen reads repositories through `domain`, never through `data`.
+  `cmp/`: a screen reads repositories through `domain`, never through `data`.
 - Workflow: `./gradlew publishSharedCore` at the root, then build in `native-android/` (its `README.md`).
 
 ### `native-ios/`: standalone iOS app
@@ -477,7 +476,7 @@ native-ios/
 | Layer | Strings |
 |---|---|
 | Remote content | Locale sent to the API, cached per locale |
-| `apps/cmp` UI | Compose Multiplatform resources |
+| `cmp/` UI | Compose Multiplatform resources |
 | `native-android/` UI | Android resources |
 | `native-ios/` UI | String Catalog |
 
@@ -488,7 +487,7 @@ native-ios/
 | Area | Choice |
 |---|---|
 | Language | Kotlin 2.x (K2), Swift 6 |
-| UI | Compose Multiplatform (`apps/cmp`); Jetpack Compose (`native-android/`); SwiftUI (`native-ios/`) |
+| UI | Compose Multiplatform (`cmp/`); Jetpack Compose (`native-android/`); SwiftUI (`native-ios/`) |
 | Navigation | Navigation Compose (type-safe); SwiftUI `NavigationStack` |
 | DI | Koin |
 | Networking | Ktor Client, kotlinx.serialization |

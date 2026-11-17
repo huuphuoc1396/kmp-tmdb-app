@@ -27,24 +27,24 @@ class ModuleTypeTest {
 
     @Test
     fun featureModulesCarryTheirFeatureAndApp() {
-        assertEquals(ModuleType(ModuleKind.NAV, "details", "cmp"), moduleTypeOf(":apps:cmp:feature:details:nav"))
-        assertEquals(ModuleType(ModuleKind.API, "cart", "cmp"), moduleTypeOf(":apps:cmp:feature:cart:api"))
-        assertEquals(ModuleType(ModuleKind.UI, "home", "cmp"), moduleTypeOf(":apps:cmp:feature:home:ui"))
+        assertEquals(ModuleType(ModuleKind.NAV, "details", "cmp"), moduleTypeOf(":cmp:feature:details:nav"))
+        assertEquals(ModuleType(ModuleKind.API, "cart", "cmp"), moduleTypeOf(":cmp:feature:cart:api"))
+        assertEquals(ModuleType(ModuleKind.UI, "home", "cmp"), moduleTypeOf(":cmp:feature:home:ui"))
     }
 
     @Test
     fun designsystemBelongsToAnApp() {
-        assertEquals(ModuleType(ModuleKind.DESIGNSYSTEM, app = "cmp"), moduleTypeOf(":apps:cmp:designsystem"))
+        assertEquals(ModuleType(ModuleKind.DESIGNSYSTEM, app = "cmp"), moduleTypeOf(":cmp:designsystem"))
     }
 
     @Test
     fun composeAppPathIsApp() {
-        assertEquals(ModuleType(ModuleKind.APP, app = "cmp"), moduleTypeOf(":apps:cmp:composeApp"))
+        assertEquals(ModuleType(ModuleKind.APP, app = "cmp"), moduleTypeOf(":cmp:composeApp"))
     }
 
     @Test
     fun androidAppPathIsAndroidApp() {
-        assertEquals(ModuleType(ModuleKind.ANDROID_APP, app = "cmp"), moduleTypeOf(":apps:cmp:androidApp"))
+        assertEquals(ModuleType(ModuleKind.ANDROID_APP, app = "cmp"), moduleTypeOf(":cmp:androidApp"))
     }
 
     @Test
@@ -59,11 +59,12 @@ class ModuleTypeTest {
             ":core:designsystem",
             ":feature:home:ui",
             ":feature:details:nav",
-            ":apps:cmp",
-            ":apps:cmp:feature:home",
-            ":apps:cmp:feature:home:impl",
-            ":apps:cmp:android:feature:home:ui",
-            ":apps:cmp:desktopApp",
+            ":cmp",
+            ":cmp:feature:home",
+            ":cmp:feature:home:impl",
+            ":cmp:android:feature:home:ui",
+            ":cmp:desktopApp",
+            ":apps:cmp:composeApp",
             ":tools:x",
             ":architecture-test",
         ).forEach { assertNull(moduleTypeOf(it), it) }

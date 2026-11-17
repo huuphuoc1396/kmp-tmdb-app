@@ -33,23 +33,23 @@ class DependencyRulesTest {
     @Test
     fun nothingDependsOnIosSdk() {
         assertRejected(":core:di", ":core:ios")
-        assertRejected(":apps:cmp:composeApp", ":core:ios")
+        assertRejected(":cmp:composeApp", ":core:ios")
     }
 
     @Test
     fun iosSdkNeverDependsOnAnApp() {
-        assertRejected(":core:ios", ":apps:cmp:designsystem")
+        assertRejected(":core:ios", ":cmp:designsystem")
     }
 
     @Test
     fun uiToUiIsRejected() {
-        assertRejected(":apps:cmp:feature:home:ui", ":apps:cmp:feature:details:ui")
+        assertRejected(":cmp:feature:home:ui", ":cmp:feature:details:ui")
     }
 
     @Test
     fun uiToDataIsRejected() {
-        assertRejected(":apps:cmp:feature:home:ui", ":service:title:data")
-        assertRejected(":apps:cmp:feature:home:ui", ":core:network")
+        assertRejected(":cmp:feature:home:ui", ":service:title:data")
+        assertRejected(":cmp:feature:home:ui", ":core:network")
     }
 
     @Test
@@ -83,8 +83,8 @@ class DependencyRulesTest {
 
     @Test
     fun fakeAndTestingAllowedOnlyInTestScope() {
-        assertRejected(":apps:cmp:feature:home:ui", ":service:title:fake")
-        assertAllowed(":apps:cmp:feature:home:ui", ":service:title:fake", testScope = true)
+        assertRejected(":cmp:feature:home:ui", ":service:title:fake")
+        assertAllowed(":cmp:feature:home:ui", ":service:title:fake", testScope = true)
         assertRejected(":service:title:data", ":core:testing")
         assertAllowed(":service:title:data", ":core:testing", testScope = true)
     }
@@ -102,43 +102,43 @@ class DependencyRulesTest {
 
     @Test
     fun featureTypesFollowTable() {
-        assertAllowed(":apps:cmp:feature:home:ui", ":apps:cmp:feature:details:nav")
-        assertAllowed(":apps:cmp:feature:home:ui", ":apps:cmp:feature:favorites:api")
-        assertAllowed(":apps:cmp:feature:home:ui", ":service:title:domain")
-        assertAllowed(":apps:cmp:feature:home:ui", ":apps:cmp:designsystem")
-        assertAllowed(":apps:cmp:feature:details:nav", ":core:model")
-        assertRejected(":apps:cmp:feature:details:nav", ":core:common")
-        assertRejected(":apps:cmp:feature:details:api", ":service:title:domain")
-        assertAllowed(":apps:cmp:designsystem", ":core:model")
-        assertRejected(":apps:cmp:designsystem", ":service:title:domain")
+        assertAllowed(":cmp:feature:home:ui", ":cmp:feature:details:nav")
+        assertAllowed(":cmp:feature:home:ui", ":cmp:feature:favorites:api")
+        assertAllowed(":cmp:feature:home:ui", ":service:title:domain")
+        assertAllowed(":cmp:feature:home:ui", ":cmp:designsystem")
+        assertAllowed(":cmp:feature:details:nav", ":core:model")
+        assertRejected(":cmp:feature:details:nav", ":core:common")
+        assertRejected(":cmp:feature:details:api", ":service:title:domain")
+        assertAllowed(":cmp:designsystem", ":core:model")
+        assertRejected(":cmp:designsystem", ":service:title:domain")
     }
 
     @Test
     fun sharedCoreNeverDependsOnAnApp() {
-        assertRejected(":core:di", ":apps:cmp:feature:home:ui")
-        assertRejected(":core:model", ":apps:cmp:designsystem")
-        assertRejected(":service:title:domain", ":apps:cmp:feature:details:nav")
-        assertRejected(":core:di", ":apps:cmp:designsystem", testScope = true)
+        assertRejected(":core:di", ":cmp:feature:home:ui")
+        assertRejected(":core:model", ":cmp:designsystem")
+        assertRejected(":service:title:domain", ":cmp:feature:details:nav")
+        assertRejected(":core:di", ":cmp:designsystem", testScope = true)
     }
 
     @Test
     fun androidAppMayDependOnComposeApp() {
-        assertAllowed(":apps:cmp:androidApp", ":apps:cmp:composeApp")
+        assertAllowed(":cmp:androidApp", ":cmp:composeApp")
     }
 
     @Test
     fun appShellMayDependOnSharedCoreAndOwnApp() {
-        assertAllowed(":apps:cmp:composeApp", ":apps:cmp:designsystem")
-        assertAllowed(":apps:cmp:composeApp", ":apps:cmp:feature:home:ui")
-        assertAllowed(":apps:cmp:composeApp", ":core:di")
-        assertAllowed(":apps:cmp:androidApp", ":core:di")
-        assertAllowed(":apps:cmp:composeApp", ":service:settings:domain")
+        assertAllowed(":cmp:composeApp", ":cmp:designsystem")
+        assertAllowed(":cmp:composeApp", ":cmp:feature:home:ui")
+        assertAllowed(":cmp:composeApp", ":core:di")
+        assertAllowed(":cmp:androidApp", ":core:di")
+        assertAllowed(":cmp:composeApp", ":service:settings:domain")
     }
 
     @Test
     fun appShellUsesFakeOnlyInTests() {
-        assertRejected(":apps:cmp:composeApp", ":service:settings:fake")
-        assertAllowed(":apps:cmp:composeApp", ":service:settings:fake", testScope = true)
+        assertRejected(":cmp:composeApp", ":service:settings:fake")
+        assertAllowed(":cmp:composeApp", ":service:settings:fake", testScope = true)
     }
 
     private fun violation(from: String, to: String, testScope: Boolean): String? =

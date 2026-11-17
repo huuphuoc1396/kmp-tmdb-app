@@ -2,23 +2,23 @@
 
 Kotlin Multiplatform shared core for a TMDB discovery app (films, series, anime, novelas; en + pt-BR).
 Everything lives on `main` in directories: shared core (`core/`, `service/`), the Compose Multiplatform app
-`apps/cmp`, and the standalone native apps `native-android/` and `native-ios/`.
+`cmp/`, and the standalone native apps `native-android/` and `native-ios/`.
 Full design: `docs/architecture.md`.
 Per-layer rules (build logic, tests, architecture tests) are in `.claude/rules/` and load by path.
 
 Current state: early. Production code exists in `core:common` (`AppResult`, `AppError`, `DispatcherProvider`),
 `core:security` (master key cipher), `core:datastore` (encrypted DataStore), `core:di` (`initKoin()`) and the
 `settings` context (`service/settings/{domain,data,fake}`, onboarding state), `core:testing` (`MainDispatcherTest`)
-and the `apps/cmp` onboarding feature (`apps/cmp/feature/onboarding/ui`). The other `core/*` modules are still
+and the `cmp/` onboarding feature (`cmp/feature/onboarding/ui`). The other `core/*` modules are still
 skeletons with a `*SmokeTest` placeholder. Contexts `title` and `favorites` are created by the first feature that
 needs them. New code follows `docs/architecture.md` (sections 5–8), not the
 skeleton or existing examples.
 
 ## Repository layout
-- One branch (`main`); apps are directories, not branches. The KMP build holds the shared core and `apps/cmp` (Compose Multiplatform: shared ViewModel + UI), which has its shell (`designsystem`, `composeApp`, `androidApp`, Xcode `iosApp`), the onboarding screen and a placeholder Home.
+- One branch (`main`); apps are directories, not branches. The KMP build holds the shared core and `cmp/` (Compose Multiplatform: shared ViewModel + UI), which has its shell (`designsystem`, `composeApp`, `androidApp`, Xcode `iosApp`), the onboarding screen and a placeholder Home.
 - `native-android/` is a standalone Gradle project (own settings, wrapper, catalog, Detekt; one `:app` module, Jetpack Compose) that is not part of the KMP build. It uses the shared core only through the libraries published to `build/maven-repo` (`com.banhmilabs.tmdb:core-di`, `service-<ctx>-domain`), like an outside SDK consumer. See `native-android/README.md`.
 - `native-ios/` is a standalone Xcode project (SwiftUI, iOS 16, one app target plus a test target hosted by the app) that is not part of the KMP build. It uses the shared core only through the local Swift Package `build/swift-package/TmdbCore` (`SharedCore` entry point, SKIE interop). Swift ViewModels are `ObservableObject`s (no `@Observable`, which needs iOS 17). See `native-ios/README.md`.
-- `native-*` never depends on `apps/cmp`, and the KMP build never includes or references `native-*`.
+- `native-*` never depends on `cmp/`, and the KMP build never includes or references `native-*`.
 - CI runs JVM checks only; app builds and platform tests run locally.
 
 ## Setup
@@ -41,7 +41,7 @@ skeleton or existing examples.
 - Publish the shared core: `./gradlew publishSharedCore` writes every production module of `core/` and `service/` that has code (not `fake`, `core:testing` or app modules) to `build/maven-repo`, as `com.banhmilabs.tmdb:<path-with-dashes>:0.1.0-SNAPSHOT` (e.g. `core-di`, `service-settings-domain`). All targets; iOS klibs need macOS + Xcode. Republishing replaces the snapshot. On macOS it also writes the iOS Swift Package `build/swift-package/TmdbCore` (`Package.swift` + a dynamic release XCFramework `TmdbCore`, bundle ID `com.banhmilabs.tmdb.TmdbCore`, slices `iosArm64` and `iosSimulatorArm64`, with SKIE) from `core:ios`, which is not on Maven.
 - Native Android app (standalone; publish first, then from `native-android/`): `./gradlew publishSharedCore`, then `cd native-android && ./gradlew :app:installDebug`. Checks: `./gradlew :app:detekt :app:testDebugUnitTest` (in `native-android/`). Not run by CI.
 - Native iOS app (standalone; macOS + Xcode; publish first, then from `native-ios/`): `./gradlew publishSharedCore`, then `xcodebuild -project TmdbNative.xcodeproj -scheme TmdbNative -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`. Tests: `xcodebuild -project TmdbNative.xcodeproj -scheme TmdbNative -destination 'platform=iOS Simulator,name=iPhone 17' test`. Not run by CI.
-- Run the cmp app: Android `./gradlew :apps:cmp:androidApp:installDebug` (emulator/device); iOS: open `apps/cmp/iosApp/iosApp.xcodeproj` in Xcode, or build with `xcodebuild -project apps/cmp/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`. The Xcode project repeats the iOS deployment target (16.0) because it can't read the version catalog.
+- Run the cmp app: Android `./gradlew :cmp:androidApp:installDebug` (emulator/device); iOS: open `cmp/iosApp/iosApp.xcodeproj` in Xcode, or build with `xcodebuild -project cmp/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`. The Xcode project repeats the iOS deployment target (16.0) because it can't read the version catalog.
 
 ## Before finishing a code change
 Applies only when source or build files changed. Docs-only changes (`*.md`): run nothing. Report results honestly.
@@ -57,7 +57,7 @@ Full (when the user asks, or before opening a PR):
 - Platform tests for modules whose `androidMain` / `iosMain` changed (emulator or simulator; say if skipped).
 
 ## Architecture
-- Three tiers: **Libraries** (`core/`), **Services** (`service/<context>/{domain,data,fake}`), **Features** (`apps/<app>/feature/<x>/{nav,api,ui}`). `core:di` and each app shell are the composition roots.
+- Three tiers: **Libraries** (`core/`), **Services** (`service/<context>/{domain,data,fake}`), **Features** (`cmp/feature/<x>/{nav,api,ui}`). `core:di` and each app shell are the composition roots.
 - Offline-first: UI ◄ ViewModel ◄ (use case) ◄ `Repository.observe()` ◄ SQLDelight (single source of truth). `Repository.refresh()` → Ktor → upsert into SQLDelight. The network never feeds the UI directly.
 - The `service/*/domain` modules (repository interfaces, use cases, their models) are the public API of the core. Platforms never see `data`, `network` or `database`.
 - Use cases are optional: create one only when it combines repositories, applies business rules, shapes data for a screen, or is reused by two features. Otherwise the ViewModel calls the repository directly. Never write a use case that only forwards.
@@ -86,10 +86,10 @@ and sets targets `android` (with host tests), `jvm`, `iosArm64`, `iosSimulatorAr
 | `service/<ctx>/domain` (on demand) | Context models, repository interfaces, use cases | kernel; another context's `domain` (one level, registered in `DependencyRules.domainAllowlist`) |
 | `service/<ctx>/data` (on demand) | Repository impls, endpoints + DTOs, mappers, its own SQLDelight database, refresh policy, Koin module | own `domain`, kernel, `network`/`database`/`datastore` |
 | `service/<ctx>/fake` (on demand) | In-memory repository fakes + repository contract test | own `domain`, kernel |
-| `apps/<app>/composeApp` | `App()`, navigation graph; builds the iOS framework `ComposeApp` (root of the app) | its own app, the shared core |
-| `apps/<app>/androidApp` | Android application: `Application` (starts `initKoin`), `Activity` (root of the app) | its own app, the shared core |
-| `apps/<app>/feature/<x>/nav` (on demand) | Route, Args, Result; renamed `api` when it must expose an entry interface | `core:model` |
-| `apps/<app>/feature/<x>/ui` | ViewModel + screen | `nav`/`api` (same app), `service/*/domain`, the app's `designsystem`, kernel |
+| `cmp/composeApp` | `App()`, navigation graph; builds the iOS framework `ComposeApp` (root of the app) | its own app, the shared core |
+| `cmp/androidApp` | Android application: `Application` (starts `initKoin`), `Activity` (root of the app) | its own app, the shared core |
+| `cmp/feature/<x>/nav` (on demand) | Route, Args, Result; renamed `api` when it must expose an entry interface | `core:model` |
+| `cmp/feature/<x>/ui` | ViewModel + screen | `nav`/`api` (same app), `service/*/domain`, the app's `designsystem`, kernel |
 | `architecture-test` | Konsist rules (JVM only) | — |
 
 Contexts: `title` (home lists, details, cast, videos, genres, search), `favorites`, `settings` (language, onboarding).
@@ -102,7 +102,7 @@ app shell → an entry interface in B's `api` bound with Koin (5.4).
 Enforced by `tmdb.module` (`build-logic/convention/.../buildlogic/DependencyRules.kt`): an unknown module path or a
 forbidden `project(...)` dependency fails configuration with `Rule: <from> -> <to>: …`; the `domain → domain`
 allowlist is `DependencyRules.domainAllowlist` (one level, checked); the shared core never depends on an app. Enforced by Konsist (`architecture-test/`, over
-`core/`, `service/`, `apps/`): `core:model`, `service/*/domain`, `apps/*/feature/*/nav` import no frameworks (Ktor,
+`core/`, `service/`, `cmp/`): `core:model`, `service/*/domain`, `cmp/feature/*/nav` import no frameworks (Ktor,
 SQLDelight, `androidx.`, Compose, Koin, `android.`, `platform.`); `domain` imports no `data`/`fake`/infrastructure/`di`;
 `network`/`database`/`datastore` import no `service`/`di`; feature `ui` imports no other `ui` and no `data`; every
 file uses the package of its path (`service/title/domain` → `com.banhmilabs.tmdb.service.title.domain`).
@@ -111,7 +111,7 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 - New shared module: create it at its architecture path, add it to `settings.gradle.kts`, and apply only `alias(libs.plugins.tmdb.module)`. Type, namespace (`:service:title:domain` → `com.banhmilabs.tmdb.service.title.domain`), Kover and the dependency check come from the path; don't set them by hand. Konsist picks it up automatically.
 - Leaf names repeat (`domain`, `data`, `ui`); `tmdb.module` keeps klib names unique by setting `group` from the path.
 - A model goes in `core:model` only when two or more contexts (or a `nav` module) need it; otherwise it stays in its context's `domain`.
-- `apps/cmp` ViewModels follow MVI (`docs/architecture.md` 11): `<Feature>UiState` data class as `StateFlow`, `<Feature>Intent` sealed interface handled by `onIntent`, `<Feature>Effect` sealed interface as a `Flow` from a buffered `Channel`; stateful `<Feature>Screen` (gets the ViewModel, collects state and effects) draws stateless `<Feature>Content(state, onIntent)`; navigation only calls the screen. Packages by screen, not by layer: `navigation/` and `di/` fixed; contract, ViewModel and screen at the module root with `component/`; one package per screen once there are two. Reference: `apps/cmp/feature/onboarding/ui`.
+- `cmp/` ViewModels follow MVI (`docs/architecture.md` 11): `<Feature>UiState` data class as `StateFlow`, `<Feature>Intent` sealed interface handled by `onIntent`, `<Feature>Effect` sealed interface as a `Flow` from a buffered `Channel`; stateful `<Feature>Screen` (gets the ViewModel, collects state and effects) draws stateless `<Feature>Content(state, onIntent)`; navigation only calls the screen. Packages by screen, not by layer: `navigation/` and `di/` fixed; contract, ViewModel and screen at the module root with `component/`; one package per screen once there are two. Reference: `cmp/feature/onboarding/ui`.
 - A use case is a class with `operator fun invoke`, no interface. Repository interfaces expose only what consumers need; `upsert`-style operations stay in `data`.
 - Coverage (80% line, DI/`*Dto`/generated excluded) is applied by `tmdb.module` to `domain` and `data` modules only.
 - Module dependencies use type-safe accessors: `implementation(projects.service.title.domain)`.
@@ -134,7 +134,7 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | Encrypted local settings | `encryptedDataStore(...)`, `masterKeyCipher(alias)` | `core:datastore`, `core:security` |
 | Koin start-up | `initKoin(appDeclaration)` | `core:di` |
 | Test Main dispatcher (ViewModel tests) | extend `MainDispatcherTest` | `core:testing` |
-| Compose resources (strings, drawables) | `composeResources/` in the module; `Res` is in `<namespace>.generated.resources` | `apps/cmp/*` (set by `tmdb.module`) |
+| Compose resources (strings, drawables) | `composeResources/` in the module; `Res` is in `<namespace>.generated.resources` | `cmp/*` (set by `tmdb.module`) |
 | Repository test double | `Fake<Repository>` (e.g. `FakeSettingsRepository`) | `service/<ctx>/fake` |
 | Module build setup | `tmdb.module` (shared modules), `tmdb.detekt` (JVM modules) | `build-logic/convention` |
 
@@ -153,7 +153,7 @@ create them in these modules when first needed.)
 - Don't use `EncryptedSharedPreferences` (deprecated); use `core:datastore` with the AES-GCM serializer.
 - Don't put the TMDB token in source or committed files; use `secrets.properties` / CI secrets.
 - Don't log request/response bodies in release builds.
-- Don't make `native-android/` depend on `apps/cmp` or reference the KMP build (no `includeBuild`, `project(...)` or source paths); it uses only the published shared core.
+- Don't make `native-android/` depend on `cmp/` or reference the KMP build (no `includeBuild`, `project(...)` or source paths); it uses only the published shared core.
 - Don't put UI in `core/` or `service/`.
 - Don't hardcode versions or SDK levels in module build files; read them from `libs.versions.toml`.
 - Don't add `GlobalScope` or hardcoded `Dispatchers.*`; inject `DispatcherProvider`.

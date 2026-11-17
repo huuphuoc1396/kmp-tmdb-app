@@ -26,8 +26,8 @@ class ModuleConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         val type = moduleTypeOf(path) ?: throw GradleException(
             "Unknown module type for $path. Shared modules live at :core:<name>, " +
-                ":service:<context>:domain|data|fake, :apps:<app>:designsystem|composeApp|androidApp or " +
-                ":apps:<app>:feature:<name>:nav|api|ui " +
+                ":service:<context>:domain|data|fake, :cmp:designsystem|composeApp|androidApp or " +
+                ":cmp:feature:<name>:nav|api|ui " +
                 "(docs/architecture.md 5.2).",
         )
         DependencyRules.allowlistViolation()?.let { throw GradleException(it) }
