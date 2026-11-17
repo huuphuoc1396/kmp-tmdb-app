@@ -19,7 +19,7 @@ one product.
   |---|---|---|---|---|
   | `apps/cmp` | modules of the KMP build | shared | **shared** (KMP ViewModel) | **shared** (Compose Multiplatform) |
   | `native-android/` | published Android libraries (AAR) | shared | Android ViewModel | Jetpack Compose |
-  | `native-ios/` (planned) | published XCFramework | shared | Swift `@Observable` | SwiftUI |
+  | `native-ios/` | published XCFramework (local Swift Package) | shared | Swift `ObservableObject` | SwiftUI |
 
 - **Scales with the team.** Modules follow the patterns large Android codebases use (Airbnb: feature + nav modules;
   Square: public / impl / fake; Slack: Features / Services / Libraries), so the structure holds as contexts and
@@ -42,7 +42,7 @@ service/<context>/        # Services tier: domain, data, fake
 apps/
 └── cmp/                  # Compose Multiplatform app: designsystem, feature/*, app shells
 native-android/           # Standalone Gradle project: native Android app on the published core
-native-ios/               # Standalone Xcode project: native iOS app on the published core (planned)
+native-ios/               # Standalone Xcode project: native iOS app on the published core
 docs/
 ```
 
@@ -52,6 +52,8 @@ docs/
 - `native-android/` has its own settings, wrapper, version catalog and Detekt config. It reaches the core only
   through the libraries published to `build/maven-repo` (section 14), so it sees a core change after the core is
   published again.
+- `native-ios/` has its own committed Xcode project. It reaches the core only through the Swift Package
+  `build/swift-package/TmdbCore` (section 14), so it also sees a core change after the core is published again.
 - `native-*` never depends on `apps/cmp`, and the shared core never depends on an app.
 - An app directory is created when its first screen is built.
 
@@ -118,7 +120,8 @@ core/
 ├── datastore/   # DataStore KMP with an encrypted serializer
 ├── security/    # Master key: Android Keystore / iOS Keychain / JVM fake; AES-GCM
 ├── testing/     # Test dispatchers
-└── di/          # initKoin(); collects the Koin module of every service/*/data
+├── di/          # initKoin(); collects the Koin module of every service/*/data
+└── ios/         # iOS entry point SharedCore; builds the TmdbCore XCFramework
 service/<context>/
 ├── domain/      # Models, repository interfaces, use cases
 ├── data/        # Repository implementations, endpoints + DTOs, mappers, queries, refresh policy, Koin module
@@ -166,6 +169,7 @@ The **public API of the shared core** is the set of `service/*/domain` modules. 
 | `core/security` | security | Master key and encryption, used by infra |
 | `core/testing` | testing | Shared test utilities |
 | `core/di` | root | Wiring of the shared core (`initKoin()`) |
+| `core/ios` | ios-sdk | `SharedCore` (start, repositories); exports its `api` dependencies (kernel, service domains) in the XCFramework |
 | `apps/<app>/composeApp` | root (app) | `App()`, navigation graph, slots between features; KMP library that also builds the iOS framework |
 | `apps/<app>/androidApp` | root (android-app) | Android application: `Application`, `Activity`, Koin start |
 | `service/<ctx>/domain` | domain | Context models, repository interfaces, use cases |
@@ -209,10 +213,12 @@ Allowed dependencies (everything not listed is forbidden):
 | ui | its own and other features' `nav` / `api` in the same app, `service/*/domain`, its app's designsystem, kernel |
 | testing | kernel |
 | root | everything in its app and the shared core |
+| ios-sdk | everything in the shared core; no module depends on it |
 | test source sets | additionally `service/*/fake`, `core:testing` |
 
 Forbidden in particular: `ui → ui`, `ui → data`, `ui → infra`, `data → data`, `fake → data`, `domain → data` /
-`fake`, `fake` outside test source sets (or a demo app), and anything from the shared core to an app.
+`fake`, `fake` outside test source sets (or a demo app), anything → `core:ios`, and anything from the shared core
+to an app.
 
 **`domain → domain`:**
 
@@ -318,7 +324,7 @@ UI ◄── ViewModel ◄── (UseCase) ◄── Repository.observe()  ◄�
 | Shared ViewModels (`apps/cmp`) | `kotlinx-coroutines-test`, Turbine, service fakes, MockK | `jvmTest` |
 | Compose UI and screenshots (`apps/cmp`) | `runComposeUiTest` from `androidx.compose.ui.test.v2` (the v1 one is deprecated), Roborazzi | JVM |
 | Native Android (`native-android/`) | JUnit 4 + MockK ViewModel tests against the published domain API; UI checked manually on device | JVM, run locally |
-| Native iOS (`native-ios/`, planned) | XCTest for Swift ViewModels; XCUITest for flows | simulator |
+| Native iOS (`native-ios/`) | XCTest in the app's test host against the real shared core through the published API (Swift can't implement a Kotlin `Flow`, so no Swift fakes); UI checked manually on the simulator | simulator, run locally |
 | Architecture | Konsist | JVM |
 | Coverage and static analysis | Kover (80% line on `domain` and `data`), Detekt | CI |
 
@@ -444,13 +450,26 @@ native-android/
   `apps/cmp`: a screen reads repositories through `domain`, never through `data`.
 - Workflow: `./gradlew publishSharedCore` at the root, then build in `native-android/` (its `README.md`).
 
-### `native-ios/` (planned)
+### `native-ios/`: standalone iOS app
 
-A standalone Xcode project that consumes an XCFramework published by the KMP build, the same way `native-android/`
-consumes AARs. It links exactly one Kotlin umbrella framework (to avoid duplicating the Kotlin runtime and types),
-which exports `core:common`, `core:model` and the `service/*/domain` modules. SKIE turns `Flow<T>` into
-`AsyncSequence`, `suspend` into `async throws` and `sealed` hierarchies into exhaustive `switch`. The details are
-specced when the app is built.
+```
+native-ios/
+├── TmdbNative.xcodeproj  # committed; file-system synchronized groups, shared scheme TmdbNative
+├── TmdbNative/           # App (starts the shared core), views, Theme, Info.plist, assets
+└── TmdbNativeTests/      # XCTest, hosted by the app
+```
+
+- One app target to start; feature folders are split out when a second feature needs them.
+- Dependency: the local package `../build/swift-package/TmdbCore`, product `TmdbCore`. It links exactly one Kotlin
+  umbrella framework (to avoid duplicating the Kotlin runtime and types), which exports the kernel and the
+  `service/*/domain` modules.
+- Start-up: `SharedCore.shared.start()` in the `App` init. Repositories come from `SharedCore`'s accessors; Swift
+  never sees Koin.
+- Interop (SKIE): `Flow<T>` becomes `SkieSwiftFlow<T>`, an `AsyncSequence` read with `for await`; `suspend` becomes
+  `async throws`; sealed types get `onEnum(of:)` for an exhaustive `switch`.
+- ViewModels are `@MainActor` `ObservableObject`s with `@Published` state, held with `@StateObject` (iOS 16; no
+  `@Observable`, which needs iOS 17). The feature rules are the same as in the other apps.
+- Workflow: `./gradlew publishSharedCore` at the root, then build in `native-ios/` (its `README.md`).
 
 ### Localization
 
@@ -459,7 +478,7 @@ specced when the app is built.
 | Remote content | Locale sent to the API, cached per locale |
 | `apps/cmp` UI | Compose Multiplatform resources |
 | `native-android/` UI | Android resources |
-| `native-ios/` UI (planned) | String Catalog |
+| `native-ios/` UI | String Catalog |
 
 ---
 
@@ -468,14 +487,14 @@ specced when the app is built.
 | Area | Choice |
 |---|---|
 | Language | Kotlin 2.x (K2), Swift 6 |
-| UI | Compose Multiplatform (`apps/cmp`); Jetpack Compose (`native-android/`); SwiftUI (`native-ios/`, planned) |
+| UI | Compose Multiplatform (`apps/cmp`); Jetpack Compose (`native-android/`); SwiftUI (`native-ios/`) |
 | Navigation | Navigation Compose (type-safe); SwiftUI `NavigationStack` |
 | DI | Koin |
 | Networking | Ktor Client, kotlinx.serialization |
 | Database | SQLDelight (SQLCipher planned) |
 | Settings | DataStore KMP + AES-GCM (Android Keystore; `cryptography-kotlin` on iOS / JVM) |
 | Images | Coil 3 (Compose); a disk-caching image library on SwiftUI |
-| iOS interop | SKIE (planned, with `native-ios/`) |
+| iOS interop | SKIE (in the `TmdbCore` XCFramework) |
 | Testing | `kotlin.test`, MockK, Turbine, Kotest assertions; Konsist; Kover |
 | Build | Gradle version catalog, convention plugins in `build-logic` |
 
@@ -503,6 +522,15 @@ The standalone `native-android/` is not built on CI. It is built and checked loc
 cd native-android && ./gradlew :app:assembleDebug :app:detekt :app:testDebugUnitTest
 ```
 
+The standalone `native-ios/` is not built on CI either. It is built and tested locally (macOS + Xcode):
+
+```bash
+./gradlew publishSharedCore
+cd native-ios
+xcodebuild -project TmdbNative.xcodeproj -scheme TmdbNative -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+xcodebuild -project TmdbNative.xcodeproj -scheme TmdbNative -destination 'platform=iOS Simulator,name=iPhone 17' test
+```
+
 ---
 
 ## 14. Publishing the shared core
@@ -520,4 +548,8 @@ The KMP build publishes the shared core so that standalone apps can use it like 
 - **Consumer:** declares `maven("../build/maven-repo")` restricted to the group `com.banhmilabs.tmdb`, and excludes
   that group from the remote repositories. A build before publishing then fails with a clear "Could not find
   com.banhmilabs.tmdb:…". It depends on the root coordinates; Gradle metadata picks the platform variant.
-- Set up by `tmdb.module` (`build-logic/.../buildlogic/Publishing.kt`).
+- **iOS:** on macOS, `publishSharedCore` also builds `core:ios` into a static release XCFramework `TmdbCore`
+  (`iosArm64`, `iosSimulatorArm64`, with SKIE) and writes it with a generated `Package.swift` (iOS major version from
+  the catalog) to the git-ignored `build/swift-package/TmdbCore`. `core:ios` is not published to Maven. A consumer
+  adds the folder as a local Swift Package; a build before publishing fails with "the package … cannot be accessed".
+- Set up by `tmdb.module` (`build-logic/.../buildlogic/Publishing.kt`, `IosSdk.kt` for iOS).

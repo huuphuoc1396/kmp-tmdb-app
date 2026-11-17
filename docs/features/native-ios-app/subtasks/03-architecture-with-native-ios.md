@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Depends on: 02-standalone-native-ios-app
-Status: Todo
+Status: Done
 
 ## Goal
 The KMP build's docs and rules describe the standalone `native-ios/` app and how the shared core is published for
