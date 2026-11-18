@@ -7,7 +7,8 @@ Full design: `docs/architecture.md`.
 Per-layer rules (build logic, tests, architecture tests) are in `.claude/rules/` and load by path.
 
 Current state: early. Production code exists in `core:common` (`AppResult`, `AppError`, `DispatcherProvider`),
-`core:security` (master key cipher), `core:datastore` (encrypted DataStore), `core:di` (`initKoin()`) and the
+`core:security` (master key cipher), `core:datastore` (encrypted DataStore), `core:network` (TMDB client,
+`apiCall`), `core:di` (`initKoin()`) and the
 `settings` context (`service/settings/{domain,data,fake}`, onboarding state), `core:testing` (`MainDispatcherTest`)
 and the `cmp/` onboarding feature (`cmp/feature/onboarding/ui`). The other `core/*` modules are still
 skeletons with a `*SmokeTest` placeholder. Contexts `title` and `favorites` are created by the first feature that
@@ -26,7 +27,9 @@ skeleton or existing examples.
 - Android SDK via `local.properties` (`sdk.dir`), git-ignored. compileSdk 37, targetSdk 37, minSdk 24, iOS 16.
 - iOS targets need macOS + Xcode; `kotlin.native.ignoreDisabledTargets=true` lets Android work proceed without them.
 - Configuration cache and build cache are on (`gradle.properties`). Keep build logic config-cache safe.
-- Secrets (TMDB token) go in git-ignored `secrets.properties`; not wired up yet (planned in the network task).
+- TMDB API Read Access Token: `TMDB_ACCESS_TOKEN` in git-ignored `secrets.properties` (copy `secrets.properties.example`),
+  or the `TMDB_ACCESS_TOKEN` environment variable on CI. It is injected XOR-obfuscated at build time; without it the build
+  warns and TMDB calls fail with Unauthorized.
 
 ## Commands
 `<module>` is a Gradle path such as `core:common` or `service:title:data`.
@@ -133,6 +136,7 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | Current time | `kotlin.time.Clock` (injected) | stdlib |
 | Shared IDs and models | `TitleId`, `Title`, `Genre`, `Language` | `core:model` |
 | Encrypted local settings | `encryptedDataStore(...)`, `masterKeyCipher(alias)` | `core:datastore`, `core:security` |
+| TMDB HTTP client / error mapping | `createTmdbHttpClient()`, `apiCall { }` | `core:network` |
 | Koin start-up | `initKoin(appDeclaration)` | `core:di` |
 | Test Main dispatcher (ViewModel tests) | extend `MainDispatcherTest` | `core:testing` |
 | Compose resources (strings, drawables) | `composeResources/` in the module; `Res` is in `<namespace>.generated.resources` | `cmp/*` (set by `tmdb.module`) |
