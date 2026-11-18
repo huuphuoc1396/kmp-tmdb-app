@@ -8,6 +8,7 @@ import com.banhmilabs.tmdb.buildlogic.configureIosSdk
 import com.banhmilabs.tmdb.buildlogic.configureKotlinMultiplatform
 import com.banhmilabs.tmdb.buildlogic.configureKover
 import com.banhmilabs.tmdb.buildlogic.configurePublishing
+import com.banhmilabs.tmdb.buildlogic.configureSqlDelight
 import com.banhmilabs.tmdb.buildlogic.configureTmdbSecrets
 import com.banhmilabs.tmdb.buildlogic.derivedNamespace
 import com.banhmilabs.tmdb.buildlogic.hasProductionSources
@@ -43,6 +44,7 @@ class ModuleConventionPlugin : Plugin<Project> {
         }
         configureKotlinMultiplatform(iosFramework = if (type.kind == ModuleKind.APP) IOS_FRAMEWORK else null)
         if (path == TMDB_SECRETS_MODULE) configureTmdbSecrets()
+        if (type.kind == ModuleKind.DATA && file(SQLDELIGHT_SOURCES).isDirectory) configureSqlDelight()
         if (type.kind == ModuleKind.IOS_SDK) configureIosSdk()
         if (type.app == "cmp" && type.kind in COMPOSE_KINDS) configureComposeMultiplatform()
         if (type.kind == ModuleKind.DOMAIN || type.kind == ModuleKind.DATA) configureKover()
@@ -71,6 +73,7 @@ class ModuleConventionPlugin : Plugin<Project> {
 
     private companion object {
         const val IOS_FRAMEWORK = "ComposeApp"
+        const val SQLDELIGHT_SOURCES = "src/commonMain/sqldelight"
         val COMPOSE_KINDS = setOf(ModuleKind.DESIGNSYSTEM, ModuleKind.UI, ModuleKind.APP)
         val ANDROID_MAIN_CONFIGURATIONS = setOf("implementation", "api", "compileOnly", "runtimeOnly")
     }

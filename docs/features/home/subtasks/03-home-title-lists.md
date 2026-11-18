@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Depends on: 01-tmdb-network-access, 02-local-database-driver
-Status: Todo
+Status: Done
 
 ## Goal
 The shared core provides the ten Home lists (featured and "Mais populares" for each of the five categories) as

@@ -1,0 +1,42 @@
+-- Titles of each Home list, per language, in TMDB order.
+CREATE TABLE homeListTitle (
+    list TEXT NOT NULL,
+    language TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    tmdbId INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    name TEXT NOT NULL,
+    posterPath TEXT,
+    PRIMARY KEY (list, language, position)
+);
+
+-- When each Home list was last fetched, in epoch milliseconds.
+CREATE TABLE homeListFetch (
+    list TEXT NOT NULL,
+    language TEXT NOT NULL,
+    fetchedAt INTEGER NOT NULL,
+    PRIMARY KEY (list, language)
+);
+
+selectTitles:
+SELECT tmdbId, type, name, posterPath
+FROM homeListTitle
+WHERE list = ? AND language = ?
+ORDER BY position;
+
+selectFetchedAt:
+SELECT fetchedAt
+FROM homeListFetch
+WHERE list = ? AND language = ?;
+
+deleteTitles:
+DELETE FROM homeListTitle
+WHERE list = ? AND language = ?;
+
+insertTitle:
+INSERT INTO homeListTitle (list, language, position, tmdbId, type, name, posterPath)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+upsertFetchedAt:
+INSERT OR REPLACE INTO homeListFetch (list, language, fetchedAt)
+VALUES (?, ?, ?);
