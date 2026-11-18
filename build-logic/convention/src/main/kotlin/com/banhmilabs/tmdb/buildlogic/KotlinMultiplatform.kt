@@ -7,12 +7,13 @@ import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 private const val ANDROID_TEST_RUNNER = "androidx.test.runner.AndroidJUnitRunner"
+private const val SQLITE_LINKER_OPT = "-lsqlite3"
 
 /**
  * Kotlin Multiplatform library targeting Android and iOS (device + simulator), with kotlinx.serialization.
  * Unit tests default to `androidHostTest` (`kotlin-test`, MockK). `commonTest` (`kotlin-test`, no MockK) also runs
- * on the Android host, in the Android device tests and on the iOS simulator. With [iosFramework], the iOS targets
- * also build a static framework of that name (app shells).
+ * on the Android host, in the Android device tests and on the iOS simulator. iOS binaries link sqlite3 (SQLDelight).
+ * With [iosFramework], the iOS targets also build a static framework of that name (app shells).
  */
 internal fun Project.configureKotlinMultiplatform(iosFramework: String? = null) {
     pluginManager.apply("org.jetbrains.kotlin.multiplatform")
@@ -33,6 +34,7 @@ internal fun Project.configureKotlinMultiplatform(iosFramework: String? = null) 
             }
         }
         listOf(iosArm64(), iosSimulatorArm64()).forEach { target ->
+            target.binaries.configureEach { linkerOpts(SQLITE_LINKER_OPT) }
             if (iosFramework != null) {
                 target.binaries.framework {
                     baseName = iosFramework

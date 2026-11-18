@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Depends on: none
-Status: Todo
+Status: Done
 
 ## Goal
 The shared core can open a local SQLite database on Android and iOS, so a context can keep its own cached data on
