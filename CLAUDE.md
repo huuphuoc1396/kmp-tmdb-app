@@ -8,7 +8,7 @@ Per-layer rules (build logic, tests, architecture tests) are in `.claude/rules/`
 
 Current state: early. Production code exists in `core:common` (`AppResult`, `AppError`, `DispatcherProvider`),
 `core:security` (master key cipher), `core:datastore` (encrypted DataStore), `core:network` (TMDB client,
-`apiCall`), `core:di` (`initKoin()`) and the
+`apiCall`), `core:database` (`DatabaseDriverFactory`), `core:di` (`initKoin()`) and the
 `settings` context (`service/settings/{domain,data,fake}`, onboarding state), `core:testing` (`MainDispatcherTest`)
 and the `cmp/` onboarding feature (`cmp/feature/onboarding/ui`). The other `core/*` modules are still
 skeletons with a `*SmokeTest` placeholder. Contexts `title` and `favorites` are created by the first feature that
@@ -137,6 +137,7 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | Shared IDs and models | `TitleId`, `Title`, `Genre`, `Language` | `core:model` |
 | Encrypted local settings | `encryptedDataStore(...)`, `masterKeyCipher(alias)` | `core:datastore`, `core:security` |
 | TMDB HTTP client / error mapping | `createTmdbHttpClient()`, `apiCall { }` | `core:network` |
+| SQLite driver for a context's database | `DatabaseDriverFactory(context)` / `DatabaseDriverFactory()` | `core:database` |
 | Koin start-up | `initKoin(appDeclaration)` | `core:di` |
 | Test Main dispatcher (ViewModel tests) | extend `MainDispatcherTest` | `core:testing` |
 | Compose resources (strings, drawables) | `composeResources/` in the module; `Res` is in `<namespace>.generated.resources` | `cmp/*` (set by `tmdb.module`) |
