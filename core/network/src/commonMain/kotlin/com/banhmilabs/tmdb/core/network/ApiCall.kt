@@ -8,11 +8,8 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CancellationException
 import kotlinx.io.IOException
 
-/**
- * Runs a TMDB request and maps any failure to an [AppError]: 401 Unauthorized, 404 NotFound, other HTTP errors
- * Unknown, timeouts and I/O errors Network, anything else (e.g. malformed JSON) Unknown. Cancellation is rethrown.
- */
-@Suppress("TooGenericExceptionCaught") // Every failure must become an AppError.
+/** Runs a TMDB request: 401 Unauthorized, 404 NotFound, timeout/IO Network, else Unknown. Rethrows cancellation. */
+@Suppress("TooGenericExceptionCaught") // Every failure becomes an AppError.
 suspend fun <T> apiCall(block: suspend () -> T): AppResult<T> = try {
     AppResult.Success(block())
 } catch (e: CancellationException) {

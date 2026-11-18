@@ -11,7 +11,7 @@ import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-/** TMDB API v3 base URL; request paths are relative to it (`movie/popular`). */
+/** Request paths are relative to it, e.g. `movie/popular`. */
 const val TMDB_BASE_URL = "https://api.themoviedb.org/3/"
 
 private const val CONNECT_TIMEOUT_MILLIS = 15_000L
@@ -22,10 +22,7 @@ internal val tmdbJson = Json {
     explicitNulls = false
 }
 
-/**
- * Ktor client for TMDB API v3: HTTPS base URL, Bearer token, JSON, timeouts; non-2xx responses throw. Endpoints live
- * in each service's `data` module, which adds `parameter("language", tag)` per request and wraps calls in [apiCall].
- */
+/** TMDB v3 client: Bearer token, JSON, timeouts; non-2xx throws. Callers add `language` and wrap in [apiCall]. */
 fun createTmdbHttpClient(
     engine: HttpClientEngine = platformHttpEngine(),
     accessToken: String = TmdbSecrets.accessToken,
