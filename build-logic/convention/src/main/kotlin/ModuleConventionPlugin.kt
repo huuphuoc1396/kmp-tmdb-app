@@ -1,12 +1,14 @@
 import com.banhmilabs.tmdb.buildlogic.DependencyRules
 import com.banhmilabs.tmdb.buildlogic.ModuleKind
 import com.banhmilabs.tmdb.buildlogic.ModuleType
+import com.banhmilabs.tmdb.buildlogic.TMDB_SECRETS_MODULE
 import com.banhmilabs.tmdb.buildlogic.configureAndroidApplication
 import com.banhmilabs.tmdb.buildlogic.configureComposeMultiplatform
 import com.banhmilabs.tmdb.buildlogic.configureIosSdk
 import com.banhmilabs.tmdb.buildlogic.configureKotlinMultiplatform
 import com.banhmilabs.tmdb.buildlogic.configureKover
 import com.banhmilabs.tmdb.buildlogic.configurePublishing
+import com.banhmilabs.tmdb.buildlogic.configureTmdbSecrets
 import com.banhmilabs.tmdb.buildlogic.derivedNamespace
 import com.banhmilabs.tmdb.buildlogic.hasProductionSources
 import com.banhmilabs.tmdb.buildlogic.isPublished
@@ -40,6 +42,7 @@ class ModuleConventionPlugin : Plugin<Project> {
             return
         }
         configureKotlinMultiplatform(iosFramework = if (type.kind == ModuleKind.APP) IOS_FRAMEWORK else null)
+        if (path == TMDB_SECRETS_MODULE) configureTmdbSecrets()
         if (type.kind == ModuleKind.IOS_SDK) configureIosSdk()
         if (type.app == "cmp" && type.kind in COMPOSE_KINDS) configureComposeMultiplatform()
         if (type.kind == ModuleKind.DOMAIN || type.kind == ModuleKind.DATA) configureKover()
