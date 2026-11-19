@@ -1,0 +1,97 @@
+package com.banhmilabs.tmdb.cmp.feature.home.ui.component
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.Res
+import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_category_anime
+import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_category_documentaries
+import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_category_movies
+import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_category_novelas
+import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_category_series
+import com.banhmilabs.tmdb.service.title.domain.TitleCategory
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
+
+private val TabsHeight = 34.dp
+private val TabsStart = 33.dp
+private val TabSpacing = 29.dp
+private val PillShape = RoundedCornerShape(70.dp)
+private val PillHorizontalPadding = 14.dp
+private val TabVerticalPadding = 6.dp
+private const val UNSELECTED_ALPHA = 0.4f
+
+private val SelectedStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+private val UnselectedStyle = TextStyle(
+    color = Color.White.copy(alpha = UNSELECTED_ALPHA),
+    fontSize = 16.sp,
+    fontWeight = FontWeight.Normal,
+)
+
+/** The category tabs in display order; the selected one is a pill. Scrolls sideways and bleeds to the end edge. */
+@Composable
+internal fun CategoryTabs(selected: TitleCategory, onSelect: (TitleCategory) -> Unit, modifier: Modifier = Modifier) {
+    LazyRow(
+        modifier = modifier.height(TabsHeight),
+        contentPadding = PaddingValues(start = TabsStart),
+        horizontalArrangement = Arrangement.spacedBy(TabSpacing),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        items(TitleCategory.entries) { category ->
+            CategoryTab(
+                label = stringResource(category.label),
+                selected = category == selected,
+                onClick = { onSelect(category) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun CategoryTab(label: String, selected: Boolean, onClick: () -> Unit) {
+    val shape = if (selected) {
+        Modifier
+            .clip(PillShape)
+            .background(MaterialTheme.colorScheme.secondary)
+    } else {
+        Modifier
+    }
+    Text(
+        text = label,
+        modifier = shape
+            .selectable(selected = selected, role = Role.Tab, onClick = onClick)
+            .padding(
+                horizontal = if (selected) PillHorizontalPadding else 0.dp,
+                vertical = TabVerticalPadding,
+            ),
+        style = if (selected) SelectedStyle else UnselectedStyle,
+        maxLines = 1,
+    )
+}
+
+private val TitleCategory.label: StringResource
+    get() = when (this) {
+        TitleCategory.MOVIES -> Res.string.home_category_movies
+        TitleCategory.SERIES -> Res.string.home_category_series
+        TitleCategory.ANIME -> Res.string.home_category_anime
+        TitleCategory.NOVELAS -> Res.string.home_category_novelas
+        TitleCategory.DOCUMENTARIES -> Res.string.home_category_documentaries
+    }

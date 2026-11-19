@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Home](../design/home.md)
 Depends on: 03-home-title-lists
-Status: Todo
+Status: Done
 
 ## Goal
 In the Compose Multiplatform app (Android and iOS), the placeholder Home is replaced by the real Home as designed:

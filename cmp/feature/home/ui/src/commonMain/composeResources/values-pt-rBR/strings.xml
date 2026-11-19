@@ -1,0 +1,10 @@
+<resources>
+    <string name="home_title">O que você quer assistir hoje?</string>
+    <string name="home_search_hint">Buscar</string>
+    <string name="home_popular_heading">Mais populares</string>
+    <string name="home_category_movies">Filmes</string>
+    <string name="home_category_series">Séries</string>
+    <string name="home_category_anime">Animes</string>
+    <string name="home_category_novelas">Novelas</string>
+    <string name="home_category_documentaries">Documentários</string>
+</resources>
