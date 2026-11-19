@@ -1,6 +1,6 @@
 package com.banhmilabs.tmdb.cmp.feature.home.ui
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,15 +13,14 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -35,9 +34,12 @@ import com.banhmilabs.tmdb.cmp.feature.home.ui.component.HomeHeader
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.PosterRow
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.SearchField
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.Res
+import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_background
+import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_header_glow
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_popular_heading
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -52,9 +54,6 @@ private val TabsToFeatured = 37.dp
 private val FeaturedToHeading = 23.dp
 private val HeadingToPopular = 16.dp
 private val HeaderGlowHeight = 522.dp
-
-private val ScreenTop = Color(0xFF303243)
-private const val SCREEN_GRADIENT_END = 0.65394f
 
 private val HeadingStyle = TextStyle(color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
@@ -78,18 +77,20 @@ internal fun HomeScreen(onTitleClick: (Title) -> Unit, viewModel: HomeViewModel 
 
 @Composable
 internal fun HomeContent(state: HomeUiState, onIntent: (HomeIntent) -> Unit, modifier: Modifier = Modifier) {
-    val colors = MaterialTheme.colorScheme
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Brush.verticalGradient(0f to ScreenTop, SCREEN_GRADIENT_END to colors.background)),
-    ) {
+    Box(modifier = modifier.fillMaxSize()) {
+        // Fixed to the screen; the header glow below scrolls with the content.
+        Image(
+            painter = painterResource(Res.drawable.home_background),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds,
+        )
         Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(HeaderGlowHeight)
-                    .background(Brush.verticalGradient(listOf(colors.primary, Color.Transparent))),
+            Image(
+                painter = painterResource(Res.drawable.home_header_glow),
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth().height(HeaderGlowHeight),
+                contentScale = ContentScale.FillBounds,
             )
             Column(
                 modifier = Modifier

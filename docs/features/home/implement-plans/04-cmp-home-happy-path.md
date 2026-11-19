@@ -349,3 +349,11 @@ back button. Loading, error and empty states, pull-to-refresh and accessibility 
   - Switching to Anime changes both rows.
   - Tapping a poster opens the placeholder showing its name.
   - Back returns to Anime with the same rows.
+- **Backgrounds are vector drawables, not `Brush` code** (from user, after review). This matches onboarding's
+  `onboarding_scrim.xml`.
+  - `drawable/home_background.xml`: 375×812, `#303243` → `#15151D` at 0.65394. It is drawn behind the screen with
+    `ContentScale.FillBounds`.
+  - `drawable/home_header_glow.xml`: 375×522, `#8000FF` → transparent. It is drawn at the top of the scrolling
+    content.
+  - The glow colour is now fixed in the vector rather than taken from `primary`.
+  - Checked on the iPhone 17 simulator: it looks the same as before. This was also the first run of Home on iOS.
