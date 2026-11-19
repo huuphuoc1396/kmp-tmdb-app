@@ -6,6 +6,7 @@ import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 import com.banhmilabs.tmdb.service.title.domain.TitleListType
 import com.banhmilabs.tmdb.service.title.domain.TitleListsRepository
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -33,6 +34,22 @@ class FakeTitleListsRepositoryTest : TitleListsRepositoryContract() {
         assertEquals(
             AppResult.Success(Unit),
             fake.refresh(TitleCategory.SERIES, TitleListType.FEATURED, Language.EN_US),
+        )
+    }
+
+    @Test
+    fun setRemoteTitlesAppliesOnlyToThatList() = runTest {
+        val fake = FakeTitleListsRepository(CONTRACT_TITLES)
+        val anime = CONTRACT_TITLES.take(1)
+        fake.setRemoteTitles(TitleCategory.ANIME, TitleListType.POPULAR, anime)
+
+        fake.refresh(TitleCategory.ANIME, TitleListType.POPULAR, Language.PT_BR)
+        fake.refresh(TitleCategory.ANIME, TitleListType.FEATURED, Language.PT_BR)
+
+        assertEquals(anime, fake.observe(TitleCategory.ANIME, TitleListType.POPULAR, Language.PT_BR).first())
+        assertEquals(
+            CONTRACT_TITLES,
+            fake.observe(TitleCategory.ANIME, TitleListType.FEATURED, Language.PT_BR).first(),
         )
     }
 }

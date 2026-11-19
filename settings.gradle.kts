@@ -38,6 +38,7 @@ include(
     ":service:title:fake",
     ":cmp:designsystem",
     ":cmp:feature:onboarding:ui",
+    ":cmp:feature:home:ui",
     ":cmp:composeApp",
     ":cmp:androidApp",
 )

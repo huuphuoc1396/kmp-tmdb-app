@@ -15,11 +15,17 @@ import kotlinx.coroutines.flow.update
 
 /**
  * In-memory [TitleListsRepository] for tests; kept honest by [TitleListsRepositoryContract]. Every refresh stores
- * [remoteTitles] (no staleness check).
+ * the list's titles from [setRemoteTitles], else [remoteTitles] (no staleness check).
  */
 class FakeTitleListsRepository(private val remoteTitles: List<Title> = emptyList()) : TitleListsRepository {
     private val lists = MutableStateFlow<Map<Key, List<Title>>>(emptyMap())
+    private val remoteByList = mutableMapOf<Pair<TitleCategory, TitleListType>, List<Title>>()
     private var nextRefreshError: AppError? = null
+
+    /** Refreshes of this list, in any language, store [titles] instead of [remoteTitles]. */
+    fun setRemoteTitles(category: TitleCategory, listType: TitleListType, titles: List<Title>) {
+        remoteByList[category to listType] = titles
+    }
 
     /** The next [refresh] fails with [error] and leaves the cache unchanged. */
     fun failNextRefresh(error: AppError) {
@@ -40,7 +46,8 @@ class FakeTitleListsRepository(private val remoteTitles: List<Title> = emptyList
             nextRefreshError = null
             return AppResult.Failure(error)
         }
-        lists.update { it + (Key(category, listType, language) to remoteTitles) }
+        val titles = remoteByList[category to listType] ?: remoteTitles
+        lists.update { it + (Key(category, listType, language) to titles) }
         return AppResult.Success(Unit)
     }
 
