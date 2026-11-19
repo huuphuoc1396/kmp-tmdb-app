@@ -35,6 +35,7 @@ detekt {
 dependencies {
     implementation(libs.shared.core.di)
     implementation(libs.shared.core.settings.domain)
+    implementation(libs.shared.core.title.domain)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.foundation)
@@ -47,6 +48,8 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.core.splashscreen)
     implementation(libs.kotlinx.serialization.core)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.mockk)

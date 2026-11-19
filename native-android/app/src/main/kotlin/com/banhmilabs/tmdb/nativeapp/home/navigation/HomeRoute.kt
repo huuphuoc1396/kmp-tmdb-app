@@ -1,4 +1,4 @@
-package com.banhmilabs.tmdb.nativeapp
+package com.banhmilabs.tmdb.nativeapp.home.navigation
 
 import kotlinx.serialization.Serializable
 

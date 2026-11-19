@@ -2,4 +2,16 @@
     <string name="onboarding_headline">All about movies, series, anime and much more.</string>
     <string name="onboarding_body">Stay up to date on movies, series, anime and much more.</string>
     <string name="onboarding_get_started">Get started</string>
+    <string name="home_title">What do you want to watch today?</string>
+    <string name="home_search_hint">Search</string>
+    <string name="home_popular_heading">Most popular</string>
+    <string name="home_category_movies">Movies</string>
+    <string name="home_category_series">Series</string>
+    <string name="home_category_anime">Anime</string>
+    <string name="home_category_novelas">Telenovelas</string>
+    <string name="home_category_documentaries">Documentaries</string>
+    <string name="home_row_empty">Nothing to show here yet.</string>
+    <string name="home_row_error">Couldn\'t load these titles.</string>
+    <string name="home_retry">Try again</string>
+    <string name="details_back">Back</string>
 </resources>

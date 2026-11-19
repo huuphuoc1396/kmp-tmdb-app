@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home header glow (design/home.md, Rectangle 10): #8000FF at the top fading to transparent. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="375dp"
+    android:height="522dp"
+    android:viewportWidth="375"
+    android:viewportHeight="522">
+    <path android:pathData="M0,0h375v522h-375z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="187.5"
+                android:startY="0"
+                android:endX="187.5"
+                android:endY="522">
+                <item android:color="#FF8000FF" android:offset="0" />
+                <item android:color="#008000FF" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
+</vector>

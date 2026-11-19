@@ -2,4 +2,16 @@
     <string name="onboarding_headline">Tudo sobre filmes, séries, animes e muito mais.</string>
     <string name="onboarding_body">Fique por dentro das informações de filmes, séries, animes e muito mais.</string>
     <string name="onboarding_get_started">Acessar</string>
+    <string name="home_title">O que você quer assistir hoje?</string>
+    <string name="home_search_hint">Buscar</string>
+    <string name="home_popular_heading">Mais populares</string>
+    <string name="home_category_movies">Filmes</string>
+    <string name="home_category_series">Séries</string>
+    <string name="home_category_anime">Animes</string>
+    <string name="home_category_novelas">Novelas</string>
+    <string name="home_category_documentaries">Documentários</string>
+    <string name="home_row_empty">Nada para mostrar aqui ainda.</string>
+    <string name="home_row_error">Não foi possível carregar estes títulos.</string>
+    <string name="home_retry">Tentar novamente</string>
+    <string name="details_back">Voltar</string>
 </resources>
