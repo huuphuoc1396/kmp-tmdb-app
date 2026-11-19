@@ -21,6 +21,10 @@ class FakeTitleListsRepository(private val remoteTitles: List<Title> = emptyList
     private val lists = MutableStateFlow<Map<Key, List<Title>>>(emptyMap())
     private val remoteByList = mutableMapOf<Pair<TitleCategory, TitleListType>, List<Title>>()
     private var nextRefreshError: AppError? = null
+    private val _refreshRequests = mutableListOf<RefreshRequest>()
+
+    /** Every [refresh] call so far, failed ones included, in call order. */
+    val refreshRequests: List<RefreshRequest> get() = _refreshRequests.toList()
 
     /** Refreshes of this list, in any language, store [titles] instead of [remoteTitles]. */
     fun setRemoteTitles(category: TitleCategory, listType: TitleListType, titles: List<Title>) {
@@ -41,6 +45,7 @@ class FakeTitleListsRepository(private val remoteTitles: List<Title> = emptyList
         language: Language,
         force: Boolean,
     ): AppResult<Unit> {
+        _refreshRequests += RefreshRequest(category, listType, language, force)
         val error = nextRefreshError
         if (error != null) {
             nextRefreshError = null
@@ -50,6 +55,14 @@ class FakeTitleListsRepository(private val remoteTitles: List<Title> = emptyList
         lists.update { it + (Key(category, listType, language) to titles) }
         return AppResult.Success(Unit)
     }
+
+    /** One [refresh] call as made by the code under test. */
+    data class RefreshRequest(
+        val category: TitleCategory,
+        val listType: TitleListType,
+        val language: Language,
+        val force: Boolean,
+    )
 
     private data class Key(val category: TitleCategory, val listType: TitleListType, val language: Language)
 }

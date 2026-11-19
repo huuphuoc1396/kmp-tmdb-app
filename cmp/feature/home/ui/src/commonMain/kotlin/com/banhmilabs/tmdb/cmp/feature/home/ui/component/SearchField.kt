@@ -3,7 +3,7 @@ package com.banhmilabs.tmdb.cmp.feature.home.ui.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +42,7 @@ private val HintStyle = TextStyle(
 internal fun SearchField(modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
-            .height(FieldHeight)
+            .heightIn(min = FieldHeight)
             .clip(FieldShape)
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .clearAndSetSemantics {}

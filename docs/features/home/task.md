@@ -169,9 +169,11 @@ Genre IDs: Animation 16, Documentary 99, Soap 10766 (TV only).
 - [Home](design/home.md)
 
 ## Open questions
-- [ ] Confirm that `/discover/movie` supports `primary_release_date.gte` and `include_adult` as expected (owner:
-  developer, before blueprint of the data layer).
-- [ ] Final copy for the empty-row and error messages in en and pt-BR (owner: user, before the UI subtask).
+- [x] Confirm that `/discover/movie` supports `primary_release_date.gte` and `include_adult` as expected (owner:
+  developer, before blueprint of the data layer). Yes, per TMDB's Discover documentation (plan 03).
+- [x] Final copy for the empty-row and error messages in en and pt-BR (owner: user, before the UI subtask).
+  Empty: "Nothing to show here yet." / "Nada para mostrar aqui ainda."; error: "Couldn't load these titles." /
+  "Não foi possível carregar estes títulos."; retry: "Try again" / "Tentar novamente" (plan 05).
 
 ## Change log
 - 2026-11-17: Initial version.
@@ -179,6 +181,7 @@ Genre IDs: Animation 16, Documentary 99, Soap 10766 (TV only).
 - 2026-11-17: Linked designs: home.
 - 2026-11-17: Search field has no action; Search screen removed from scope (AC-4 changed, user flow step 6
   removed). Confirmed by the user.
+- 2026-11-19: Open questions answered: Discover filters confirmed; empty, error and retry copy decided.
 
 ## Subtasks
 1. [01 - TMDB network access](subtasks/01-tmdb-network-access.md)
