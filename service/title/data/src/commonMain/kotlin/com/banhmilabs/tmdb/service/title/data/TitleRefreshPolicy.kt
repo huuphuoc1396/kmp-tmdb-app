@@ -5,9 +5,8 @@ import kotlin.time.Instant
 
 /** How long cached title data stays fresh. */
 internal object TitleRefreshPolicy {
-    val HOME_LIST_TTL = 6.hours
+    val LIST_TTL = 6.hours
 
-    /** A list never fetched, or fetched more than [HOME_LIST_TTL] before [now], is stale. */
-    fun isStale(fetchedAtMillis: Long?, now: Instant): Boolean =
-        fetchedAtMillis == null || now - Instant.fromEpochMilliseconds(fetchedAtMillis) > HOME_LIST_TTL
+    /** A list never fetched, or fetched more than [LIST_TTL] before [now], is stale. */
+    fun isStale(fetchedAt: Instant?, now: Instant): Boolean = fetchedAt == null || now - fetchedAt > LIST_TTL
 }

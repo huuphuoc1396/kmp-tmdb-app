@@ -1,4 +1,4 @@
-package com.banhmilabs.tmdb.service.title.data
+package com.banhmilabs.tmdb.service.title.data.remote
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -14,4 +14,7 @@ internal data class TmdbTitleDto(
     val title: String? = null,
     val name: String? = null,
     @SerialName("poster_path") val posterPath: String? = null,
-)
+) {
+    /** Films have `title`, series have `name`. */
+    val displayName: String? get() = title ?: name
+}

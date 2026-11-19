@@ -6,9 +6,9 @@ import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
 import com.banhmilabs.tmdb.core.model.TitleId
 import com.banhmilabs.tmdb.core.model.TitleType
-import com.banhmilabs.tmdb.service.title.domain.HomeCategory
-import com.banhmilabs.tmdb.service.title.domain.HomeListsRepository
-import com.banhmilabs.tmdb.service.title.domain.HomeRow
+import com.banhmilabs.tmdb.service.title.domain.TitleCategory
+import com.banhmilabs.tmdb.service.title.domain.TitleListType
+import com.banhmilabs.tmdb.service.title.domain.TitleListsRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -17,38 +17,38 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 
-/** Behavior every [HomeListsRepository] must have; extended by the real implementation's and the fake's tests. */
-abstract class HomeListsRepositoryContract {
+/** Behavior every [TitleListsRepository] must have; extended by the real implementation's and the fake's tests. */
+abstract class TitleListsRepositoryContract {
     /** A repository with nothing cached whose remote serves [CONTRACT_TITLES] for every list. */
-    protected abstract fun TestScope.createRepository(): HomeListsRepository
+    protected abstract fun TestScope.createRepository(): TitleListsRepository
 
     /** The next refresh of the repository last created fails with [error]. */
     protected abstract fun failNextRefresh(error: AppError)
 
     @Test
     fun observeIsNullBeforeRefresh() = runTest {
-        assertNull(createRepository().observe(MOVIES, HomeRow.POPULAR, Language.EN_US).first())
+        assertNull(createRepository().observe(MOVIES, TitleListType.POPULAR, Language.EN_US).first())
     }
 
     @Test
     fun refreshStoresTitlesForObserver() = runTest {
         val repository = createRepository()
 
-        assertEquals(AppResult.Success(Unit), repository.refresh(MOVIES, HomeRow.POPULAR, Language.EN_US))
+        assertEquals(AppResult.Success(Unit), repository.refresh(MOVIES, TitleListType.POPULAR, Language.EN_US))
 
-        assertEquals(CONTRACT_TITLES, repository.observe(MOVIES, HomeRow.POPULAR, Language.EN_US).first())
+        assertEquals(CONTRACT_TITLES, repository.observe(MOVIES, TitleListType.POPULAR, Language.EN_US).first())
     }
 
     @Test
     fun failedRefreshKeepsCachedTitles() = runTest {
         val repository = createRepository()
-        repository.refresh(MOVIES, HomeRow.POPULAR, Language.EN_US)
+        repository.refresh(MOVIES, TitleListType.POPULAR, Language.EN_US)
         failNextRefresh(AppError.Network)
 
-        val result = repository.refresh(MOVIES, HomeRow.POPULAR, Language.EN_US, force = true)
+        val result = repository.refresh(MOVIES, TitleListType.POPULAR, Language.EN_US, force = true)
 
         assertEquals(AppResult.Failure(AppError.Network), result)
-        assertEquals(CONTRACT_TITLES, repository.observe(MOVIES, HomeRow.POPULAR, Language.EN_US).first())
+        assertEquals(CONTRACT_TITLES, repository.observe(MOVIES, TitleListType.POPULAR, Language.EN_US).first())
     }
 
     @Test
@@ -56,30 +56,30 @@ abstract class HomeListsRepositoryContract {
         val repository = createRepository()
         failNextRefresh(AppError.Network)
 
-        assertIs<AppResult.Failure>(repository.refresh(MOVIES, HomeRow.POPULAR, Language.EN_US))
-        assertNull(repository.observe(MOVIES, HomeRow.POPULAR, Language.EN_US).first())
+        assertIs<AppResult.Failure>(repository.refresh(MOVIES, TitleListType.POPULAR, Language.EN_US))
+        assertNull(repository.observe(MOVIES, TitleListType.POPULAR, Language.EN_US).first())
     }
 
     @Test
     fun languagesAreCachedSeparately() = runTest {
         val repository = createRepository()
 
-        repository.refresh(MOVIES, HomeRow.POPULAR, Language.PT_BR)
+        repository.refresh(MOVIES, TitleListType.POPULAR, Language.PT_BR)
 
-        assertNull(repository.observe(MOVIES, HomeRow.POPULAR, Language.EN_US).first())
+        assertNull(repository.observe(MOVIES, TitleListType.POPULAR, Language.EN_US).first())
     }
 
     @Test
     fun listsAreCachedSeparately() = runTest {
         val repository = createRepository()
 
-        repository.refresh(MOVIES, HomeRow.POPULAR, Language.EN_US)
+        repository.refresh(MOVIES, TitleListType.POPULAR, Language.EN_US)
 
-        assertNull(repository.observe(MOVIES, HomeRow.FEATURED, Language.EN_US).first())
+        assertNull(repository.observe(MOVIES, TitleListType.FEATURED, Language.EN_US).first())
     }
 
     companion object {
-        private val MOVIES = HomeCategory.MOVIES
+        private val MOVIES = TitleCategory.MOVIES
 
         /** Two films, the second without a poster. */
         val CONTRACT_TITLES = listOf(

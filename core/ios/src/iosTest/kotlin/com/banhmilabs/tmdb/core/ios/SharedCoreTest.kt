@@ -22,10 +22,10 @@ class SharedCoreTest {
     }
 
     @Test
-    fun startProvidesHomeListsRepository() {
+    fun startProvidesTitleListsRepository() {
         SharedCore.start()
 
-        assertNotNull(SharedCore.homeListsRepository)
+        assertNotNull(SharedCore.titleListsRepository)
     }
 
     @Test

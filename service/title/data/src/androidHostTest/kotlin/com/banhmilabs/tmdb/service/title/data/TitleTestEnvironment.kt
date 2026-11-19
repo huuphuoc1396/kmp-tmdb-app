@@ -5,8 +5,10 @@ import com.banhmilabs.tmdb.core.common.AppError
 import com.banhmilabs.tmdb.core.common.DispatcherProvider
 import com.banhmilabs.tmdb.core.network.createTmdbHttpClient
 import com.banhmilabs.tmdb.service.title.data.generated.TitleDatabase
-import com.banhmilabs.tmdb.service.title.domain.HomeListsRepository
-import com.banhmilabs.tmdb.service.title.fake.HomeListsRepositoryContract.Companion.CONTRACT_TITLES
+import com.banhmilabs.tmdb.service.title.data.local.TitleListLocalDataSource
+import com.banhmilabs.tmdb.service.title.data.remote.TitleListRemoteDataSource
+import com.banhmilabs.tmdb.service.title.domain.TitleListsRepository
+import com.banhmilabs.tmdb.service.title.fake.TitleListsRepositoryContract.Companion.CONTRACT_TITLES
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.respondError
@@ -25,7 +27,7 @@ import kotlin.time.Clock
 import kotlin.time.Instant
 
 /**
- * A real [HomeListsRepositoryImpl] over an in-memory database and a `MockEngine` that serves [responseBody] (or
+ * A real [TitleListsRepositoryImpl] over an in-memory database and a `MockEngine` that serves [responseBody] (or
  * [nextError] once), with a controllable clock. Records every request in [requests].
  */
 internal class TitleTestEnvironment {
@@ -41,7 +43,7 @@ internal class TitleTestEnvironment {
     private val clock = mockk<Clock> { every { now() } answers { now } }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun TestScope.createRepository(): HomeListsRepository {
+    fun TestScope.createRepository(): TitleListsRepository {
         val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY).also { TitleDatabase.Schema.create(it) }
         val engine = MockEngine { request ->
             requests += request
@@ -56,12 +58,11 @@ internal class TitleTestEnvironment {
             }
         }
         val dispatchers = mockk<DispatcherProvider> { every { io } returns UnconfinedTestDispatcher(testScheduler) }
-        return HomeListsRepositoryImpl(
-            database = TitleDatabase(driver),
-            httpClient = createTmdbHttpClient(engine, accessToken = "token"),
+        return TitleListsRepositoryImpl(
+            remote = TitleListRemoteDataSource(createTmdbHttpClient(engine, accessToken = "token")),
+            local = TitleListLocalDataSource(TitleDatabase(driver), dispatchers),
+            refreshes = TitleListRefreshes(backgroundScope),
             clock = clock,
-            dispatchers = dispatchers,
-            scope = backgroundScope,
         )
     }
 

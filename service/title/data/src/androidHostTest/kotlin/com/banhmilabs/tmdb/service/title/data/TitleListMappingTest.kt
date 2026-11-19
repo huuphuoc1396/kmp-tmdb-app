@@ -4,8 +4,8 @@ import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
 import com.banhmilabs.tmdb.core.model.TitleId
 import com.banhmilabs.tmdb.core.model.TitleType
-import com.banhmilabs.tmdb.service.title.domain.HomeCategory
-import com.banhmilabs.tmdb.service.title.domain.HomeRow
+import com.banhmilabs.tmdb.service.title.domain.TitleCategory
+import com.banhmilabs.tmdb.service.title.domain.TitleListType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -14,7 +14,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 /** How TMDB results become cached [Title]s. */
-class HomeListMappingTest {
+class TitleListMappingTest {
     private val env = TitleTestEnvironment()
 
     @Test
@@ -23,7 +23,7 @@ class HomeListMappingTest {
 
         assertEquals(
             listOf(TitleId(1399, TitleType.TV), TitleId(94997, TitleType.TV)),
-            refreshed(HomeCategory.SERIES).map { it.id },
+            refreshed(TitleCategory.SERIES).map { it.id },
         )
     }
 
@@ -51,25 +51,29 @@ class HomeListMappingTest {
     @Test
     fun refreshReplacesPreviousTitlesInOrder() = runTest {
         val repository = with(env) { createRepository() }
-        repository.refresh(HomeCategory.MOVIES, HomeRow.POPULAR, Language.EN_US)
+        repository.refresh(TitleCategory.MOVIES, TitleListType.POPULAR, Language.EN_US)
         env.responseBody = env.fixture("movie_list.json")
 
-        repository.refresh(HomeCategory.MOVIES, HomeRow.POPULAR, Language.EN_US, force = true)
+        repository.refresh(TitleCategory.MOVIES, TitleListType.POPULAR, Language.EN_US, force = true)
 
         assertEquals(
             listOf(1311031L, 755898L, 1061474L),
-            repository.observe(HomeCategory.MOVIES, HomeRow.POPULAR, Language.EN_US).first()?.map { it.id.tmdbId },
+            repository.observe(
+                TitleCategory.MOVIES,
+                TitleListType.POPULAR,
+                Language.EN_US,
+            ).first()?.map { it.id.tmdbId },
         )
     }
 
     private suspend fun TestScope.refreshedMovieFixture(): List<Title> {
         env.responseBody = env.fixture("movie_list.json")
-        return refreshed(HomeCategory.MOVIES)
+        return refreshed(TitleCategory.MOVIES)
     }
 
-    private suspend fun TestScope.refreshed(category: HomeCategory): List<Title> {
+    private suspend fun TestScope.refreshed(category: TitleCategory): List<Title> {
         val repository = with(env) { createRepository() }
-        repository.refresh(category, HomeRow.POPULAR, Language.EN_US)
-        return checkNotNull(repository.observe(category, HomeRow.POPULAR, Language.EN_US).first())
+        repository.refresh(category, TitleListType.POPULAR, Language.EN_US)
+        return checkNotNull(repository.observe(category, TitleListType.POPULAR, Language.EN_US).first())
     }
 }

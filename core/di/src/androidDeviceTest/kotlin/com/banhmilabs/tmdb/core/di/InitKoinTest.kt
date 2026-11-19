@@ -2,7 +2,7 @@ package com.banhmilabs.tmdb.core.di
 
 import androidx.test.platform.app.InstrumentationRegistry
 import com.banhmilabs.tmdb.service.settings.domain.SettingsRepository
-import com.banhmilabs.tmdb.service.title.domain.HomeListsRepository
+import com.banhmilabs.tmdb.service.title.domain.TitleListsRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.stopKoin
 import kotlin.test.AfterTest
@@ -23,9 +23,9 @@ class InitKoinTest {
     }
 
     @Test
-    fun initKoinProvidesHomeListsRepository() {
+    fun initKoinProvidesTitleListsRepository() {
         val koin = initKoin { androidContext(InstrumentationRegistry.getInstrumentation().targetContext) }.koin
 
-        assertNotNull(koin.getOrNull<HomeListsRepository>())
+        assertNotNull(koin.getOrNull<TitleListsRepository>())
     }
 }

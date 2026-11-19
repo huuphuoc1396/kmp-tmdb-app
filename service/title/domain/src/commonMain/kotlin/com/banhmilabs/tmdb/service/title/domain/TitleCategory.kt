@@ -1,7 +1,7 @@
 package com.banhmilabs.tmdb.service.title.domain
 
-/** Home categories, in tab order. */
-enum class HomeCategory {
+/** Title categories, in the order apps show them. */
+enum class TitleCategory {
     MOVIES,
     SERIES,
     ANIME,

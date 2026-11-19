@@ -394,3 +394,26 @@ Other modules affected:
   reach the URL.
 - `kotlin.time.Clock` / `Instant` needed no opt-in on Kotlin 2.4.21, and SQLDelight 2.4.1 generated code with the
   AGP 9 KMP library plugin, so both risks are cleared.
+- After review, `HomeListsRepositoryImpl` is split (from user). The behavior is unchanged:
+  - `HomeListRemoteDataSource` fetches the TMDB list, returning `HomeListEntry`, with entries without a name dropped.
+  - `HomeListLocalDataSource` handles `observe`, `fetchedAt` and `replace` in SQLDelight.
+  - `HomeListRefreshes` runs one refresh per list in its own scope, bound in Koin (EC-9). It has its own
+    `HomeListRefreshesTest`, with 5 cases. It started as a generic `SharedRefreshes<K>`; the type parameter was
+    dropped because only `title` uses it.
+  - The repository only decides when to refresh. `TitleRefreshPolicy.isStale` takes an `Instant?`.
+- Packages by layer (from user):
+  - `data/` holds `HomeListsRepositoryImpl` and `HomeListKey`.
+  - `data/remote/` holds the remote data source, requests and DTOs.
+  - `data/local/` holds the local data source.
+  - `HomeListRefreshes` and `TitleRefreshPolicy` sit at the `data/` root, next to the repository they serve. A
+    `refresh/` package was tried and dropped: neither is a data source.
+  - `di/` and the `.sq` in `generated/` are unchanged. Tests follow the same packages.
+- Names follow content, not the Home screen (from user). The shared core is UI-agnostic, so:
+  - `HomeCategory` → `TitleCategory`, and `HomeRow` → `TitleListType` (parameter `listType`).
+  - `HomeListsRepository` → `TitleListsRepository`.
+  - Every `HomeList*` data, fake and test class → `TitleList*`.
+  - `HOME_LIST_TTL` → `LIST_TTL`.
+  - `HomeList.sq` with `homeListTitle` / `homeListFetch` → `TitleList.sq` with `titleListItem` / `titleListFetch`.
+    Nothing has been released yet, so no migration is needed.
+  - `SharedCore.homeListsRepository` → `titleListsRepository`.
+  - The steps above keep the old names as they were planned.

@@ -10,7 +10,7 @@ Current state: early. Production code exists in `core:common` (`AppResult`, `App
 `core:security` (master key cipher), `core:datastore` (encrypted DataStore), `core:network` (TMDB client,
 `apiCall`), `core:database` (`DatabaseDriverFactory`), `core:model` (`TitleId`, `Title`, `Language`), `core:di`
 (`initKoin()`), the `settings` context (`service/settings/{domain,data,fake}`, onboarding state), the `title` context
-(`service/title/{domain,data,fake}`, Home lists cached in SQLDelight), `core:testing` (`MainDispatcherTest`)
+(`service/title/{domain,data,fake}`, featured and popular lists cached in SQLDelight), `core:testing` (`MainDispatcherTest`)
 and the `cmp/` onboarding feature (`cmp/feature/onboarding/ui`). The other `core/*` modules are still
 skeletons with a `*SmokeTest` placeholder. The `favorites` context is created by the first feature that needs it. New code follows `docs/architecture.md` (sections 5–8), not the
 skeleton or existing examples.
@@ -139,11 +139,11 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | TMDB HTTP client / error mapping | `createTmdbHttpClient()`, `apiCall { }` | `core:network` |
 | SQLite driver for a context's database | `DatabaseDriverFactory(context)` / `DatabaseDriverFactory()` | `core:database` |
 | A context's SQLDelight database | `.sq` files in `src/commonMain/sqldelight/<namespace path>/generated/`; `tmdb.module` generates `<Context>Database` | `service/<ctx>/data` |
-| Home lists (observe, refresh) | `HomeListsRepository` | `service:title:domain` |
+| Featured and popular title lists (observe, refresh) | `TitleListsRepository` | `service:title:domain` |
 | Koin start-up | `initKoin(appDeclaration)` | `core:di` |
 | Test Main dispatcher (ViewModel tests) | extend `MainDispatcherTest` | `core:testing` |
 | Compose resources (strings, drawables) | `composeResources/` in the module; `Res` is in `<namespace>.generated.resources` | `cmp/*` (set by `tmdb.module`) |
-| Repository test double | `Fake<Repository>` (e.g. `FakeSettingsRepository`, `FakeHomeListsRepository`) | `service/<ctx>/fake` |
+| Repository test double | `Fake<Repository>` (e.g. `FakeSettingsRepository`, `FakeTitleListsRepository`) | `service/<ctx>/fake` |
 | Module build setup | `tmdb.module` (shared modules), `tmdb.detekt` (JVM modules) | `build-logic/convention` |
 
 ## Do not

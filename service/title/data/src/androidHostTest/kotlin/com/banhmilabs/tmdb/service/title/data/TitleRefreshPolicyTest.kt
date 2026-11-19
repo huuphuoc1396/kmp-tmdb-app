@@ -16,11 +16,11 @@ class TitleRefreshPolicyTest {
 
     @Test
     fun sevenHoursOldIsStale() {
-        assertTrue(TitleRefreshPolicy.isStale((now - 7.hours).toEpochMilliseconds(), now))
+        assertTrue(TitleRefreshPolicy.isStale(now - 7.hours, now))
     }
 
     @Test
     fun oneHourOldIsFresh() {
-        assertFalse(TitleRefreshPolicy.isStale((now - 1.hours).toEpochMilliseconds(), now))
+        assertFalse(TitleRefreshPolicy.isStale(now - 1.hours, now))
     }
 }

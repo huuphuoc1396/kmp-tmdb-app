@@ -1,8 +1,8 @@
-package com.banhmilabs.tmdb.service.title.data
+package com.banhmilabs.tmdb.service.title.data.remote
 
 import com.banhmilabs.tmdb.core.model.TitleType
-import com.banhmilabs.tmdb.service.title.domain.HomeCategory
-import com.banhmilabs.tmdb.service.title.domain.HomeRow
+import com.banhmilabs.tmdb.service.title.domain.TitleCategory
+import com.banhmilabs.tmdb.service.title.domain.TitleListType
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
@@ -13,30 +13,30 @@ private const val GENRE_SOAP = "10766"
 private const val GENRE_DOCUMENTARY = "99"
 private const val NOVELA_COUNTRIES = "BR|MX|CO|AR|VE|CL|PE"
 
-/** A TMDB request for a Home list; [path] is relative to `TMDB_BASE_URL`, [type] is the type of its results. */
-internal data class HomeListRequest(val path: String, val parameters: Map<String, String>, val type: TitleType)
+/** A TMDB request for a title list; [path] is relative to `TMDB_BASE_URL`, [type] is the type of its results. */
+internal data class TitleListRequest(val path: String, val parameters: Map<String, String>, val type: TitleType)
 
-/** The agreed endpoint of each Home list (task.md "Data source"); date filters are counted back from [now]. */
-internal fun homeListRequest(category: HomeCategory, row: HomeRow, now: Instant): HomeListRequest {
-    val featured = row == HomeRow.FEATURED
+/** The TMDB endpoint and filters of each title list; date filters are counted back from [now]. */
+internal fun titleListRequest(category: TitleCategory, listType: TitleListType, now: Instant): TitleListRequest {
+    val featured = listType == TitleListType.FEATURED
     return when (category) {
-        HomeCategory.MOVIES ->
-            HomeListRequest(if (featured) "trending/movie/week" else "movie/popular", emptyMap(), TitleType.MOVIE)
+        TitleCategory.MOVIES ->
+            TitleListRequest(if (featured) "trending/movie/week" else "movie/popular", emptyMap(), TitleType.MOVIE)
 
-        HomeCategory.SERIES ->
-            HomeListRequest(if (featured) "trending/tv/week" else "tv/popular", emptyMap(), TitleType.TV)
+        TitleCategory.SERIES ->
+            TitleListRequest(if (featured) "trending/tv/week" else "tv/popular", emptyMap(), TitleType.TV)
 
-        HomeCategory.ANIME -> discoverTv(
+        TitleCategory.ANIME -> discoverTv(
             mapOf("with_genres" to GENRE_ANIMATION, "with_original_language" to "ja"),
             airedSince = now.takeIf { featured },
         )
 
-        HomeCategory.NOVELAS -> discoverTv(
+        TitleCategory.NOVELAS -> discoverTv(
             mapOf("with_genres" to GENRE_SOAP, "with_origin_country" to NOVELA_COUNTRIES),
             airedSince = now.takeIf { featured },
         )
 
-        HomeCategory.DOCUMENTARIES -> HomeListRequest(
+        TitleCategory.DOCUMENTARIES -> TitleListRequest(
             "discover/movie",
             DISCOVER + ("with_genres" to GENRE_DOCUMENTARY) + listOfNotNull(
                 ("primary_release_date.gte" to now.minusDaysAsDate(FEATURED_DOCUMENTARY_DAYS)).takeIf { featured },
@@ -48,7 +48,7 @@ internal fun homeListRequest(category: HomeCategory, row: HomeRow, now: Instant)
 
 private val DISCOVER = mapOf("include_adult" to "false", "sort_by" to "popularity.desc")
 
-private fun discoverTv(filters: Map<String, String>, airedSince: Instant?) = HomeListRequest(
+private fun discoverTv(filters: Map<String, String>, airedSince: Instant?) = TitleListRequest(
     "discover/tv",
     DISCOVER + filters + listOfNotNull(airedSince?.let { "air_date.gte" to it.minusDaysAsDate(FEATURED_TV_DAYS) }),
     TitleType.TV,
