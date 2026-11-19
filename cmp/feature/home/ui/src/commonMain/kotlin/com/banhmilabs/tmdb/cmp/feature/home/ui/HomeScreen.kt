@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -41,8 +40,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.CategoryTabs
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.HomeHeader
@@ -85,26 +82,20 @@ private val HeadingStyle = TextStyle(color = Color.White, fontSize = 18.sp, font
 internal fun HomeScreen(onTitleClick: (Title) -> Unit, viewModel: HomeViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val currentOnTitleClick by rememberUpdatedState(onTitleClick)
-    val lifecycleOwner = LocalLifecycleOwner.current
     val language = Language.fromLocaleTag(Locale.current.toLanguageTag())
     LaunchedEffect(language) {
         viewModel.onIntent(HomeIntent.LanguageChanged(language))
     }
-    LaunchedEffect(viewModel, lifecycleOwner) {
+    LaunchedEffect(viewModel) {
         viewModel.effects.collect { effect ->
             when (effect) {
-                // Once the first tap navigates, Home is no longer resumed, so a second quick tap is dropped.
-                is HomeEffect.OpenTitle ->
-                    if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                        currentOnTitleClick(effect.title)
-                    }
+                is HomeEffect.OpenTitle -> currentOnTitleClick(effect.title)
             }
         }
     }
     HomeContent(state = state, onIntent = viewModel::onIntent)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeContent(state: HomeUiState, onIntent: (HomeIntent) -> Unit, modifier: Modifier = Modifier) {
     val pullState = rememberPullToRefreshState()

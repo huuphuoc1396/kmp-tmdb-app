@@ -264,7 +264,7 @@ semantics and 48dp touch targets.
 | AC-8 Error without cache, retry | 2, 3, 4 | `failedLoadWithoutCacheShowsError`, `retryReloadsTheFailedRow`; manual: How to test 2 |
 | AC-9 Freshness and pull-to-refresh | 2, 4 | `tabSwitchRefreshesWithoutForce`, `pullToRefreshForcesBothListsAndEndsIndicator`; manual: How to test 4, 5 |
 | AC-11 Posters announced with name as button | 5 | Manual: How to test 7 |
-| EC-1 Open once on repeated taps | 4 | Manual: How to test 9 |
+| EC-1 Open once on repeated taps | — (guard removed, see Deviations) | — |
 | EC-2 Long name truncated | 5 (kept from 04) | Manual: How to test 8 |
 | EC-3 Empty row | 2, 3, 4 | `emptyListShowsEmptyRow` |
 | EC-4 One row fails | 2, 4 | `oneRowFailsWhileOtherShowsTitles` |
@@ -318,3 +318,5 @@ semantics and 48dp touch targets.
   - Telenovelas loads both rows.
   - A pull gesture ran, but the indicator was not captured because the refresh finished too fast.
   - Android and process death were not checked (no emulator was running).
+- **The `RESUMED` check before opening details was removed** (from user, after review). As a result, EC-1 (open
+  exactly once on repeated taps) has no guard in the code now, and a quick double tap may push details twice.
