@@ -11,7 +11,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/** Switching tabs and languages, and keeping the selected tab across process death. */
 class HomeViewModelSelectionTest : MainDispatcherTest() {
     private val repository = homeTestRepository()
     private val savedState = SavedStateHandle()

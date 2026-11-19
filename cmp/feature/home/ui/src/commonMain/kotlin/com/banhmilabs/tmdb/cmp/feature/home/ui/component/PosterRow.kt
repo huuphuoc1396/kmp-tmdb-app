@@ -49,7 +49,6 @@ private val PlaceholderNameStyle = TextStyle(
     textAlign = TextAlign.Center,
 )
 
-/** A row of posters that scrolls sideways and bleeds to the end edge. */
 @Composable
 internal fun PosterRow(
     titles: List<Title>,
@@ -70,7 +69,6 @@ internal fun PosterRow(
     }
 }
 
-/** The poster image, or a tile with the title's name when TMDB has no poster. */
 @Composable
 private fun Poster(title: Title, onClick: () -> Unit) {
     Box(

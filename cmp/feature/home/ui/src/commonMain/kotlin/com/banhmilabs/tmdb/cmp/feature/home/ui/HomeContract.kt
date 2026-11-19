@@ -5,7 +5,6 @@ import com.banhmilabs.tmdb.core.model.Title
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 import com.banhmilabs.tmdb.service.title.domain.TitleListType
 
-/** What a poster row shows. */
 internal sealed interface RowState {
     /** Nothing cached yet and no failure reported. */
     data object Loading : RowState

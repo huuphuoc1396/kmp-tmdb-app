@@ -152,7 +152,6 @@ internal fun HomeContent(state: HomeUiState, onIntent: (HomeIntent) -> Unit, mod
     }
 }
 
-/** Both rows of the selected category, or one spinner while neither has loaded yet. */
 @Composable
 private fun HomeRows(state: HomeUiState, onIntent: (HomeIntent) -> Unit) {
     if (state.featured == RowState.Loading && state.popular == RowState.Loading) {

@@ -49,7 +49,6 @@ private val UnselectedStyle = TextStyle(
     fontWeight = FontWeight.Normal,
 )
 
-/** The category tabs in display order; the selected one is a pill. Scrolls sideways and bleeds to the end edge. */
 @Composable
 internal fun CategoryTabs(selected: TitleCategory, onSelect: (TitleCategory) -> Unit, modifier: Modifier = Modifier) {
     LazyRow(

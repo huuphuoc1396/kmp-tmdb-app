@@ -41,7 +41,6 @@ private val MessageStyle = TextStyle(
 )
 private val RetryStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
 
-/** A row's empty or error message in place of its posters, with a retry pill when [onRetry] is set. */
 @Composable
 internal fun RowMessage(message: String, onRetry: (() -> Unit)?, modifier: Modifier = Modifier) {
     Column(

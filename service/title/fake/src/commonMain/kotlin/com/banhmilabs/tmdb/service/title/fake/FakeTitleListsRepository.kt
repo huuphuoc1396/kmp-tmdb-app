@@ -56,7 +56,6 @@ class FakeTitleListsRepository(private val remoteTitles: List<Title> = emptyList
         return AppResult.Success(Unit)
     }
 
-    /** One [refresh] call as made by the code under test. */
     data class RefreshRequest(
         val category: TitleCategory,
         val listType: TitleListType,

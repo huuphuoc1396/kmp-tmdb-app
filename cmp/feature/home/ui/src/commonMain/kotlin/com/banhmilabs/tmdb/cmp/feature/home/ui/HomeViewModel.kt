@@ -107,7 +107,6 @@ internal class HomeViewModel(
         viewModelScope.launch { _effects.send(HomeEffect.OpenTitle(title)) }
     }
 
-    /** Pull-to-refresh: both lists, regardless of age. A pull while one is running is ignored. */
     private fun refreshAll() {
         val current = currentSelection() ?: return
         if (manualRefresh.value) return
