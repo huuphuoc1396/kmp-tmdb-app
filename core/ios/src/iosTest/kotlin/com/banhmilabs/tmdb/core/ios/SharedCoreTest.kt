@@ -22,6 +22,13 @@ class SharedCoreTest {
     }
 
     @Test
+    fun startProvidesTitleListsRepository() {
+        SharedCore.start()
+
+        assertNotNull(SharedCore.titleListsRepository)
+    }
+
+    @Test
     fun startTwiceKeepsTheSameCore() {
         SharedCore.start()
         val repository = SharedCore.settingsRepository

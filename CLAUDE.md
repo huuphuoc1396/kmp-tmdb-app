@@ -8,11 +8,11 @@ Per-layer rules (build logic, tests, architecture tests) are in `.claude/rules/`
 
 Current state: early. Production code exists in `core:common` (`AppResult`, `AppError`, `DispatcherProvider`),
 `core:security` (master key cipher), `core:datastore` (encrypted DataStore), `core:network` (TMDB client,
-`apiCall`), `core:database` (`DatabaseDriverFactory`), `core:di` (`initKoin()`) and the
-`settings` context (`service/settings/{domain,data,fake}`, onboarding state), `core:testing` (`MainDispatcherTest`)
+`apiCall`), `core:database` (`DatabaseDriverFactory`), `core:model` (`TitleId`, `Title`, `Language`), `core:di`
+(`initKoin()`), the `settings` context (`service/settings/{domain,data,fake}`, onboarding state), the `title` context
+(`service/title/{domain,data,fake}`, featured and popular lists cached in SQLDelight), `core:testing` (`MainDispatcherTest`)
 and the `cmp/` onboarding feature (`cmp/feature/onboarding/ui`). The other `core/*` modules are still
-skeletons with a `*SmokeTest` placeholder. Contexts `title` and `favorites` are created by the first feature that
-needs them. New code follows `docs/architecture.md` (sections 5–8), not the
+skeletons with a `*SmokeTest` placeholder. The `favorites` context is created by the first feature that needs it. New code follows `docs/architecture.md` (sections 5–8), not the
 skeleton or existing examples.
 
 ## Repository layout
@@ -134,18 +134,17 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | Result / error type | `AppResult`, `AppError` | `core:common` |
 | Coroutine dispatchers | `DispatcherProvider` | `core:common` |
 | Current time | `kotlin.time.Clock` (injected) | stdlib |
-| Shared IDs and models | `TitleId`, `Title`, `Genre`, `Language` | `core:model` |
+| Shared IDs and models | `TitleId`, `Title`, `Language` (`Language.fromLocaleTag`) | `core:model` |
 | Encrypted local settings | `encryptedDataStore(...)`, `masterKeyCipher(alias)` | `core:datastore`, `core:security` |
 | TMDB HTTP client / error mapping | `createTmdbHttpClient()`, `apiCall { }` | `core:network` |
 | SQLite driver for a context's database | `DatabaseDriverFactory(context)` / `DatabaseDriverFactory()` | `core:database` |
+| A context's SQLDelight database | `.sq` files in `src/commonMain/sqldelight/<namespace path>/generated/`; `tmdb.module` generates `<Context>Database` | `service/<ctx>/data` |
+| Featured and popular title lists (observe, refresh) | `TitleListsRepository` | `service:title:domain` |
 | Koin start-up | `initKoin(appDeclaration)` | `core:di` |
 | Test Main dispatcher (ViewModel tests) | extend `MainDispatcherTest` | `core:testing` |
 | Compose resources (strings, drawables) | `composeResources/` in the module; `Res` is in `<namespace>.generated.resources` | `cmp/*` (set by `tmdb.module`) |
-| Repository test double | `Fake<Repository>` (e.g. `FakeSettingsRepository`) | `service/<ctx>/fake` |
+| Repository test double | `Fake<Repository>` (e.g. `FakeSettingsRepository`, `FakeTitleListsRepository`) | `service/<ctx>/fake` |
 | Module build setup | `tmdb.module` (shared modules), `tmdb.detekt` (JVM modules) | `build-logic/convention` |
-
-(`core:model` types and `kotlin.time.Clock` injection are planned but not implemented yet —
-create them in these modules when first needed.)
 
 ## Do not
 - Don't use MockK or JVM-only APIs in `commonTest`; such tests go in `androidHostTest`.

@@ -1,0 +1,9 @@
+{
+  "page": 1,
+  "results": [
+    {"id": 1399, "name": "Game of Thrones", "poster_path": "/1XS1oqL89opfnbLl8WnZY1O1uJx.jpg", "origin_country": ["US"]},
+    {"id": 94997, "name": "House of the Dragon", "poster_path": "/z2yahl2uefxDCl0nogcRBstwruJ.jpg", "origin_country": ["US"]}
+  ],
+  "total_pages": 1,
+  "total_results": 2
+}

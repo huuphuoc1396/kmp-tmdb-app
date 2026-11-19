@@ -1,0 +1,11 @@
+{
+  "page": 1,
+  "results": [
+    {"id": 1311031, "title": "Demon Slayer: Infinity Castle", "poster_path": "/aFRDH3P7TX61FVGpaLhKr6QiOC1.jpg", "media_type": "movie", "adult": false},
+    {"id": 755898, "title": "War of the Worlds", "poster_path": null, "media_type": "movie", "adult": false},
+    {"id": 999, "poster_path": "/no-name.jpg", "media_type": "movie", "adult": false},
+    {"id": 1061474, "title": "Superman", "poster_path": "/ombsmhYUqR4qqOLOxAyr5V8hbyv.jpg", "media_type": "movie", "adult": false}
+  ],
+  "total_pages": 500,
+  "total_results": 10000
+}
