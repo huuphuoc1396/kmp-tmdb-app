@@ -70,10 +70,12 @@ No Figma variables or styles are bound to this frame; all values are raw.
 | Title (en) | What do you want to watch today? (from task.md AC-10) |
 | Search hint (pt-BR / en) | Buscar / Search |
 | Tabs (pt-BR) | Filmes · Séries · Animes · Novelas · Documentários |
-| Tabs (en) | Not in the design; see Gaps |
+| Tabs (en) | Movies · Series · Anime · Telenovelas · Documentaries (from user, plan 04) |
 | Section heading (pt-BR / en) | Mais populares / Most popular |
 | Retry button (pt-BR) | Tentar novamente |
-| Error / empty messages, retry (en) | Not in the design; see Gaps |
+| Empty row (en / pt-BR) | Nothing to show here yet. / Nada para mostrar aqui ainda. (from user, plan 05) |
+| Error row (en / pt-BR) | Couldn't load these titles. / Não foi possível carregar estes títulos. (from user, plan 05) |
+| Retry button (en) | Try again (from user, plan 05) |
 
 ## States
 ### Content
@@ -121,13 +123,15 @@ The design is dark only; there is no light variant. The app uses a dark theme th
 | Poster images (14 in the frame) | PNG | 124×188 | Featured and popular rows | not downloaded: TMDB film art, sample content only; the app loads posters from TMDB at runtime |
 
 ## Gaps
-- [ ] English tab labels (Movies? Series? Anime? Soaps? Documentaries?) (needed for AC-10)
-- [ ] Error and empty message copy in en and pt-BR, and the English retry label (task.md open question; AC-8, EC-3)
+- [x] English tab labels (Movies? Series? Anime? Soaps? Documentaries?) (needed for AC-10)
+- [x] Error and empty message copy in en and pt-BR, and the English retry label (task.md open question; AC-8, EC-3)
 - [ ] Press feedback for tabs and posters (not designed; e.g. platform default ripple / highlight)
-- [ ] Unselected tabs have no touch area in the design; a minimum touch target is needed (task.md constraints)
-- [ ] Source of the generic person icon (needed for AC-5)
+- [x] Unselected tabs have no touch area in the design; a minimum touch target is needed (task.md constraints)
+- [x] Source of the generic person icon (needed for AC-5)
 
 ## Change log
 - 2026-11-17: Initial version.
 - 2026-11-17: Confirmed by the user.
 - 2026-11-17: Search field tap: opens Search → no action, skipped by screen readers (task.md AC-4 change). Confirmed by the user.
+- 2026-11-19: Gaps closed by plans 04 and 05: English tab labels, empty and error copy, 48dp tab touch targets,
+  Material Icons person icon. Press feedback stays the platform default.

@@ -3,14 +3,16 @@ package com.banhmilabs.tmdb.cmp.feature.home.ui.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +33,8 @@ import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
-private val TabsHeight = 34.dp
+/** At least the 48dp touch target; the design's row is 34dp, so the screen trims 7dp of spacing above and below. */
+private val TabsMinHeight = 48.dp
 private val TabsStart = 33.dp
 private val TabSpacing = 29.dp
 private val PillShape = RoundedCornerShape(70.dp)
@@ -46,11 +49,10 @@ private val UnselectedStyle = TextStyle(
     fontWeight = FontWeight.Normal,
 )
 
-/** The category tabs in display order; the selected one is a pill. Scrolls sideways and bleeds to the end edge. */
 @Composable
 internal fun CategoryTabs(selected: TitleCategory, onSelect: (TitleCategory) -> Unit, modifier: Modifier = Modifier) {
     LazyRow(
-        modifier = modifier.height(TabsHeight),
+        modifier = modifier.selectableGroup().heightIn(min = TabsMinHeight),
         contentPadding = PaddingValues(start = TabsStart),
         horizontalArrangement = Arrangement.spacedBy(TabSpacing),
         verticalAlignment = Alignment.CenterVertically,
@@ -69,10 +71,11 @@ internal fun CategoryTabs(selected: TitleCategory, onSelect: (TitleCategory) -> 
 private fun CategoryTab(label: String, selected: Boolean, onClick: () -> Unit) {
     val shape = if (selected) {
         Modifier
+            .minimumInteractiveComponentSize()
             .clip(PillShape)
             .background(MaterialTheme.colorScheme.secondary)
     } else {
-        Modifier
+        Modifier.minimumInteractiveComponentSize()
     }
     Text(
         text = label,

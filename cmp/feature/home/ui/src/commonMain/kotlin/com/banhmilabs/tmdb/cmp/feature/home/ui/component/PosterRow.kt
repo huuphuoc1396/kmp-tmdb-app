@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +22,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -45,11 +49,16 @@ private val PlaceholderNameStyle = TextStyle(
     textAlign = TextAlign.Center,
 )
 
-/** A row of posters that scrolls sideways and bleeds to the end edge. */
 @Composable
-internal fun PosterRow(titles: List<Title>, onTitleClick: (Title) -> Unit, modifier: Modifier = Modifier) {
+internal fun PosterRow(
+    titles: List<Title>,
+    listState: LazyListState,
+    onTitleClick: (Title) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     LazyRow(
         modifier = modifier.height(PosterHeight),
+        state = listState,
         contentPadding = PaddingValues(start = ScreenPadding),
         horizontalArrangement = Arrangement.spacedBy(PosterSpacing),
     ) {
@@ -60,7 +69,6 @@ internal fun PosterRow(titles: List<Title>, onTitleClick: (Title) -> Unit, modif
     }
 }
 
-/** The poster image, or a tile with the title's name when TMDB has no poster. */
 @Composable
 private fun Poster(title: Title, onClick: () -> Unit) {
     Box(
@@ -68,6 +76,8 @@ private fun Poster(title: Title, onClick: () -> Unit) {
             .size(width = PosterWidth, height = PosterHeight)
             .clip(PosterShape)
             .background(MaterialTheme.colorScheme.surfaceVariant)
+            // Announced once, as a button with the title's name, whether it shows an image or the placeholder.
+            .semantics(mergeDescendants = true) { contentDescription = title.name }
             .clickable(role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -75,7 +85,7 @@ private fun Poster(title: Title, onClick: () -> Unit) {
         if (posterUrl == null) {
             Text(
                 text = title.name,
-                modifier = Modifier.padding(PlaceholderPadding),
+                modifier = Modifier.padding(PlaceholderPadding).clearAndSetSemantics {},
                 style = PlaceholderNameStyle,
                 maxLines = PLACEHOLDER_MAX_LINES,
                 overflow = TextOverflow.Ellipsis,

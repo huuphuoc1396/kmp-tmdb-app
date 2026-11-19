@@ -52,4 +52,31 @@ class FakeTitleListsRepositoryTest : TitleListsRepositoryContract() {
             fake.observe(TitleCategory.ANIME, TitleListType.FEATURED, Language.PT_BR).first(),
         )
     }
+
+    @Test
+    fun refreshRequestsAreRecorded() = runTest {
+        val fake = FakeTitleListsRepository(CONTRACT_TITLES)
+        fake.failNextRefresh(AppError.Network)
+
+        fake.refresh(TitleCategory.MOVIES, TitleListType.POPULAR, Language.EN_US, force = true)
+        fake.refresh(TitleCategory.ANIME, TitleListType.FEATURED, Language.PT_BR)
+
+        assertEquals(
+            listOf(
+                FakeTitleListsRepository.RefreshRequest(
+                    TitleCategory.MOVIES,
+                    TitleListType.POPULAR,
+                    Language.EN_US,
+                    force = true,
+                ),
+                FakeTitleListsRepository.RefreshRequest(
+                    TitleCategory.ANIME,
+                    TitleListType.FEATURED,
+                    Language.PT_BR,
+                    force = false,
+                ),
+            ),
+            fake.refreshRequests,
+        )
+    }
 }

@@ -37,7 +37,6 @@ private const val PERSON_ICON_ALPHA = 0.5f
 
 private val TitleStyle = TextStyle(color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
 
-/** The screen title and a decorative avatar with no action. */
 @Composable
 internal fun HomeHeader(modifier: Modifier = Modifier) {
     Row(modifier = modifier, verticalAlignment = Alignment.Top) {

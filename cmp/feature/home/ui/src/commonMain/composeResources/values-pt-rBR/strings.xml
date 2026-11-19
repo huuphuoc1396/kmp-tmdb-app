@@ -7,4 +7,7 @@
     <string name="home_category_anime">Animes</string>
     <string name="home_category_novelas">Novelas</string>
     <string name="home_category_documentaries">Documentários</string>
+    <string name="home_row_empty">Nada para mostrar aqui ainda.</string>
+    <string name="home_row_error">Não foi possível carregar estes títulos.</string>
+    <string name="home_retry">Tentar novamente</string>
 </resources>

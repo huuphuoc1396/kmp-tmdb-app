@@ -1,73 +1,91 @@
 package com.banhmilabs.tmdb.cmp.feature.home.ui
 
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
-import com.banhmilabs.tmdb.core.model.Language
-import com.banhmilabs.tmdb.core.model.Title
-import com.banhmilabs.tmdb.core.model.TitleId
-import com.banhmilabs.tmdb.core.model.TitleType
+import com.banhmilabs.tmdb.core.common.AppError
 import com.banhmilabs.tmdb.core.testing.MainDispatcherTest
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 import com.banhmilabs.tmdb.service.title.domain.TitleListType
-import com.banhmilabs.tmdb.service.title.fake.FakeTitleListsRepository
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class HomeViewModelTest : MainDispatcherTest() {
-    private val repository = FakeTitleListsRepository().apply {
-        setRemoteTitles(TitleCategory.MOVIES, TitleListType.FEATURED, MOVIES_FEATURED)
-        setRemoteTitles(TitleCategory.MOVIES, TitleListType.POPULAR, MOVIES_POPULAR)
-        setRemoteTitles(TitleCategory.ANIME, TitleListType.FEATURED, ANIME_FEATURED)
-        setRemoteTitles(TitleCategory.ANIME, TitleListType.POPULAR, ANIME_POPULAR)
-    }
+    private val repository = homeTestRepository()
+    private val savedState = SavedStateHandle()
 
     // Created after MainDispatcherTest sets the Main dispatcher: the ViewModel starts collecting in its init.
-    private val viewModel by lazy { HomeViewModel(repository) }
+    private val viewModel by lazy { HomeViewModel(repository, savedState) }
 
     @Test
-    fun startsWithMoviesSelectedAndNoTitles() {
+    fun startsLoadingWithMoviesSelected() {
         assertEquals(HomeUiState(selectedCategory = TitleCategory.MOVIES), viewModel.state.value)
     }
 
     @Test
-    fun languageKnownShowsMoviesFeaturedAndPopular() = runTest(testDispatcher) {
-        viewModel.state.test {
-            skipItems(1)
-            viewModel.onIntent(HomeIntent.LanguageChanged(Language.EN_US))
+    fun rowsShowTitlesOnceLoaded() = runTest(testDispatcher) {
+        start(viewModel)
 
-            assertEquals(
-                HomeUiState(TitleCategory.MOVIES, featured = MOVIES_FEATURED, popular = MOVIES_POPULAR),
-                expectMostRecentItem(),
-            )
-        }
+        assertEquals(
+            HomeUiState(
+                selectedCategory = TitleCategory.MOVIES,
+                featured = RowState.Titles(MOVIES_FEATURED),
+                popular = RowState.Titles(MOVIES_POPULAR),
+            ),
+            viewModel.state.value,
+        )
     }
 
     @Test
-    fun selectingCategoryShowsItsLists() = runTest(testDispatcher) {
-        viewModel.state.test {
-            viewModel.onIntent(HomeIntent.LanguageChanged(Language.EN_US))
-            viewModel.onIntent(HomeIntent.CategorySelected(TitleCategory.ANIME))
+    fun emptyListShowsEmptyRow() = runTest(testDispatcher) {
+        start(viewModel)
 
-            assertEquals(
-                HomeUiState(TitleCategory.ANIME, featured = ANIME_FEATURED, popular = ANIME_POPULAR),
-                expectMostRecentItem(),
-            )
-        }
+        viewModel.onIntent(HomeIntent.CategorySelected(TitleCategory.DOCUMENTARIES))
+
+        assertEquals(RowState.Titles(emptyList()), viewModel.state.value.featured)
     }
 
     @Test
-    fun listsAreLoadedInTheGivenLanguage() = runTest(testDispatcher) {
-        viewModel.state.test {
-            viewModel.onIntent(HomeIntent.LanguageChanged(Language.PT_BR))
-            cancelAndIgnoreRemainingEvents()
-        }
+    fun failedLoadWithoutCacheShowsError() = runTest(testDispatcher) {
+        repository.failNextRefresh(AppError.Network)
 
-        assertNotNull(repository.observe(TitleCategory.MOVIES, TitleListType.FEATURED, Language.PT_BR).first())
-        assertNotNull(repository.observe(TitleCategory.MOVIES, TitleListType.POPULAR, Language.PT_BR).first())
-        assertNull(repository.observe(TitleCategory.MOVIES, TitleListType.FEATURED, Language.EN_US).first())
+        start(viewModel)
+
+        assertEquals(RowState.Error, viewModel.state.value.featured)
+    }
+
+    @Test
+    fun oneRowFailsWhileOtherShowsTitles() = runTest(testDispatcher) {
+        repository.failNextRefresh(AppError.Network)
+
+        start(viewModel)
+
+        assertEquals(RowState.Error, viewModel.state.value.featured)
+        assertEquals(RowState.Titles(MOVIES_POPULAR), viewModel.state.value.popular)
+    }
+
+    @Test
+    fun failedRefreshWithCacheKeepsTitles() = runTest(testDispatcher) {
+        start(viewModel)
+        repository.failNextRefresh(AppError.Network)
+
+        viewModel.onIntent(HomeIntent.Refresh)
+
+        assertEquals(RowState.Titles(MOVIES_FEATURED), viewModel.state.value.featured)
+    }
+
+    @Test
+    fun retryReloadsTheFailedRow() = runTest(testDispatcher) {
+        repository.failNextRefresh(AppError.Network)
+        start(viewModel)
+
+        viewModel.onIntent(HomeIntent.Retry(TitleListType.FEATURED))
+
+        assertEquals(RowState.Titles(MOVIES_FEATURED), viewModel.state.value.featured)
+        val retry = repository.refreshRequests.last()
+        assertEquals(TitleListType.FEATURED, retry.listType)
+        assertTrue(retry.force)
     }
 
     @Test
@@ -77,14 +95,5 @@ class HomeViewModelTest : MainDispatcherTest() {
 
             assertEquals(HomeEffect.OpenTitle(MOVIES_FEATURED.first()), awaitItem())
         }
-    }
-
-    private companion object {
-        val MOVIES_FEATURED = listOf(title(1, TitleType.MOVIE))
-        val MOVIES_POPULAR = listOf(title(2, TitleType.MOVIE), title(3, TitleType.MOVIE))
-        val ANIME_FEATURED = listOf(title(4, TitleType.TV))
-        val ANIME_POPULAR = listOf(title(5, TitleType.TV))
-
-        fun title(id: Long, type: TitleType) = Title(TitleId(id, type), name = "Title $id", posterUrl = null)
     }
 }

@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Home](../design/home.md)
 Depends on: 04-cmp-home-happy-path
-Status: Todo
+Status: Done
 
 ## Goal
 Home in the cmp app handles first loads, failures, empty rows, offline use, refreshing, interruptions and
