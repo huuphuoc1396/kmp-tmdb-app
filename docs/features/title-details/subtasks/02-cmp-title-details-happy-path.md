@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Title details](../design/title-details.md)
 Depends on: 01-title-details-data
-Status: Todo
+Status: In progress
 
 ## Goal
 In the Compose Multiplatform app (Android and iOS), tapping a poster on Home opens the real Title details screen as designed, with real TMDB data. Users can go back, open the trailer on YouTube and open a recommended title's details.
@@ -120,3 +120,4 @@ In the Compose Multiplatform app (Android and iOS), tapping a poster on Home ope
 
 ## Change log
 - 2026-11-20: Initial version.
+- 2026-11-20: Plan approved (implement-plans/02-cmp-title-details-happy-path.md).
