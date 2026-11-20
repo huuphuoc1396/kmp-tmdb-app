@@ -1,13 +1,10 @@
-package com.banhmilabs.tmdb.service.title.data
+package com.banhmilabs.tmdb.service.title.data.details.remote
 
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.TitleId
 import com.banhmilabs.tmdb.core.model.TitleType
-import com.banhmilabs.tmdb.service.title.data.remote.TmdbEpisodeDto
-import com.banhmilabs.tmdb.service.title.data.remote.TmdbTitleDetailsDto
-import com.banhmilabs.tmdb.service.title.data.remote.TmdbVideoDto
-import com.banhmilabs.tmdb.service.title.data.remote.TmdbVideosDto
-import com.banhmilabs.tmdb.service.title.data.remote.toEntry
+import com.banhmilabs.tmdb.service.title.data.details.TitleDetailsEntry
+import com.banhmilabs.tmdb.service.title.data.details.TitleDetailsKey
 
 /** Test helpers that map hand-built TMDB details DTOs. */
 internal object DetailsDtos {

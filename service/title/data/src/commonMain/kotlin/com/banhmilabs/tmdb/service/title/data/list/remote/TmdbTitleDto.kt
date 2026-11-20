@@ -1,4 +1,4 @@
-package com.banhmilabs.tmdb.service.title.data.remote
+package com.banhmilabs.tmdb.service.title.data.list.remote
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

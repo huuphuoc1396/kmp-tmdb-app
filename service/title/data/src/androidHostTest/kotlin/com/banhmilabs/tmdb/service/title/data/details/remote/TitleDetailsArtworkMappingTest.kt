@@ -1,14 +1,7 @@
-package com.banhmilabs.tmdb.service.title.data
+package com.banhmilabs.tmdb.service.title.data.details.remote
 
 import com.banhmilabs.tmdb.core.model.TitleType
-import com.banhmilabs.tmdb.service.title.data.DetailsDtos.movie
-import com.banhmilabs.tmdb.service.title.data.remote.MAX_CAST
-import com.banhmilabs.tmdb.service.title.data.remote.MAX_RECOMMENDATIONS
-import com.banhmilabs.tmdb.service.title.data.remote.TmdbCastDto
-import com.banhmilabs.tmdb.service.title.data.remote.TmdbCreditsDto
-import com.banhmilabs.tmdb.service.title.data.remote.TmdbRecommendationDto
-import com.banhmilabs.tmdb.service.title.data.remote.TmdbRecommendationsDto
-import com.banhmilabs.tmdb.service.title.data.remote.TmdbTitleDetailsDto
+import com.banhmilabs.tmdb.service.title.data.details.remote.DetailsDtos.movie
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

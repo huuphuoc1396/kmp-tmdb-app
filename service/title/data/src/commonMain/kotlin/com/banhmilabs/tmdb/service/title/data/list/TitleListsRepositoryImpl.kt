@@ -1,10 +1,12 @@
-package com.banhmilabs.tmdb.service.title.data
+package com.banhmilabs.tmdb.service.title.data.list
 
 import com.banhmilabs.tmdb.core.common.AppResult
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
-import com.banhmilabs.tmdb.service.title.data.local.TitleListLocalDataSource
-import com.banhmilabs.tmdb.service.title.data.remote.TitleListRemoteDataSource
+import com.banhmilabs.tmdb.service.title.data.KeyedRefreshes
+import com.banhmilabs.tmdb.service.title.data.TitleRefreshPolicy
+import com.banhmilabs.tmdb.service.title.data.list.local.TitleListLocalDataSource
+import com.banhmilabs.tmdb.service.title.data.list.remote.TitleListRemoteDataSource
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 import com.banhmilabs.tmdb.service.title.domain.TitleListType
 import com.banhmilabs.tmdb.service.title.domain.TitleListsRepository

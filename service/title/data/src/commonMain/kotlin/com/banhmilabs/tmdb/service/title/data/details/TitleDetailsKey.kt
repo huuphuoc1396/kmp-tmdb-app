@@ -1,7 +1,8 @@
-package com.banhmilabs.tmdb.service.title.data
+package com.banhmilabs.tmdb.service.title.data.details
 
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.TitleId
+import com.banhmilabs.tmdb.service.title.data.TitleEntry
 import kotlinx.datetime.LocalDate
 
 /** One title's details in one language: the database key of its cached details. */
@@ -20,7 +21,7 @@ internal data class TitleDetailsEntry(
     val trailerKey: String?,
     val genres: List<String>,
     val cast: List<CastEntry>,
-    val recommendations: List<TitleListEntry>,
+    val recommendations: List<TitleEntry>,
 )
 
 /** A cast member as cached. */

@@ -1,4 +1,4 @@
-package com.banhmilabs.tmdb.service.title.data.local
+package com.banhmilabs.tmdb.service.title.data.list.local
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
@@ -7,9 +7,10 @@ import com.banhmilabs.tmdb.core.common.DispatcherProvider
 import com.banhmilabs.tmdb.core.model.Title
 import com.banhmilabs.tmdb.core.model.TitleId
 import com.banhmilabs.tmdb.core.model.TitleType
-import com.banhmilabs.tmdb.service.title.data.TitleListEntry
-import com.banhmilabs.tmdb.service.title.data.TitleListKey
+import com.banhmilabs.tmdb.service.title.data.TitleEntry
+import com.banhmilabs.tmdb.service.title.data.TmdbImages
 import com.banhmilabs.tmdb.service.title.data.generated.TitleDatabase
+import com.banhmilabs.tmdb.service.title.data.list.TitleListKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -43,7 +44,7 @@ internal class TitleListLocalDataSource(
     }
 
     /** Replaces the list and its fetch time in one transaction, keeping the order of [entries]. */
-    suspend fun replace(key: TitleListKey, entries: List<TitleListEntry>, fetchedAt: Instant): Unit =
+    suspend fun replace(key: TitleListKey, entries: List<TitleEntry>, fetchedAt: Instant): Unit =
         withContext(dispatchers.io) {
             database.transaction {
                 queries.deleteTitles(list = key.list, language = key.language)

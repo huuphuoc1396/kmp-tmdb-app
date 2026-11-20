@@ -1,4 +1,4 @@
-package com.banhmilabs.tmdb.service.title.data.local
+package com.banhmilabs.tmdb.service.title.data.details.local
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
@@ -7,8 +7,9 @@ import com.banhmilabs.tmdb.core.common.DispatcherProvider
 import com.banhmilabs.tmdb.core.model.Title
 import com.banhmilabs.tmdb.core.model.TitleId
 import com.banhmilabs.tmdb.core.model.TitleType
-import com.banhmilabs.tmdb.service.title.data.TitleDetailsEntry
-import com.banhmilabs.tmdb.service.title.data.TitleDetailsKey
+import com.banhmilabs.tmdb.service.title.data.TmdbImages
+import com.banhmilabs.tmdb.service.title.data.details.TitleDetailsEntry
+import com.banhmilabs.tmdb.service.title.data.details.TitleDetailsKey
 import com.banhmilabs.tmdb.service.title.data.generated.SelectDetails
 import com.banhmilabs.tmdb.service.title.data.generated.TitleDatabase
 import com.banhmilabs.tmdb.service.title.domain.CastMember

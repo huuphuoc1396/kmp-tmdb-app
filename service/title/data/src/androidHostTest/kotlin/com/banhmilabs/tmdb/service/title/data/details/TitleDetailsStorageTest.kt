@@ -1,4 +1,4 @@
-package com.banhmilabs.tmdb.service.title.data
+package com.banhmilabs.tmdb.service.title.data.details
 
 import com.banhmilabs.tmdb.core.common.AppError
 import com.banhmilabs.tmdb.core.common.AppResult

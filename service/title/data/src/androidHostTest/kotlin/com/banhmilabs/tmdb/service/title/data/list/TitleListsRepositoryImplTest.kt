@@ -1,4 +1,4 @@
-package com.banhmilabs.tmdb.service.title.data
+package com.banhmilabs.tmdb.service.title.data.list
 
 import com.banhmilabs.tmdb.core.common.AppError
 import com.banhmilabs.tmdb.core.common.AppResult
@@ -17,7 +17,7 @@ import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.hours
 
 class TitleListsRepositoryImplTest : TitleListsRepositoryContract() {
-    private val env = TitleTestEnvironment()
+    private val env = TitleListTestEnvironment()
 
     override fun TestScope.createRepository(): TitleListsRepository = with(env) { createRepository() }
 

@@ -1,4 +1,4 @@
-package com.banhmilabs.tmdb.service.title.data
+package com.banhmilabs.tmdb.service.title.data.list
 
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
@@ -15,7 +15,7 @@ import kotlin.test.assertNull
 
 /** How TMDB results become cached [Title]s. */
 class TitleListMappingTest {
-    private val env = TitleTestEnvironment()
+    private val env = TitleListTestEnvironment()
 
     @Test
     fun tvListStoresTvTitles() = runTest {

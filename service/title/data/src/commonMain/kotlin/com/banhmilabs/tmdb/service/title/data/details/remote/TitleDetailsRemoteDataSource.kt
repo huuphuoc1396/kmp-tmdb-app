@@ -1,14 +1,14 @@
-package com.banhmilabs.tmdb.service.title.data.remote
+package com.banhmilabs.tmdb.service.title.data.details.remote
 
 import com.banhmilabs.tmdb.core.common.AppError
 import com.banhmilabs.tmdb.core.common.AppResult
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.TitleType
 import com.banhmilabs.tmdb.core.network.apiCall
-import com.banhmilabs.tmdb.service.title.data.CastEntry
-import com.banhmilabs.tmdb.service.title.data.TitleDetailsEntry
-import com.banhmilabs.tmdb.service.title.data.TitleDetailsKey
-import com.banhmilabs.tmdb.service.title.data.TitleListEntry
+import com.banhmilabs.tmdb.service.title.data.TitleEntry
+import com.banhmilabs.tmdb.service.title.data.details.CastEntry
+import com.banhmilabs.tmdb.service.title.data.details.TitleDetailsEntry
+import com.banhmilabs.tmdb.service.title.data.details.TitleDetailsKey
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -87,12 +87,12 @@ private fun List<TmdbVideoDto>.trailerKey(language: String): String? {
     return (inLanguage(language).firstOrNull() ?: inLanguage(ENGLISH).firstOrNull())?.key
 }
 
-private fun TmdbRecommendationDto.toEntry(defaultType: TitleType): TitleListEntry? {
+private fun TmdbRecommendationDto.toEntry(defaultType: TitleType): TitleEntry? {
     val displayName = title ?: name ?: return null
     val type = when (mediaType) {
         "movie" -> TitleType.MOVIE
         "tv" -> TitleType.TV
         else -> defaultType
     }
-    return TitleListEntry(tmdbId = id, type = type, name = displayName, posterPath = posterPath)
+    return TitleEntry(tmdbId = id, type = type, name = displayName, posterPath = posterPath)
 }

@@ -1,10 +1,9 @@
-package com.banhmilabs.tmdb.service.title.data
+package com.banhmilabs.tmdb.service.title.data.details.remote
 
 import com.banhmilabs.tmdb.core.model.Language
-import com.banhmilabs.tmdb.service.title.data.DetailsDtos.movie
-import com.banhmilabs.tmdb.service.title.data.DetailsDtos.trailer
-import com.banhmilabs.tmdb.service.title.data.DetailsDtos.withVideos
-import com.banhmilabs.tmdb.service.title.data.remote.TmdbVideoDto
+import com.banhmilabs.tmdb.service.title.data.details.remote.DetailsDtos.movie
+import com.banhmilabs.tmdb.service.title.data.details.remote.DetailsDtos.trailer
+import com.banhmilabs.tmdb.service.title.data.details.remote.DetailsDtos.withVideos
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

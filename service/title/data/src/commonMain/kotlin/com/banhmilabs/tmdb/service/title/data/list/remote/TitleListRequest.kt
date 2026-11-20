@@ -1,4 +1,4 @@
-package com.banhmilabs.tmdb.service.title.data.remote
+package com.banhmilabs.tmdb.service.title.data.list.remote
 
 import com.banhmilabs.tmdb.core.model.TitleType
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory

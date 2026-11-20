@@ -1,10 +1,12 @@
-package com.banhmilabs.tmdb.service.title.data
+package com.banhmilabs.tmdb.service.title.data.details
 
 import com.banhmilabs.tmdb.core.common.AppResult
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.TitleId
-import com.banhmilabs.tmdb.service.title.data.local.TitleDetailsLocalDataSource
-import com.banhmilabs.tmdb.service.title.data.remote.TitleDetailsRemoteDataSource
+import com.banhmilabs.tmdb.service.title.data.KeyedRefreshes
+import com.banhmilabs.tmdb.service.title.data.TitleRefreshPolicy
+import com.banhmilabs.tmdb.service.title.data.details.local.TitleDetailsLocalDataSource
+import com.banhmilabs.tmdb.service.title.data.details.remote.TitleDetailsRemoteDataSource
 import com.banhmilabs.tmdb.service.title.domain.TitleDetails
 import com.banhmilabs.tmdb.service.title.domain.TitleDetailsRepository
 import kotlinx.coroutines.flow.Flow

@@ -1,4 +1,4 @@
-package com.banhmilabs.tmdb.service.title.data.local
+package com.banhmilabs.tmdb.service.title.data
 
 private const val IMAGE_BASE_URL = "https://image.tmdb.org/t/p/"
 
