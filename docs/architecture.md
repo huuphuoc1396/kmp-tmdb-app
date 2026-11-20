@@ -392,10 +392,13 @@ tests.
   lost (backup restore, device reset), decryption fails and the store is reset to defaults instead of crashing. `EncryptedSharedPreferences` is not used (deprecated).
 - **Database encryption:** each `service/*/data` passes `DatabaseKeys.passphrase(name)` (`core:security`) to
   `DatabaseDriverFactory.create`. The passphrase is an envelope key: 32 random bytes per database, encrypted with the
-  `"database"` master key and kept in `noBackupFilesDir`, so it never leaves the device in a backup. Android opens the
-  database with SQLCipher; a file that is "not a database" for that key (an unencrypted database from an earlier
-  version, or a lost key) is deleted and created again, while other open errors are thrown. iOS is planned: until
-  then `DatabaseKeys` returns null there and the database is plain SQLDelight.
+  `"database"` master key (Keystore / Keychain) and kept in `noBackupFilesDir` on Android and in
+  `Application Support/database-keys` on iOS. Both platforms open the database with SQLCipher 4 (Android:
+  `sqlcipher-android`; iOS: the official dynamic `SQLCipher.xcframework`, linked in place of the system sqlite3 and
+  shipped to apps through Swift Package Manager). A file that is "not a database" for that key (an unencrypted
+  database from an earlier version, or a lost key) is deleted and created again, while other open errors are thrown.
+  `data` modules open their database lazily, on the first query on the IO dispatcher, so key access and SQLCipher's
+  key derivation never run on the main thread or during Koin start-up.
 
 ---
 

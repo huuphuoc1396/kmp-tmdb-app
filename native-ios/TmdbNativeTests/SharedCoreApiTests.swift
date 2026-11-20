@@ -55,6 +55,24 @@ final class SharedCoreApiTests: XCTestCase {
         _ = await titleLists.refresh(listKey(.movies, .featured, .enUs), force: false)
     }
 
+    @MainActor
+    func testTitleDatabaseIsEncrypted() async throws {
+        var iterator = SharedCoreTitleLists().observe(listKey(.movies, .featured, .enUs)).makeAsyncIterator()
+
+        // Reading the cache opens the title database with its Keychain-protected key.
+        _ = await iterator.next()
+
+        let file = try XCTUnwrap(titleDatabaseFile(), "title.db was not created")
+        let header = try FileHandle(forReadingFrom: file).read(upToCount: 16)
+        XCTAssertNotEqual(header, Data("SQLite format 3\0".utf8))
+    }
+
+    private func titleDatabaseFile() -> URL? {
+        let library = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)[0]
+        let files = FileManager.default.enumerator(at: library, includingPropertiesForKeys: nil)
+        return files?.compactMap { $0 as? URL }.first { $0.lastPathComponent == "title.db" }
+    }
+
     private func firstValue(of flow: SkieSwiftFlow<KotlinBoolean>) async -> Bool? {
         for await value in flow {
             return value.boolValue

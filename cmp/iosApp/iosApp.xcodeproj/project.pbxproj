@@ -10,6 +10,7 @@
 		A1000000000000000000000A /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000006 /* iOSApp.swift */; };
 		A1000000000000000000000B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000007 /* ContentView.swift */; };
 		A10000000000000000000017 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* Assets.xcassets */; };
+		A10000000000000000000019 /* SQLCipher in Frameworks */ = {isa = PBXBuildFile; productRef = A1000000000000000000001B /* SQLCipher */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000000000000000000019 /* SQLCipher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,6 +77,9 @@
 			dependencies = (
 			);
 			name = iosApp;
+			packageProductDependencies = (
+				A1000000000000000000001B /* SQLCipher */,
+			);
 			productName = iosApp;
 			productReference = A10000000000000000000005 /* iosApp.app */;
 			productType = "com.apple.product-type.application";
@@ -98,6 +103,9 @@
 				Base,
 			);
 			mainGroup = A10000000000000000000002;
+			packageReferences = (
+				A1000000000000000000001A /* XCRemoteSwiftPackageReference "SQLCipher.swift" */,
+			);
 			productRefGroup = A10000000000000000000003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -206,7 +214,6 @@
 					"$(inherited)",
 					"-framework",
 					ComposeApp,
-					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.banhmilabs.tmdb.cmp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -231,7 +238,6 @@
 					"$(inherited)",
 					"-framework",
 					ComposeApp,
-					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.banhmilabs.tmdb.cmp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -262,6 +268,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A1000000000000000000001A /* XCRemoteSwiftPackageReference "SQLCipher.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sqlcipher/SQLCipher.swift";
+			requirement = {
+				kind = exactVersion;
+				version = 4.20.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A1000000000000000000001B /* SQLCipher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1000000000000000000001A /* XCRemoteSwiftPackageReference "SQLCipher.swift" */;
+			productName = SQLCipher;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A10000000000000000000001 /* Project object */;
 }

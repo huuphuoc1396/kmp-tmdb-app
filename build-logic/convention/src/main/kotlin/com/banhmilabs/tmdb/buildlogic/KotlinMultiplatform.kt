@@ -5,14 +5,15 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 
 private const val ANDROID_TEST_RUNNER = "androidx.test.runner.AndroidJUnitRunner"
-private const val SQLITE_LINKER_OPT = "-lsqlite3"
 
 /**
  * Kotlin Multiplatform library targeting Android and iOS (device + simulator), with kotlinx.serialization.
  * Unit tests default to `androidHostTest` (`kotlin-test`, MockK). `commonTest` (`kotlin-test`, no MockK) also runs
- * on the Android host, in the Android device tests and on the iOS simulator. iOS binaries link sqlite3 (SQLDelight).
+ * on the Android host, in the Android device tests and on the iOS simulator. iOS binaries link SQLCipher (in place of
+ * the system sqlite3) for SQLDelight; test executables find it through an rpath to `build/sqlcipher`.
  * With [iosFramework], the iOS targets also build a static framework of that name (app shells).
  */
 internal fun Project.configureKotlinMultiplatform(iosFramework: String? = null) {
@@ -33,8 +34,14 @@ internal fun Project.configureKotlinMultiplatform(iosFramework: String? = null) 
                 instrumentationRunner = ANDROID_TEST_RUNNER
             }
         }
+        val unpackSqlCipher = registerSqlCipherUnpack()
         listOf(iosArm64(), iosSimulatorArm64()).forEach { target ->
-            target.binaries.configureEach { linkerOpts(SQLITE_LINKER_OPT) }
+            val frameworkDir = sqlCipherFrameworkDir(target.name)
+            target.binaries.configureEach {
+                linkTaskProvider.configure { dependsOn(unpackSqlCipher) }
+                linkerOpts("-F", frameworkDir, "-framework", "SQLCipher")
+                if (this is TestExecutable) linkerOpts("-rpath", frameworkDir)
+            }
             if (iosFramework != null) {
                 target.binaries.framework {
                     baseName = iosFramework

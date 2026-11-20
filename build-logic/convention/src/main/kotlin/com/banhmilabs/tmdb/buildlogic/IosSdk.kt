@@ -11,9 +11,13 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 private const val IOS_SDK_NAME = "TmdbCore"
 private const val SWIFT_PACKAGE_DIR = "build/swift-package"
 private const val SWIFT_TOOLS = "5.9"
+private const val SQLCIPHER_RELEASES = "https://github.com/sqlcipher/SQLCipher.swift/releases/download"
 
-/** `Package.swift` of the local Swift Package that serves the `TmdbCore` XCFramework to standalone iOS apps. */
-internal fun swiftPackageManifest(iosMajor: Int): String =
+/**
+ * `Package.swift` of the local Swift Package that serves the `TmdbCore` XCFramework to standalone iOS apps. The
+ * product also carries the official `SQLCipher` framework that `TmdbCore` links against, so apps embed it.
+ */
+internal fun swiftPackageManifest(iosMajor: Int, sqlCipherVersion: String, sqlCipherChecksum: String): String =
     """
     // swift-tools-version:$SWIFT_TOOLS
     import PackageDescription
@@ -21,8 +25,15 @@ internal fun swiftPackageManifest(iosMajor: Int): String =
     let package = Package(
         name: "$IOS_SDK_NAME",
         platforms: [.iOS(.v$iosMajor)],
-        products: [.library(name: "$IOS_SDK_NAME", targets: ["$IOS_SDK_NAME"])],
-        targets: [.binaryTarget(name: "$IOS_SDK_NAME", path: "$IOS_SDK_NAME.xcframework")]
+        products: [.library(name: "$IOS_SDK_NAME", targets: ["$IOS_SDK_NAME", "SQLCipher"])],
+        targets: [
+            .binaryTarget(name: "$IOS_SDK_NAME", path: "$IOS_SDK_NAME.xcframework"),
+            .binaryTarget(
+                name: "SQLCipher",
+                url: "$SQLCIPHER_RELEASES/$sqlCipherVersion/SQLCipher.xcframework.zip",
+                checksum: "$sqlCipherChecksum"
+            )
+        ]
     )
     """.trimIndent() + "\n"
 
@@ -54,7 +65,11 @@ internal fun Project.configureIosSdk() {
         }
     }
 
-    val manifest = swiftPackageManifest(libs.version("ios-deploymentTarget").substringBefore('.').toInt())
+    val manifest = swiftPackageManifest(
+        iosMajor = libs.version("ios-deploymentTarget").substringBefore('.').toInt(),
+        sqlCipherVersion = libs.version("sqlcipher"),
+        sqlCipherChecksum = libs.version("sqlcipher-ios-checksum"),
+    )
     val manifestFile = layout.buildDirectory.file("swift-package/Package.swift")
     val writeManifest = tasks.register("write${IOS_SDK_NAME}PackageManifest") {
         inputs.property("manifest", manifest)

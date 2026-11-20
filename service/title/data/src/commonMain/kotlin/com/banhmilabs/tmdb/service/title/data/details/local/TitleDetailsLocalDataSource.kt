@@ -18,19 +18,27 @@ import com.banhmilabs.tmdb.service.title.domain.Trailer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 import kotlin.time.Instant
 
-/** Title details cached in SQLDelight, per title and language. */
+/**
+ * Title details cached in SQLDelight, per title and language. The database opens on first use, on the IO dispatcher.
+ */
 internal class TitleDetailsLocalDataSource(
-    private val database: TitleDatabase,
+    private val database: Lazy<TitleDatabase>,
     private val dispatchers: DispatcherProvider,
 ) {
-    private val queries = database.titleDetailsQueries
+    private val queries by lazy { database.value.titleDetailsQueries }
 
     /** Cached details; `null` until they were stored once. */
-    fun observe(key: TitleDetailsKey): Flow<TitleDetails?> {
+    fun observe(key: TitleDetailsKey): Flow<TitleDetails?> = flow { emitAll(observeCached(key)) }
+        .flowOn(dispatchers.io)
+
+    private fun observeCached(key: TitleDetailsKey): Flow<TitleDetails?> {
         val (tmdbId, type, language) = key.columns()
         val details = queries.selectDetails(tmdbId, type, language).asFlow().mapToOneOrNull(dispatchers.io)
         val genres = queries.selectGenres(tmdbId, type, language).asFlow().mapToList(dispatchers.io)
@@ -59,7 +67,7 @@ internal class TitleDetailsLocalDataSource(
     suspend fun upsert(key: TitleDetailsKey, entry: TitleDetailsEntry, fetchedAt: Instant): Unit =
         withContext(dispatchers.io) {
             val (tmdbId, type, language) = key.columns()
-            database.transaction {
+            database.value.transaction {
                 queries.upsertDetails(
                     tmdbId = tmdbId,
                     type = type,

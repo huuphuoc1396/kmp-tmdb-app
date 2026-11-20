@@ -31,7 +31,7 @@ val titleDataModule = module {
         TitleDatabase(driver)
     }
     single { TitleListRemoteDataSource(httpClient = get()) }
-    single { TitleListLocalDataSource(database = get(), dispatchers = get()) }
+    single { TitleListLocalDataSource(database = lazy { get<TitleDatabase>() }, dispatchers = get()) }
     single<TitleListsRepository> {
         TitleListsRepositoryImpl(
             remote = get(),
@@ -41,7 +41,7 @@ val titleDataModule = module {
         )
     }
     single { TitleDetailsRemoteDataSource(httpClient = get()) }
-    single { TitleDetailsLocalDataSource(database = get(), dispatchers = get()) }
+    single { TitleDetailsLocalDataSource(database = lazy { get<TitleDatabase>() }, dispatchers = get()) }
     single<TitleDetailsRepository> {
         TitleDetailsRepositoryImpl(
             remote = get(),

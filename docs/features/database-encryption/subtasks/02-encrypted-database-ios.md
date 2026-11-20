@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Depends on: 01-encrypted-database-android
-Status: Todo
+Status: Done
 
 ## Goal
 On iOS, the local database of the shared core is encrypted at rest with the same behavior as on Android:

@@ -14,6 +14,8 @@ Multiplatform build itself.
    ./gradlew publishSharedCore
    ```
    On macOS this writes the release XCFramework `TmdbCore` and its `Package.swift` to `build/swift-package/TmdbCore`.
+   The package also brings the official `SQLCipher` framework (the encrypted SQLite that `TmdbCore` links), which
+   Xcode downloads from the SQLCipher.swift GitHub release on the first build.
 2. Open `native-ios/TmdbNative.xcodeproj` in Xcode and run the `TmdbNative` scheme on a simulator, or build from
    `native-ios/`:
    ```bash
