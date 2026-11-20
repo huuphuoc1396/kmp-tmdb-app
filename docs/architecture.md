@@ -390,8 +390,12 @@ tests.
   non-exportable Android Keystore key used through `javax.crypto` (the key never leaves the Keystore); on iOS a key in
   the Keychain with `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`, through `cryptography-kotlin`. `core:datastore` stores `@Serializable` values as JSON encrypted with it. If the key is
   lost (backup restore, device reset), decryption fails and the store is reset to defaults instead of crashing. `EncryptedSharedPreferences` is not used (deprecated).
-- **Database encryption (planned):** the database is plain SQLDelight for now. `DatabaseDriverFactory.create(passphrase:
-  ByteArray?)` already takes a passphrase so SQLCipher can be added without changing the architecture.
+- **Database encryption:** each `service/*/data` passes `DatabaseKeys.passphrase(name)` (`core:security`) to
+  `DatabaseDriverFactory.create`. The passphrase is an envelope key: 32 random bytes per database, encrypted with the
+  `"database"` master key and kept in `noBackupFilesDir`, so it never leaves the device in a backup. Android opens the
+  database with SQLCipher; a file that is "not a database" for that key (an unencrypted database from an earlier
+  version, or a lost key) is deleted and created again, while other open errors are thrown. iOS is planned: until
+  then `DatabaseKeys` returns null there and the database is plain SQLDelight.
 
 ---
 

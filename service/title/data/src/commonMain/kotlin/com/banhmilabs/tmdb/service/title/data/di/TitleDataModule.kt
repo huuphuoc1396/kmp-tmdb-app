@@ -2,6 +2,7 @@ package com.banhmilabs.tmdb.service.title.data.di
 
 import com.banhmilabs.tmdb.core.common.DispatcherProvider
 import com.banhmilabs.tmdb.core.database.DatabaseDriverFactory
+import com.banhmilabs.tmdb.core.security.DatabaseKeys
 import com.banhmilabs.tmdb.service.title.data.TitleListRefreshes
 import com.banhmilabs.tmdb.service.title.data.TitleListsRepositoryImpl
 import com.banhmilabs.tmdb.service.title.data.generated.TitleDatabase
@@ -16,7 +17,14 @@ internal const val TITLE_DATABASE_NAME = "title.db"
 
 /** Koin bindings of the title context. */
 val titleDataModule = module {
-    single { TitleDatabase(get<DatabaseDriverFactory>().create(TitleDatabase.Schema, TITLE_DATABASE_NAME)) }
+    single {
+        val driver = get<DatabaseDriverFactory>().create(
+            schema = TitleDatabase.Schema,
+            name = TITLE_DATABASE_NAME,
+            passphrase = get<DatabaseKeys>().passphrase(TITLE_DATABASE_NAME),
+        )
+        TitleDatabase(driver)
+    }
     single { TitleListRemoteDataSource(httpClient = get()) }
     single { TitleListLocalDataSource(database = get(), dispatchers = get()) }
     single { TitleListRefreshes(CoroutineScope(SupervisorJob() + get<DispatcherProvider>().io)) }

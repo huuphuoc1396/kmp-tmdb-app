@@ -12,3 +12,6 @@ fun DatabaseDriverFactory(): DatabaseDriverFactory = object : DatabaseDriverFact
         return NativeSqliteDriver(schema, name)
     }
 }
+
+internal fun requireNoPassphrase(passphrase: ByteArray?) =
+    require(passphrase == null) { "Database encryption is not supported yet; pass a null passphrase." }
