@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbTheme
+import com.banhmilabs.tmdb.nativeapp.home.navigation.HomeRoute
 import com.banhmilabs.tmdb.nativeapp.onboarding.navigation.OnboardingRoute
 
 @Composable
