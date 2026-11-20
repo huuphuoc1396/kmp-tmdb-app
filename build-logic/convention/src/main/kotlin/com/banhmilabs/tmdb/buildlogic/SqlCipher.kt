@@ -44,18 +44,21 @@ internal fun Project.registerSqlCipherUnpack(): TaskProvider<Sync> {
     return tasks.register<Sync>("unpackSqlCipher") {
         inputs.property("checksum", expectedChecksum)
         inputs.files(zips)
-        from({ zipTree(zips.singleFile) }) {
+        // Checked before the zip is expanded, so a Git LFS pointer fails with a hint instead of "Cannot expand ZIP".
+        from({ zipTree(zips.singleFile.also { checkSqlCipherZip(it.readBytes(), expectedChecksum) }) }) {
             include("$XCFRAMEWORK/ios-arm64/**", "$XCFRAMEWORK/ios-arm64_x86_64-simulator/**")
         }
         into(layout.buildDirectory.dir(SQLCIPHER_DIR))
-        doFirst {
-            val actual = sha256(zips.singleFile.readBytes())
-            if (actual != expectedChecksum) {
-                throw GradleException(
-                    "SQLCipher.xcframework.zip checksum mismatch: expected $expectedChecksum, got $actual",
-                )
-            }
-        }
+    }
+}
+
+internal fun checkSqlCipherZip(bytes: ByteArray, expectedChecksum: String) {
+    val actual = sha256(bytes)
+    if (actual != expectedChecksum) {
+        throw GradleException(
+            "SQLCipher.xcframework.zip checksum mismatch: expected $expectedChecksum, got $actual. " +
+                "If the file is a Git LFS pointer, install Git LFS and run `git lfs pull`.",
+        )
     }
 }
 
