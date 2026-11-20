@@ -27,13 +27,10 @@ skeleton or existing examples.
 - JDK 21 (toolchain from `jvmToolchain` in `gradle/libs.versions.toml`). Gradle wrapper only.
 - Android SDK via `local.properties` (`sdk.dir`), git-ignored. compileSdk 37, targetSdk 37, minSdk 24, iOS 16.
 - iOS targets need macOS + Xcode; `kotlin.native.ignoreDisabledTargets=true` lets Android work proceed without them.
-- iOS binaries link the official dynamic `SQLCipher.xcframework` in place of the system sqlite3. Gradle resolves the
-  SQLCipher.swift release zip from `third-party/sqlcipher-ios/<version>/`, kept in Git LFS (install Git LFS before
-  cloning, or run `git lfs pull`), through a local ivy repository in `settings.gradle.kts` (version `sqlcipher` and
-  SHA-256 `sqlcipher-ios-checksum` in the catalog) into each module's `build/sqlcipher`. Upgrading: put the new zip at
-  `third-party/sqlcipher-ios/<new version>/`, then update both catalog entries. The Swift packages (`TmdbCore`,
-  `cmp/iosApp`) still fetch it from the GitHub release; `cmp/iosApp` repeats the version, since Xcode can't read the
-  catalog.
+- iOS binaries link the official dynamic `SQLCipher.xcframework` in place of the system sqlite3. Gradle resolves it from
+  the SQLCipher.swift GitHub releases (ivy repository in `settings.gradle.kts`; version `sqlcipher` and SHA-256
+  `sqlcipher-ios-checksum` in the catalog) into each module's `build/sqlcipher`. `cmp/iosApp` adds it as a Swift package
+  and repeats the version, since Xcode can't read the catalog.
 - Configuration cache and build cache are on (`gradle.properties`). Keep build logic config-cache safe.
 - TMDB API Read Access Token: `TMDB_ACCESS_TOKEN` in git-ignored `secrets.properties` (copy `secrets.properties.example`),
   or the `TMDB_ACCESS_TOKEN` environment variable on CI. It is injected XOR-obfuscated at build time; without it the build

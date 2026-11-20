@@ -12,11 +12,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        // SQLCipher.xcframework for iOS binaries: the official SQLCipher.swift release zip, kept in Git LFS.
+        // SQLCipher.xcframework for iOS binaries, from the official SQLCipher.swift GitHub releases.
         exclusiveContent {
             forRepository {
-                ivy(rootDir.resolve("third-party/sqlcipher-ios")) {
-                    name = "SQLCipherLocal"
+                ivy("https://github.com/sqlcipher/SQLCipher.swift/releases/download") {
+                    name = "SQLCipherReleases"
                     patternLayout { artifact("[revision]/[artifact].[ext]") }
                     metadataSources { artifact() }
                 }

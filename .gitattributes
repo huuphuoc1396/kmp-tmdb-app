@@ -1,1 +1,0 @@
-third-party/sqlcipher-ios/**/*.zip filter=lfs diff=lfs merge=lfs -text
