@@ -8,6 +8,7 @@ kotlin {
             implementation(projects.service.title.domain)
             implementation(projects.core.network)
             implementation(projects.core.database)
+            implementation(projects.core.security)
             implementation(libs.sqldelight.coroutines.extensions)
             implementation(libs.kotlinx.serialization.core)
             implementation(libs.koin.core)

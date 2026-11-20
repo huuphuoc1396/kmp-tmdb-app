@@ -7,8 +7,8 @@ Full design: `docs/architecture.md`.
 Per-layer rules (build logic, tests, architecture tests) are in `.claude/rules/` and load by path.
 
 Current state: early. Production code exists in `core:common` (`AppResult`, `AppError`, `DispatcherProvider`),
-`core:security` (master key cipher), `core:datastore` (encrypted DataStore), `core:network` (TMDB client,
-`apiCall`), `core:database` (`DatabaseDriverFactory`), `core:model` (`TitleId`, `Title`, `Language`), `core:di`
+`core:security` (master key cipher, `DatabaseKeys`), `core:datastore` (encrypted DataStore), `core:network` (TMDB client,
+`apiCall`), `core:database` (`DatabaseDriverFactory`; SQLCipher on Android), `core:model` (`TitleId`, `Title`, `Language`), `core:di`
 (`initKoin()`), the `settings` context (`service/settings/{domain,data,fake}`, onboarding state), the `title` context
 (`service/title/{domain,data,fake}`, featured and popular lists cached in SQLDelight), `core:testing` (`MainDispatcherTest`),
 the `cmp/` features onboarding (`cmp/feature/onboarding/ui`) and Home (`cmp/feature/home/ui`), and the `native-ios`
@@ -70,7 +70,9 @@ Full (when the user asks, or before opening a PR):
 - Refresh is stale-while-revalidate: lists store `fetchedAt`; TTL 6 h for home lists, 24 h for details.
 - Cached content is stored per language (`pt-BR` / `en-US`). Favorites are local-only.
 - Platform code goes through `expect`/`actual` (`DatabaseDriverFactory`, master key in `core:security`).
-- `DatabaseDriverFactory.create(passphrase: ByteArray?)` keeps the passphrase parameter so SQLCipher can be added later.
+- `DatabaseDriverFactory.create(schema, name, passphrase)`: Android opens the database with SQLCipher when given a
+  passphrase from `DatabaseKeys` (`core:security`); a database that cannot be opened with it is deleted and recreated.
+  iOS is not encrypted yet (`DatabaseKeys` returns null there).
 
 ## Modules
 All shared modules apply only `tmdb.module`, which reads the module type from the path (`docs/architecture.md` 5.2)
@@ -81,7 +83,7 @@ and sets targets `android` (with host and device tests), `iosArm64`, `iosSimulat
 |---|---|---|
 | `core:common` | `AppResult`, `AppError`, `DispatcherProvider` | — |
 | `core:model` | Models shared by ≥ 2 contexts or a `nav` module (`TitleId`, `Title`, `Genre`, `Language`) | — |
-| `core:security` | Master key (Keystore / Keychain), AES-GCM | `common`, `model` |
+| `core:security` | Master key (Keystore / Keychain), AES-GCM, database passphrases | `common`, `model` |
 | `core:network` | Ktor client factory, auth, cert pinning, error mapping (no endpoints) | `security`, kernel |
 | `core:database` | `DatabaseDriverFactory` (no tables; each `service/*/data` owns its own SQLDelight database) | `security`, kernel |
 | `core:datastore` | DataStore KMP + encrypted serializer | `security`, kernel |
@@ -138,6 +140,7 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | Current time | `kotlin.time.Clock` (injected) | stdlib |
 | Shared IDs and models | `TitleId`, `Title`, `Language` (`Language.fromLocaleTag`) | `core:model` |
 | Encrypted local settings | `encryptedDataStore(...)`, `masterKeyCipher(alias)` | `core:datastore`, `core:security` |
+| Database passphrase (pass to `DatabaseDriverFactory.create`) | `DatabaseKeys.passphrase(name)` (Koin) | `core:security` |
 | TMDB HTTP client / error mapping | `createTmdbHttpClient()`, `apiCall { }` | `core:network` |
 | SQLite driver for a context's database | `DatabaseDriverFactory(context)` / `DatabaseDriverFactory()` | `core:database` |
 | A context's SQLDelight database | `.sq` files in `src/commonMain/sqldelight/<namespace path>/generated/`; `tmdb.module` generates `<Context>Database` | `service/<ctx>/data` |

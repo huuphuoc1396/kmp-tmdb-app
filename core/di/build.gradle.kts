@@ -9,6 +9,7 @@ kotlin {
             implementation(projects.core.common)
             implementation(projects.core.network)
             implementation(projects.core.database)
+            implementation(projects.core.security)
             implementation(projects.service.settings.data)
             implementation(projects.service.title.data)
         }
