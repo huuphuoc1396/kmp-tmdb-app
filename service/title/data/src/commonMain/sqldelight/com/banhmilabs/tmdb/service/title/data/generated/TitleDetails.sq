@@ -1,0 +1,109 @@
+-- Details of each title, per language. Paths are TMDB image paths; dates are ISO `yyyy-MM-dd`.
+CREATE TABLE titleDetails (
+    tmdbId INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    language TEXT NOT NULL,
+    name TEXT NOT NULL,
+    releaseDate TEXT,
+    runtimeMinutes INTEGER,
+    ratingPercent INTEGER,
+    synopsis TEXT,
+    artworkPath TEXT,
+    artworkIsPoster INTEGER NOT NULL,
+    trailerKey TEXT,
+    fetchedAt INTEGER NOT NULL,
+    PRIMARY KEY (tmdbId, type, language)
+);
+
+-- Genre names of each title, per language, in TMDB order.
+CREATE TABLE titleDetailsGenre (
+    tmdbId INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    language TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    PRIMARY KEY (tmdbId, type, language, position)
+);
+
+-- Main cast of each title, per language, in TMDB order.
+CREATE TABLE titleDetailsCast (
+    tmdbId INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    language TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    profilePath TEXT,
+    PRIMARY KEY (tmdbId, type, language, position)
+);
+
+-- Recommended titles of each title, per language, in TMDB order.
+CREATE TABLE titleDetailsRecommendation (
+    tmdbId INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    language TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    recTmdbId INTEGER NOT NULL,
+    recType TEXT NOT NULL,
+    name TEXT NOT NULL,
+    posterPath TEXT,
+    PRIMARY KEY (tmdbId, type, language, position)
+);
+
+selectDetails:
+SELECT name, releaseDate, runtimeMinutes, ratingPercent, synopsis, artworkPath, artworkIsPoster, trailerKey
+FROM titleDetails
+WHERE tmdbId = ? AND type = ? AND language = ?;
+
+selectFetchedAt:
+SELECT fetchedAt
+FROM titleDetails
+WHERE tmdbId = ? AND type = ? AND language = ?;
+
+selectGenres:
+SELECT name
+FROM titleDetailsGenre
+WHERE tmdbId = ? AND type = ? AND language = ?
+ORDER BY position;
+
+selectCast:
+SELECT name, profilePath
+FROM titleDetailsCast
+WHERE tmdbId = ? AND type = ? AND language = ?
+ORDER BY position;
+
+selectRecommendations:
+SELECT recTmdbId, recType, name, posterPath
+FROM titleDetailsRecommendation
+WHERE tmdbId = ? AND type = ? AND language = ?
+ORDER BY position;
+
+upsertDetails:
+INSERT OR REPLACE INTO titleDetails (
+    tmdbId, type, language, name, releaseDate, runtimeMinutes, ratingPercent, synopsis, artworkPath,
+    artworkIsPoster, trailerKey, fetchedAt
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteGenres:
+DELETE FROM titleDetailsGenre
+WHERE tmdbId = ? AND type = ? AND language = ?;
+
+deleteCast:
+DELETE FROM titleDetailsCast
+WHERE tmdbId = ? AND type = ? AND language = ?;
+
+deleteRecommendations:
+DELETE FROM titleDetailsRecommendation
+WHERE tmdbId = ? AND type = ? AND language = ?;
+
+insertGenre:
+INSERT INTO titleDetailsGenre (tmdbId, type, language, position, name)
+VALUES (?, ?, ?, ?, ?);
+
+insertCast:
+INSERT INTO titleDetailsCast (tmdbId, type, language, position, name, profilePath)
+VALUES (?, ?, ?, ?, ?, ?);
+
+insertRecommendation:
+INSERT INTO titleDetailsRecommendation (tmdbId, type, language, position, recTmdbId, recType, name, posterPath)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
