@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.Res
@@ -53,7 +54,7 @@ internal fun TrailerButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .minimumInteractiveComponentSize()
-            .height(ButtonHeight)
+            .heightIn(min = ButtonHeight)
             .clip(ButtonShape)
             .background(gradient)
             .clickable(role = Role.Button, onClick = onClick),
@@ -66,6 +67,10 @@ internal fun TrailerButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
             modifier = Modifier.size(IconSize),
         )
         Spacer(modifier = Modifier.width(IconToLabel))
-        Text(text = stringResource(Res.string.details_watch_trailer), style = LabelStyle)
+        Text(
+            text = stringResource(Res.string.details_watch_trailer),
+            style = LabelStyle,
+            textAlign = TextAlign.Center,
+        )
     }
 }

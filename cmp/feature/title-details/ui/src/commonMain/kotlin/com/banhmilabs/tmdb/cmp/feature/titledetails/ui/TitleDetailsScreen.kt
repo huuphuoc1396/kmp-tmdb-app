@@ -1,5 +1,6 @@
 package com.banhmilabs.tmdb.cmp.feature.titledetails.ui
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,14 +15,22 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
@@ -31,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterRow
+import com.banhmilabs.tmdb.cmp.designsystem.component.RetryMessage
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.component.CastRow
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.component.DetailsArtwork
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.component.DetailsHeader
@@ -40,9 +50,11 @@ import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.component.SectionHeading
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.component.TrailerButton
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_cast
+import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_error
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_genres
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_no_synopsis
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_recommendations
+import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_retry
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
 import com.banhmilabs.tmdb.core.model.TitleId
@@ -104,30 +116,92 @@ internal fun TitleDetailsContent(
     onIntent: (TitleDetailsIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Hoisted above the states, so the positions survive the moment of Loading after process death.
+    val scroll = DetailsScroll(
+        screen = rememberScrollState(),
+        cast = rememberSaveable(saver = LazyListState.Saver) { LazyListState() },
+        recommendations = rememberSaveable(saver = LazyListState.Saver) { LazyListState() },
+    )
     Box(modifier = modifier.fillMaxSize().background(DetailsColors.Page)) {
-        state.details?.let { details ->
-            Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-                DetailsArtwork(url = details.artworkUrl)
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = HeaderTop)
-                        .windowInsetsPadding(
-                            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-                        )
-                        .padding(bottom = BottomPadding),
-                ) {
-                    DetailsBody(details = details, language = language, onIntent = onIntent)
-                }
-            }
+        when (val load = state.load) {
+            DetailsLoad.Loading -> CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = MaterialTheme.colorScheme.secondary,
+            )
+
+            DetailsLoad.Error -> RetryMessage(
+                message = stringResource(Res.string.details_error),
+                retryLabel = stringResource(Res.string.details_retry),
+                onRetry = { onIntent(TitleDetailsIntent.Retry) },
+                modifier = Modifier.align(Alignment.Center).padding(horizontal = ScreenPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            )
+
+            is DetailsLoad.Loaded -> LoadedContent(
+                details = load.details,
+                isRefreshing = state.isRefreshing,
+                language = language,
+                scroll = scroll,
+                onIntent = onIntent,
+            )
         }
         // Drawn last, so it stays fixed above the scrolling content.
         DetailsTopBar(onBack = { onIntent(TitleDetailsIntent.BackClicked) })
     }
 }
 
+/** The screen's vertical scroll and the positions of its two sideways rows. */
+private class DetailsScroll(val screen: ScrollState, val cast: LazyListState, val recommendations: LazyListState)
+
 @Composable
-private fun DetailsBody(details: TitleDetails, language: Language, onIntent: (TitleDetailsIntent) -> Unit) {
+private fun LoadedContent(
+    details: TitleDetails,
+    isRefreshing: Boolean,
+    language: Language,
+    scroll: DetailsScroll,
+    onIntent: (TitleDetailsIntent) -> Unit,
+) {
+    val pullState = rememberPullToRefreshState()
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = { onIntent(TitleDetailsIntent.Refresh) },
+        modifier = Modifier.fillMaxSize(),
+        state = pullState,
+        indicator = {
+            PullToRefreshDefaults.Indicator(
+                state = pullState,
+                isRefreshing = isRefreshing,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)),
+                color = MaterialTheme.colorScheme.secondary,
+            )
+        },
+    ) {
+        Box(modifier = Modifier.fillMaxSize().verticalScroll(scroll.screen)) {
+            DetailsArtwork(url = details.artworkUrl)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = HeaderTop)
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+                    )
+                    .padding(bottom = BottomPadding),
+            ) {
+                DetailsBody(details = details, language = language, scroll = scroll, onIntent = onIntent)
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailsBody(
+    details: TitleDetails,
+    language: Language,
+    scroll: DetailsScroll,
+    onIntent: (TitleDetailsIntent) -> Unit,
+) {
     val padded = Modifier.padding(horizontal = ScreenPadding)
     DetailsHeader(details = details, language = language, modifier = padded)
     Spacer(modifier = Modifier.height(HeaderToDivider))
@@ -146,7 +220,7 @@ private fun DetailsBody(details: TitleDetails, language: Language, onIntent: (Ti
         Spacer(modifier = Modifier.height(ToCastHeading))
         SectionHeading(text = stringResource(Res.string.details_cast), modifier = padded)
         Spacer(modifier = Modifier.height(CastHeadingToRow))
-        CastRow(cast = details.cast, startPadding = ScreenPadding)
+        CastRow(cast = details.cast, startPadding = ScreenPadding, listState = scroll.cast)
     }
     if (details.genres.isNotEmpty()) {
         Spacer(modifier = Modifier.height(ToSectionHeading))
@@ -161,6 +235,7 @@ private fun DetailsBody(details: TitleDetails, language: Language, onIntent: (Ti
         PosterRow(
             titles = details.recommendations,
             onTitleClick = { onIntent(TitleDetailsIntent.RecommendationClicked(it)) },
+            listState = scroll.recommendations,
             contentPadding = PaddingValues(start = ScreenPadding),
         )
     }

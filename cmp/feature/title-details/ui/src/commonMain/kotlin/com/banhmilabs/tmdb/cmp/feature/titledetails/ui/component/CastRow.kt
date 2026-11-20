@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,9 +54,15 @@ private val NameStyle = TextStyle(
 
 /** The main cast: round photos with a border and the name below, scrolling sideways; not clickable. */
 @Composable
-internal fun CastRow(cast: List<CastMember>, startPadding: Dp, modifier: Modifier = Modifier) {
+internal fun CastRow(
+    cast: List<CastMember>,
+    startPadding: Dp,
+    modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState(),
+) {
     LazyRow(
         modifier = modifier,
+        state = listState,
         contentPadding = PaddingValues(start = startPadding),
         horizontalArrangement = Arrangement.spacedBy(ItemSpacing),
     ) {

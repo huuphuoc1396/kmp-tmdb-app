@@ -38,7 +38,12 @@ class TitleDetailsFormatTest {
 
     @Test
     fun nameWithYearAddsYear() {
-        assertEquals("Imperdoável (2021)", nameWithYear("Imperdoável", 2021))
+        assertEquals("Imperdoável\u00A0(2021)", nameWithYear("Imperdoável", 2021))
+    }
+
+    @Test
+    fun nameWithYearKeepsYearAttached() {
+        assertEquals('\u00A0', nameWithYear("A very long name", 1999)[16])
     }
 
     @Test
