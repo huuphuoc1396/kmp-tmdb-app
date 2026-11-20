@@ -1,0 +1,11 @@
+<resources>
+    <string name="details_back">Back</string>
+    <string name="details_watch_trailer">Watch trailer</string>
+    <string name="details_cast">Main cast</string>
+    <string name="details_genres">Genres</string>
+    <string name="details_recommendations">Recommendations</string>
+    <string name="details_no_synopsis">Synopsis not available.</string>
+    <string name="details_not_rated">NR</string>
+    <string name="details_not_rated_description">Not rated yet</string>
+    <string name="details_rating_description">Rating %1$d%%</string>
+</resources>

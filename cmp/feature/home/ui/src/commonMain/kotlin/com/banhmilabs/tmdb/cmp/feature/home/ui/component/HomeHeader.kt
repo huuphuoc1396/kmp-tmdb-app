@@ -1,6 +1,5 @@
 package com.banhmilabs.tmdb.cmp.feature.home.ui.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -23,17 +22,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.banhmilabs.tmdb.cmp.designsystem.component.PersonIcon
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_title
-import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.ic_person
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 private val TitleToAvatar = 8.dp
 private val AvatarSize = 40.dp
 private val AvatarTopOffset = 7.dp
 private val PersonIconSize = 24.dp
-private const val PERSON_ICON_ALPHA = 0.5f
 
 private val TitleStyle = TextStyle(color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
 
@@ -55,12 +52,7 @@ internal fun HomeHeader(modifier: Modifier = Modifier) {
                 .clearAndSetSemantics {},
             contentAlignment = Alignment.Center,
         ) {
-            Image(
-                painter = painterResource(Res.drawable.ic_person),
-                contentDescription = null,
-                modifier = Modifier.size(PersonIconSize),
-                alpha = PERSON_ICON_ALPHA,
-            )
+            PersonIcon(modifier = Modifier.size(PersonIconSize))
         }
     }
 }

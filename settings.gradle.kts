@@ -50,6 +50,7 @@ include(
     ":cmp:designsystem",
     ":cmp:feature:onboarding:ui",
     ":cmp:feature:home:ui",
+    ":cmp:feature:title-details:ui",
     ":cmp:composeApp",
     ":cmp:androidApp",
 )
