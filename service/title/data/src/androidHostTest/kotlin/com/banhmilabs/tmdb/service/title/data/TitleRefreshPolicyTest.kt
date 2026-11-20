@@ -11,16 +11,26 @@ class TitleRefreshPolicyTest {
 
     @Test
     fun neverFetchedIsStale() {
-        assertTrue(TitleRefreshPolicy.isStale(null, now))
+        assertTrue(TitleRefreshPolicy.isStale(null, now, TitleRefreshPolicy.LIST_TTL))
     }
 
     @Test
     fun sevenHoursOldIsStale() {
-        assertTrue(TitleRefreshPolicy.isStale(now - 7.hours, now))
+        assertTrue(TitleRefreshPolicy.isStale(now - 7.hours, now, TitleRefreshPolicy.LIST_TTL))
     }
 
     @Test
     fun oneHourOldIsFresh() {
-        assertFalse(TitleRefreshPolicy.isStale(now - 1.hours, now))
+        assertFalse(TitleRefreshPolicy.isStale(now - 1.hours, now, TitleRefreshPolicy.LIST_TTL))
+    }
+
+    @Test
+    fun detailsAreFreshFor24Hours() {
+        assertFalse(TitleRefreshPolicy.isStale(now - 23.hours, now, TitleRefreshPolicy.DETAILS_TTL))
+    }
+
+    @Test
+    fun detailsAreStaleAfter24Hours() {
+        assertTrue(TitleRefreshPolicy.isStale(now - 25.hours, now, TitleRefreshPolicy.DETAILS_TTL))
     }
 }

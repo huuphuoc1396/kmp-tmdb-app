@@ -8,6 +8,7 @@ kotlin {
             api(projects.core.common)
             api(projects.core.model)
             api(libs.kotlinx.coroutines.core)
+            api(libs.kotlinx.datetime)
         }
     }
 }

@@ -1,0 +1,31 @@
+{
+  "id": 550,
+  "title": "Fight Club",
+  "overview": "An insomniac office worker and a soap maker form an underground fight club.",
+  "release_date": "1999-10-15",
+  "runtime": 139,
+  "vote_average": 8.438,
+  "vote_count": 30120,
+  "poster_path": "/fight-club.jpg",
+  "backdrop_path": "/fight-club-backdrop.jpg",
+  "genres": [{ "id": 18, "name": "Drama" }, { "id": 53, "name": "Thriller" }],
+  "credits": {
+    "cast": [
+      { "id": 287, "name": "Brad Pitt", "profile_path": null, "order": 1 },
+      { "id": 819, "name": "Edward Norton", "profile_path": "/norton.jpg", "order": 0 }
+    ]
+  },
+  "videos": {
+    "results": [
+      { "key": "teaser1", "site": "YouTube", "type": "Teaser", "iso_639_1": "en", "official": true },
+      { "key": "BdJKm16Co6M", "site": "YouTube", "type": "Trailer", "iso_639_1": "en", "official": true }
+    ]
+  },
+  "recommendations": {
+    "page": 1,
+    "results": [
+      { "id": 680, "title": "Pulp Fiction", "poster_path": "/pulp.jpg", "media_type": "movie" },
+      { "id": 1399, "name": "Game of Thrones", "poster_path": null, "media_type": "tv" }
+    ]
+  }
+}

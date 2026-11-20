@@ -61,7 +61,7 @@ internal class TitleTestEnvironment {
         return TitleListsRepositoryImpl(
             remote = TitleListRemoteDataSource(createTmdbHttpClient(engine, accessToken = "token")),
             local = TitleListLocalDataSource(TitleDatabase(driver), dispatchers),
-            refreshes = TitleListRefreshes(backgroundScope),
+            refreshes = KeyedRefreshes(backgroundScope),
             clock = clock,
         )
     }

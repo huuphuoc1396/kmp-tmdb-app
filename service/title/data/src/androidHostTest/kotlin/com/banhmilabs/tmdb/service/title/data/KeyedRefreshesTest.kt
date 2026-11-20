@@ -10,12 +10,12 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class TitleListRefreshesTest {
+class KeyedRefreshesTest {
     private var refreshCount = 0
 
     @Test
     fun notNeededReturnsSuccessWithoutRefreshing() = runTest {
-        val result = TitleListRefreshes(backgroundScope).joinOrLaunch(KEY, needed = { false }) { count() }
+        val result = KeyedRefreshes<TitleListKey>(backgroundScope).joinOrLaunch(KEY, needed = { false }) { count() }
 
         assertEquals(AppResult.Success(Unit), result)
         assertEquals(0, refreshCount)
@@ -23,7 +23,7 @@ class TitleListRefreshesTest {
 
     @Test
     fun neededLaunchesRefreshAndReturnsItsResult() = runTest {
-        val result = TitleListRefreshes(backgroundScope).joinOrLaunch(KEY, needed = { true }) {
+        val result = KeyedRefreshes<TitleListKey>(backgroundScope).joinOrLaunch(KEY, needed = { true }) {
             count()
             AppResult.Failure(AppError.Network)
         }
@@ -34,7 +34,7 @@ class TitleListRefreshesTest {
 
     @Test
     fun secondCallJoinsRunningRefresh() = runTest {
-        val refreshes = TitleListRefreshes(backgroundScope)
+        val refreshes = KeyedRefreshes<TitleListKey>(backgroundScope)
         val gate = CompletableDeferred<Unit>()
         val slowRefresh: suspend () -> AppResult<Unit> = {
             gate.await()
@@ -54,7 +54,7 @@ class TitleListRefreshesTest {
 
     @Test
     fun finishedRefreshIsLaunchedAgain() = runTest {
-        val refreshes = TitleListRefreshes(backgroundScope)
+        val refreshes = KeyedRefreshes<TitleListKey>(backgroundScope)
 
         refreshes.joinOrLaunch(KEY, needed = { true }) { count() }
         refreshes.joinOrLaunch(KEY, needed = { true }) { count() }
@@ -64,7 +64,7 @@ class TitleListRefreshesTest {
 
     @Test
     fun differentListsRefreshSeparately() = runTest {
-        val refreshes = TitleListRefreshes(backgroundScope)
+        val refreshes = KeyedRefreshes<TitleListKey>(backgroundScope)
 
         refreshes.joinOrLaunch(KEY, needed = { true }) { count() }
         refreshes.joinOrLaunch(OTHER, needed = { true }) { count() }

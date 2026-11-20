@@ -2,6 +2,7 @@ package com.banhmilabs.tmdb.core.ios
 
 import com.banhmilabs.tmdb.core.di.initKoin
 import com.banhmilabs.tmdb.service.settings.domain.SettingsRepository
+import com.banhmilabs.tmdb.service.title.domain.TitleDetailsRepository
 import com.banhmilabs.tmdb.service.title.domain.TitleListsRepository
 import org.koin.core.Koin
 
@@ -21,6 +22,9 @@ object SharedCore {
         get() = checkNotNull(koin) { "Call SharedCore.start() first" }.get()
 
     val titleListsRepository: TitleListsRepository
+        get() = checkNotNull(koin) { "Call SharedCore.start() first" }.get()
+
+    val titleDetailsRepository: TitleDetailsRepository
         get() = checkNotNull(koin) { "Call SharedCore.start() first" }.get()
 
     internal fun reset() {

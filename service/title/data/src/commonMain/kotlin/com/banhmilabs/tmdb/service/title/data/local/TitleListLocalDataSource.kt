@@ -16,8 +16,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
 import kotlin.time.Instant
 
-private const val POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500"
-
 /** The title lists cached in SQLDelight, per language. */
 internal class TitleListLocalDataSource(
     private val database: TitleDatabase,
@@ -72,5 +70,5 @@ internal class TitleListLocalDataSource(
 private fun toTitle(tmdbId: Long, type: String, name: String, posterPath: String?) = Title(
     id = TitleId(tmdbId = tmdbId, type = TitleType.valueOf(type)),
     name = name,
-    posterUrl = posterPath?.let { POSTER_BASE_URL + it },
+    posterUrl = posterPath?.let(TmdbImages::poster),
 )

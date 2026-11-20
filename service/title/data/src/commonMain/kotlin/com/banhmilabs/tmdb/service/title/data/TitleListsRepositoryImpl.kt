@@ -15,7 +15,7 @@ import kotlin.time.Clock
 internal class TitleListsRepositoryImpl(
     private val remote: TitleListRemoteDataSource,
     private val local: TitleListLocalDataSource,
-    private val refreshes: TitleListRefreshes,
+    private val refreshes: KeyedRefreshes<TitleListKey>,
     private val clock: Clock,
 ) : TitleListsRepository {
     override fun observe(category: TitleCategory, listType: TitleListType, language: Language): Flow<List<Title>?> =
@@ -30,7 +30,13 @@ internal class TitleListsRepositoryImpl(
         val key = TitleListKey(category = category, listType = listType, language = language.tag)
         return refreshes.joinOrLaunch(
             key = key,
-            needed = { force || TitleRefreshPolicy.isStale(fetchedAt = local.fetchedAt(key), now = clock.now()) },
+            needed = {
+                force || TitleRefreshPolicy.isStale(
+                    fetchedAt = local.fetchedAt(key),
+                    now = clock.now(),
+                    ttl = TitleRefreshPolicy.LIST_TTL,
+                )
+            },
             refresh = { fetchAndStore(key) },
         )
     }
