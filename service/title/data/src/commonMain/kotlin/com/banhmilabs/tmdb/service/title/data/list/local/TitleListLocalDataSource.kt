@@ -14,18 +14,24 @@ import com.banhmilabs.tmdb.service.title.data.list.TitleListKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlin.time.Instant
 
-/** The title lists cached in SQLDelight, per language. */
+/** The title lists cached in SQLDelight, per language. The database opens on first use, on the IO dispatcher. */
 internal class TitleListLocalDataSource(
-    private val database: TitleDatabase,
+    private val database: Lazy<TitleDatabase>,
     private val dispatchers: DispatcherProvider,
 ) {
-    private val queries = database.titleListQueries
+    private val queries by lazy { database.value.titleListQueries }
 
     /** Cached titles in TMDB order; `null` until the list was stored once, which differs from a list stored empty. */
-    fun observe(key: TitleListKey): Flow<List<Title>?> {
+    fun observe(key: TitleListKey): Flow<List<Title>?> = flow { emitAll(observeCached(key)) }
+        .flowOn(dispatchers.io)
+
+    private fun observeCached(key: TitleListKey): Flow<List<Title>?> {
         val titles = queries.selectTitles(list = key.list, language = key.language, mapper = ::toTitle)
             .asFlow()
             .mapToList(dispatchers.io)
@@ -46,7 +52,7 @@ internal class TitleListLocalDataSource(
     /** Replaces the list and its fetch time in one transaction, keeping the order of [entries]. */
     suspend fun replace(key: TitleListKey, entries: List<TitleEntry>, fetchedAt: Instant): Unit =
         withContext(dispatchers.io) {
-            database.transaction {
+            database.value.transaction {
                 queries.deleteTitles(list = key.list, language = key.language)
                 entries.forEachIndexed { position, entry ->
                     queries.insertTitle(

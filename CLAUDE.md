@@ -8,7 +8,7 @@ Per-layer rules (build logic, tests, architecture tests) are in `.claude/rules/`
 
 Current state: early. Production code exists in `core:common` (`AppResult`, `AppError`, `DispatcherProvider`),
 `core:security` (master key cipher, `DatabaseKeys`), `core:datastore` (encrypted DataStore), `core:network` (TMDB client,
-`apiCall`), `core:database` (`DatabaseDriverFactory`; SQLCipher on Android), `core:model` (`TitleId`, `Title`, `Language`), `core:di`
+`apiCall`), `core:database` (`DatabaseDriverFactory`; SQLCipher), `core:model` (`TitleId`, `Title`, `Language`), `core:di`
 (`initKoin()`), the `settings` context (`service/settings/{domain,data,fake}`, onboarding state), the `title` context
 (`service/title/{domain,data,fake}`, featured and popular lists cached in SQLDelight), `core:testing` (`MainDispatcherTest`),
 the `cmp/` features onboarding (`cmp/feature/onboarding/ui`) and Home (`cmp/feature/home/ui`), and the `native-ios`
@@ -27,6 +27,10 @@ skeleton or existing examples.
 - JDK 21 (toolchain from `jvmToolchain` in `gradle/libs.versions.toml`). Gradle wrapper only.
 - Android SDK via `local.properties` (`sdk.dir`), git-ignored. compileSdk 37, targetSdk 37, minSdk 24, iOS 16.
 - iOS targets need macOS + Xcode; `kotlin.native.ignoreDisabledTargets=true` lets Android work proceed without them.
+- iOS binaries link the official dynamic `SQLCipher.xcframework` in place of the system sqlite3. Gradle resolves it from
+  the SQLCipher.swift GitHub releases (ivy repository in `settings.gradle.kts`; version `sqlcipher` and SHA-256
+  `sqlcipher-ios-checksum` in the catalog) into each module's `build/sqlcipher`. `cmp/iosApp` adds it as a Swift package
+  and repeats the version, since Xcode can't read the catalog.
 - Configuration cache and build cache are on (`gradle.properties`). Keep build logic config-cache safe.
 - TMDB API Read Access Token: `TMDB_ACCESS_TOKEN` in git-ignored `secrets.properties` (copy `secrets.properties.example`),
   or the `TMDB_ACCESS_TOKEN` environment variable on CI. It is injected XOR-obfuscated at build time; without it the build
@@ -42,7 +46,8 @@ skeleton or existing examples.
 - Coverage: `./gradlew koverVerify` (80% line on every `service/*/domain` and `service/*/data`; the root project has a rule-less `koverVerify` so the command works with none); report: `:<module>:koverHtmlReport`
 - Architecture rules: `./gradlew :architecture-test:test`
 - Compile every target (Android, iOS; macOS + Xcode): `./gradlew assemble`
-- Publish the shared core: `./gradlew publishSharedCore` writes every production module of `core/` and `service/` that has code (not `fake`, `core:testing` or app modules) to `build/maven-repo`, as `com.banhmilabs.tmdb:<path-with-dashes>:0.1.0-SNAPSHOT` (e.g. `core-di`, `service-settings-domain`). All targets; iOS klibs need macOS + Xcode. Republishing replaces the snapshot. On macOS it also writes the iOS Swift Package `build/swift-package/TmdbCore` (`Package.swift` + a dynamic release XCFramework `TmdbCore`, bundle ID `com.banhmilabs.tmdb.TmdbCore`, slices `iosArm64` and `iosSimulatorArm64`, with SKIE) from `core:ios`, which is not on Maven.
+- Publish the shared core: `./gradlew publishSharedCore` writes every production module of `core/` and `service/` that has code (not `fake`, `core:testing` or app modules) to `build/maven-repo`, as `com.banhmilabs.tmdb:<path-with-dashes>:0.1.0-SNAPSHOT` (e.g. `core-di`, `service-settings-domain`). All targets; iOS klibs need macOS + Xcode. Republishing replaces the snapshot. On macOS it also writes the iOS Swift Package `build/swift-package/TmdbCore` (`Package.swift` + a dynamic release XCFramework `TmdbCore`, bundle ID `com.banhmilabs.tmdb.TmdbCore`, slices `iosArm64` and `iosSimulatorArm64`, with SKIE) from `core:ios`, which is not on Maven. Its product also carries the `SQLCipher` binary target (release URL
+  + checksum), so apps embed SQLCipher.
 - Native Android app (standalone; publish first, then from `native-android/`): `./gradlew publishSharedCore`, then `cd native-android && ./gradlew :app:installDebug`. Checks: `./gradlew :app:detekt :app:testDebugUnitTest` (in `native-android/`). Not run by CI.
 - Native iOS app (standalone; macOS + Xcode; publish first, then from `native-ios/`): `./gradlew publishSharedCore`, then `xcodebuild -project TmdbNative.xcodeproj -scheme TmdbNative -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`. Tests: `xcodebuild -project TmdbNative.xcodeproj -scheme TmdbNative -destination 'platform=iOS Simulator,name=iPhone 17' test`. Not run by CI.
 - Build, install and launch a native app in one go (publishes the shared core first): `scripts/run-native-android.sh` (connected device/emulator) or `scripts/run-native-ios.sh ["<simulator>"]` (default iPhone 17). Android Studio shows them as the shared run configurations `Run native-android` / `Run native-ios` (`.run/`); they don't attach a debugger, so debug in a separate Android Studio window on `native-android/` or in Xcode.
@@ -70,9 +75,9 @@ Full (when the user asks, or before opening a PR):
 - Refresh is stale-while-revalidate: lists store `fetchedAt`; TTL 6 h for home lists, 24 h for details.
 - Cached content is stored per language (`pt-BR` / `en-US`). Favorites are local-only.
 - Platform code goes through `expect`/`actual` (`DatabaseDriverFactory`, master key in `core:security`).
-- `DatabaseDriverFactory.create(schema, name, passphrase)`: Android opens the database with SQLCipher when given a
-  passphrase from `DatabaseKeys` (`core:security`); a database that cannot be opened with it is deleted and recreated.
-  iOS is not encrypted yet (`DatabaseKeys` returns null there).
+- `DatabaseDriverFactory.create(schema, name, passphrase)` opens the database with SQLCipher when given a passphrase
+  from `DatabaseKeys` (`core:security`); a database that cannot be opened with it is deleted and recreated. `data`
+  modules open their database lazily, on the first query on the IO dispatcher (pass `lazy { get<…Database>() }`).
 
 ## Modules
 All shared modules apply only `tmdb.module`, which reads the module type from the path (`docs/architecture.md` 5.2)

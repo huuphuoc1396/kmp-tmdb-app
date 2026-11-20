@@ -31,6 +31,7 @@ androidx-core-splashscreen = "1.2.0"
 ktor = "3.6.1"
 sqldelight = "2.4.1"
 sqlcipher = "4.20.0"
+sqlcipher-ios-checksum = "1505174fe7f8a0fe81d6ebf87a64b17701b500c12a445ef6b68b9159f012d747"
 coil = "3.6.3"
 
 [libraries]
@@ -77,6 +78,7 @@ sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", ver
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqlcipher-android = { module = "net.zetetic:sqlcipher-android", version.ref = "sqlcipher" }
+sqlcipher-ios = { module = "net.zetetic.ios:SQLCipher.xcframework", version.ref = "sqlcipher" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }

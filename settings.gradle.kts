@@ -12,6 +12,17 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // SQLCipher.xcframework for iOS binaries, from the official SQLCipher.swift GitHub releases.
+        exclusiveContent {
+            forRepository {
+                ivy("https://github.com/sqlcipher/SQLCipher.swift/releases/download") {
+                    name = "SQLCipherReleases"
+                    patternLayout { artifact("[revision]/[artifact].[ext]") }
+                    metadataSources { artifact() }
+                }
+            }
+            filter { includeGroup("net.zetetic.ios") }
+        }
     }
 }
 

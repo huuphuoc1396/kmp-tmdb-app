@@ -61,7 +61,7 @@ internal class TitleListTestEnvironment {
         val dispatchers = mockk<DispatcherProvider> { every { io } returns UnconfinedTestDispatcher(testScheduler) }
         return TitleListsRepositoryImpl(
             remote = TitleListRemoteDataSource(createTmdbHttpClient(engine, accessToken = "token")),
-            local = TitleListLocalDataSource(TitleDatabase(driver), dispatchers),
+            local = TitleListLocalDataSource(lazyOf(TitleDatabase(driver)), dispatchers),
             refreshes = KeyedRefreshes(backgroundScope),
             clock = clock,
         )

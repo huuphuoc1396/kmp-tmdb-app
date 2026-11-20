@@ -62,7 +62,7 @@ internal class TitleDetailsTestEnvironment {
         val dispatchers = mockk<DispatcherProvider> { every { io } returns UnconfinedTestDispatcher(testScheduler) }
         return TitleDetailsRepositoryImpl(
             remote = TitleDetailsRemoteDataSource(createTmdbHttpClient(engine, accessToken = "token")),
-            local = TitleDetailsLocalDataSource(TitleDatabase(driver), dispatchers),
+            local = TitleDetailsLocalDataSource(lazyOf(TitleDatabase(driver)), dispatchers),
             refreshes = KeyedRefreshes(backgroundScope),
             clock = clock,
         )
