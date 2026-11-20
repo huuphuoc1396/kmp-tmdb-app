@@ -9,7 +9,7 @@ struct TmdbNativeApp: App {
 
     var body: some Scene {
         WindowGroup {
-            AppRootView(settings: SharedCoreOnboardingSettings())
+            AppRootView(settings: SharedCoreOnboardingSettings(), titleLists: SharedCoreTitleLists())
         }
     }
 }

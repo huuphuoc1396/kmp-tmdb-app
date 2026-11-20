@@ -21,6 +21,10 @@ Multiplatform build itself.
    ```
 3. After changing the shared core, publish again (step 1), then rebuild the app.
 
+Posters load with [Nuke](https://github.com/kean/Nuke) (`NukeUI`), a remote Swift package pinned in
+`TmdbNative.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`. Xcode fetches it on the first build,
+which needs network once.
+
 ## Tests
 From `native-ios/`, on an installed iPhone simulator:
 ```bash

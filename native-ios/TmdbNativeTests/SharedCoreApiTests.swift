@@ -32,6 +32,29 @@ final class SharedCoreApiTests: XCTestCase {
         XCTAssertTrue(completed)
     }
 
+    func testSharedCoreProvidesTitleListsRepository() {
+        XCTAssertNotNil(SharedCore.shared.titleListsRepository)
+    }
+
+    @MainActor
+    func testTitleListsAdapterEmitsWithoutWaitingForNetwork() async {
+        let titleLists = SharedCoreTitleLists()
+        var iterator = titleLists.observe(listKey(.movies, .featured, .enUs)).makeAsyncIterator()
+
+        // The first value is the cache, `nil` when never loaded; the stream does not end.
+        let first: [TitleItem]?? = await iterator.next()
+
+        guard case .some = first else { return XCTFail("The stream ended without a value") }
+    }
+
+    @MainActor
+    func testTitleListsAdapterRefreshCompletes() async {
+        let titleLists = SharedCoreTitleLists()
+
+        // `true` or `false` depending on network and token; it must return instead of throwing.
+        _ = await titleLists.refresh(listKey(.movies, .featured, .enUs), force: false)
+    }
+
     private func firstValue(of flow: SkieSwiftFlow<KotlinBoolean>) async -> Bool? {
         for await value in flow {
             return value.boolValue

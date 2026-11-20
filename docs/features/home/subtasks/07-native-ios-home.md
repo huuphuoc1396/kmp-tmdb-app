@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Home](../design/home.md)
 Depends on: 03-home-title-lists
-Status: Todo
+Status: Done
 
 ## Goal
 In the native iOS app (SwiftUI), Home works end to end as in the cmp app: the designed layout, five tabs, featured and
