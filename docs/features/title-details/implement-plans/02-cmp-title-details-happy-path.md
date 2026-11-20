@@ -1,7 +1,7 @@
 # Plan: Title details happy path (cmp)
 
 Requirement: [02 - Title details happy path (cmp)](../subtasks/02-cmp-title-details-happy-path.md)
-Status: In progress
+Status: Done
 
 ## Summary
 Add the feature module `cmp/feature/title-details/ui`, shaped like `cmp/feature/home/ui` (MVI contract, ViewModel,
