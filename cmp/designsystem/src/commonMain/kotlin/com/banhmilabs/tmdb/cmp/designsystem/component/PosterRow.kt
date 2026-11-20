@@ -1,4 +1,4 @@
-package com.banhmilabs.tmdb.cmp.feature.home.ui.component
+package com.banhmilabs.tmdb.cmp.designsystem.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,7 +33,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.banhmilabs.tmdb.cmp.feature.home.ui.ScreenPadding
 import com.banhmilabs.tmdb.core.model.Title
 
 private val PosterWidth = 124.dp
@@ -49,17 +49,22 @@ private val PlaceholderNameStyle = TextStyle(
     textAlign = TextAlign.Center,
 )
 
+/**
+ * A horizontal row of 124×188dp posters; a title without a poster shows its name on a plain tile. Each poster is
+ * announced as a button with the title's name.
+ */
 @Composable
-internal fun PosterRow(
+fun PosterRow(
     titles: List<Title>,
-    listState: LazyListState,
     onTitleClick: (Title) -> Unit,
     modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState(),
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     LazyRow(
         modifier = modifier.height(PosterHeight),
         state = listState,
-        contentPadding = PaddingValues(start = ScreenPadding),
+        contentPadding = contentPadding,
         horizontalArrangement = Arrangement.spacedBy(PosterSpacing),
     ) {
         // Lazy list keys must be saveable on Android, so the id becomes a string.
