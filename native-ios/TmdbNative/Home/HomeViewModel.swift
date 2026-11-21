@@ -131,7 +131,7 @@ final class HomeViewModel: ObservableObject {
 }
 
 /// Holds the observation tasks and cancels them when the ViewModel goes away.
-private final class TaskBag: @unchecked Sendable {
+final class TaskBag: @unchecked Sendable {
     private var tasks: [Task<Void, Never>] = []
 
     func add(_ task: Task<Void, Never>) {
