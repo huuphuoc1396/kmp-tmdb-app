@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Title details](../design/title-details.md)
 Depends on: 01-title-details-data, 04-favorites
-Status: Todo
+Status: Done
 
 ## Goal
 In the standalone `native-android` app, tapping a poster on Home opens the full Title details screen as designed, with the favorite button, trailer, recommendations, loading, error, offline and pull-to-refresh behavior of the `cmp` app, using only the published shared core.
