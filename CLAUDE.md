@@ -78,6 +78,9 @@ Full (when the user asks, or before opening a PR):
 - `DatabaseDriverFactory.create(schema, name, passphrase)` opens the database with SQLCipher when given a passphrase
   from `DatabaseKeys` (`core:security`); a database that cannot be opened with it is deleted and recreated. `data`
   modules open their database lazily, on the first query on the IO dispatcher (pass `lazy { get<…Database>() }`).
+- Databases are never in OS backups: on iOS the factory excludes the database directory; each Android app has backup
+  rules (`res/xml/data_extraction_rules.xml`, `res/xml/backup_rules.xml`) excluding the `database` domain, which a
+  new Android app must copy.
 
 ## Modules
 All shared modules apply only `tmdb.module`, which reads the module type from the path (`docs/architecture.md` 5.2)

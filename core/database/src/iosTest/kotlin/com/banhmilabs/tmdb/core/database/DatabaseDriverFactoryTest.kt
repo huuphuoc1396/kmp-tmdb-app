@@ -5,6 +5,9 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSNumber
+import platform.Foundation.NSURL
+import platform.Foundation.NSURLIsExcludedFromBackupKey
 import platform.posix.memcpy
 import kotlin.random.Random
 import kotlin.test.AfterTest
@@ -30,6 +33,24 @@ class DatabaseDriverFactoryTest {
 
         assertTrue(driver.itemNames().isEmpty())
         driver.close()
+    }
+
+    @Test
+    fun plainDatabaseDirectoryIsExcludedFromBackup() {
+        setDirectoryExcludedFromBackup(false)
+
+        factory.create(TestSchema, name).close()
+
+        assertTrue(isDirectoryExcludedFromBackup())
+    }
+
+    @Test
+    fun databaseDirectoryIsExcludedFromBackup() {
+        setDirectoryExcludedFromBackup(false)
+
+        factory.create(TestSchema, name, passphrase).close()
+
+        assertTrue(isDirectoryExcludedFromBackup())
     }
 
     @Test
@@ -116,6 +137,24 @@ class DatabaseDriverFactoryTest {
         val reopened = factory.create(TestSchema, name, passphrase)
         assertEquals(listOf("Dune"), reopened.itemNames())
         reopened.close()
+    }
+
+    private fun databaseDirectory(): NSURL = NSURL.fileURLWithPath(
+        DatabaseFileContext.databasePath(name, null).substringBeforeLast('/'),
+        isDirectory = true,
+    )
+
+    @OptIn(ExperimentalForeignApi::class)
+    private fun setDirectoryExcludedFromBackup(excluded: Boolean) {
+        NSFileManager.defaultManager.createDirectoryAtURL(databaseDirectory(), true, null, null)
+        databaseDirectory().setResourceValue(excluded, forKey = NSURLIsExcludedFromBackupKey, error = null)
+    }
+
+    /** Reads the flag through a new URL, so no cached resource value is returned. */
+    @OptIn(ExperimentalForeignApi::class)
+    private fun isDirectoryExcludedFromBackup(): Boolean {
+        val values = databaseDirectory().resourceValuesForKeys(listOf(NSURLIsExcludedFromBackupKey), error = null)
+        return (values?.get(NSURLIsExcludedFromBackupKey) as? NSNumber)?.boolValue == true
     }
 
     @OptIn(ExperimentalForeignApi::class)

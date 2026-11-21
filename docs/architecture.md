@@ -399,6 +399,12 @@ tests.
   database from an earlier version, or a lost key) is deleted and created again, while other open errors are thrown.
   `data` modules open their database lazily, on the first query on the IO dispatcher, so key access and SQLCipher's
   key derivation never run on the main thread or during Koin start-up.
+- **Backups:** databases and their keys are never in OS backups, since a database restored without its key can't be
+  opened. Each Android app's backup rules (`res/xml/data_extraction_rules.xml` for Android 12+,
+  `res/xml/backup_rules.xml` for older versions) exclude the whole `database` domain from cloud backup and
+  device-to-device transfer; keys are already in `noBackupFilesDir`. On iOS, `excludeFromBackup` (`core:security`)
+  marks `Application Support/databases` (on every `DatabaseDriverFactory.create`) and
+  `Application Support/database-keys` excluded from iCloud and Finder backups. Settings are backed up as before.
 
 ---
 

@@ -8,11 +8,21 @@ import co.touchlab.sqliter.DatabaseConfiguration
 import co.touchlab.sqliter.DatabaseFileContext
 import co.touchlab.sqliter.interop.SQLiteExceptionErrorCode
 import co.touchlab.sqliter.interop.SqliteErrorType
+import com.banhmilabs.tmdb.core.security.excludeFromBackup
 
-/** iOS: databases in the app's default SQLite directory; encrypted with SQLCipher when given a passphrase. */
+/**
+ * iOS: databases in the app's default SQLite directory, which is excluded from iCloud and Finder backups;
+ * encrypted with SQLCipher when given a passphrase.
+ */
 fun DatabaseDriverFactory(): DatabaseDriverFactory = object : DatabaseDriverFactory {
-    override fun create(schema: SqlSchema<QueryResult.Value<Unit>>, name: String, passphrase: ByteArray?): SqlDriver =
-        if (passphrase == null) NativeSqliteDriver(schema, name) else openEncrypted(schema, name, passphrase.toHex())
+    override fun create(schema: SqlSchema<QueryResult.Value<Unit>>, name: String, passphrase: ByteArray?): SqlDriver {
+        val driver = when (passphrase) {
+            null -> NativeSqliteDriver(schema, name)
+            else -> openEncrypted(schema, name, passphrase.toHex())
+        }
+        excludeFromBackup(DatabaseFileContext.databasePath(name, null).substringBeforeLast('/'))
+        return driver
+    }
 }
 
 /** Opens [name] now, so a wrong key fails here; a file that isn't a database for [hexKey] is recreated. */

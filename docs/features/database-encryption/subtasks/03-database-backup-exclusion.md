@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Depends on: 02-encrypted-database-ios
-Status: Todo
+Status: Done
 
 ## Goal
 The local database file is never part of an OS backup (Android Auto Backup and device-to-device transfer, iCloud
