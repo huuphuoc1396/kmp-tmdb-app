@@ -1,0 +1,13 @@
+<!-- From docs/features/title-details/design/assets/ic_clock.svg. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="19dp"
+    android:height="19dp"
+    android:viewportWidth="19"
+    android:viewportHeight="19">
+    <path
+        android:fillColor="#BBBBBB"
+        android:pathData="M9.5,1.58333C5.13475,1.58333 1.58333,5.13475 1.58333,9.5C1.58333,13.8653 5.13475,17.4167 9.5,17.4167C13.8653,17.4167 17.4167,13.8653 17.4167,9.5C17.4167,5.13475 13.8653,1.58333 9.5,1.58333ZM9.5,15.8333C6.00796,15.8333 3.16667,12.992 3.16667,9.5C3.16667,6.00796 6.00796,3.16667 9.5,3.16667C12.992,3.16667 15.8333,6.00796 15.8333,9.5C15.8333,12.992 12.992,15.8333 9.5,15.8333Z" />
+    <path
+        android:fillColor="#BBBBBB"
+        android:pathData="M10.2917,5.54167H8.70833V9.82775L11.3153,12.4347L12.4347,11.3153L10.2917,9.17225V5.54167Z" />
+</vector>

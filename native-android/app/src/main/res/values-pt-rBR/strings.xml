@@ -14,4 +14,15 @@
     <string name="home_row_error">Não foi possível carregar estes títulos.</string>
     <string name="home_retry">Tentar novamente</string>
     <string name="details_back">Voltar</string>
+    <string name="details_watch_trailer">Assistir trailer</string>
+    <string name="details_cast">Elenco principal</string>
+    <string name="details_genres">Categoria(s)</string>
+    <string name="details_recommendations">Recomendações</string>
+    <string name="details_no_synopsis">Sinopse indisponível.</string>
+    <string name="details_not_rated">NR</string>
+    <string name="details_not_rated_description">Ainda sem avaliação</string>
+    <string name="details_rating_description">Avaliação %1$d%%</string>
+    <string name="details_error">Não foi possível carregar este título.</string>
+    <string name="details_retry">Tentar novamente</string>
+    <string name="details_favorite">Favorito</string>
 </resources>
