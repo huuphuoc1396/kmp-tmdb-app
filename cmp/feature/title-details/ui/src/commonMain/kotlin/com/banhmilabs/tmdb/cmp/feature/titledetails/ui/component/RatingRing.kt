@@ -14,6 +14,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.SpanStyle
@@ -21,7 +22,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.DetailsColors
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_not_rated
@@ -33,7 +33,9 @@ internal val RingSize = 57.dp
 private val RingWidth = 6.dp
 private const val START_ANGLE = -90f
 private const val DEGREES_PER_PERCENT = 3.6f
-private val ValueSize = 15.sp
+
+/** In dp, so the value never outgrows the fixed ring at large font sizes; the screen reader still reads it. */
+private val ValueSize = 15.dp
 
 /** The TMDB score as a ring filled to [percent], or an empty ring with "NR" when nobody has voted. */
 @Composable
@@ -45,6 +47,7 @@ internal fun RatingRing(percent: Int?, modifier: Modifier = Modifier) {
     }
     val value = percent?.toString() ?: stringResource(Res.string.details_not_rated)
     val arcColor = MaterialTheme.colorScheme.secondary
+    val valueSize = with(LocalDensity.current) { ValueSize.toSp() }
     Box(
         modifier = modifier.size(RingSize).clearAndSetSemantics { contentDescription = description },
         contentAlignment = Alignment.Center,
@@ -74,7 +77,7 @@ internal fun RatingRing(percent: Int?, modifier: Modifier = Modifier) {
                 if (percent != null) withStyle(SpanStyle(fontWeight = FontWeight.Normal)) { append("%") }
             },
             color = Color.White,
-            fontSize = ValueSize,
+            fontSize = valueSize,
         )
     }
 }

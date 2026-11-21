@@ -28,5 +28,8 @@ internal fun formatRuntime(minutes: Int): String {
     }
 }
 
-/** The name followed by the year in parentheses, or the name alone when the year is unknown. */
-internal fun nameWithYear(name: String, year: Int?): String = if (year == null) name else "$name ($year)"
+/**
+ * The name followed by the year in parentheses, or the name alone when the year is unknown. A non-breaking space
+ * keeps the year on the name's last line when it wraps.
+ */
+internal fun nameWithYear(name: String, year: Int?): String = if (year == null) name else "$name\u00A0($year)"

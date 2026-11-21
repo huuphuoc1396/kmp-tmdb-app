@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Title details](../design/title-details.md)
 Depends on: 02-cmp-title-details-happy-path
-Status: Todo
+Status: Done
 
 ## Goal
 In `cmp`, Title details handles first load, failures, no network, stale data and pull-to-refresh, and stays correct with repeated taps, long content, rotation, process death, language changes and the largest font size.

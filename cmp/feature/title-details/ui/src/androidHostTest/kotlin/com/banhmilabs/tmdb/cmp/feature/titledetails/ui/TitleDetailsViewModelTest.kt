@@ -31,7 +31,7 @@ class TitleDetailsViewModelTest : MainDispatcherTest() {
     fun showsDetailsAfterLanguage() = runTest(testDispatcher) {
         start()
 
-        assertEquals(TitleDetailsUiState(CONTRACT_MOVIE_DETAILS), viewModel.state.value)
+        assertEquals(TitleDetailsUiState(DetailsLoad.Loaded(CONTRACT_MOVIE_DETAILS)), viewModel.state.value)
     }
 
     @Test

@@ -8,4 +8,6 @@
     <string name="details_not_rated">NR</string>
     <string name="details_not_rated_description">Ainda sem avaliação</string>
     <string name="details_rating_description">Avaliação %1$d%%</string>
+    <string name="details_error">Não foi possível carregar este título.</string>
+    <string name="details_retry">Tentar novamente</string>
 </resources>
