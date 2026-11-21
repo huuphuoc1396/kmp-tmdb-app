@@ -30,7 +30,7 @@ private const val STOP_TIMEOUT_MILLIS = 5_000L
 
 /**
  * Shows the details of [titleId] in the device language and whether it is a favorite. Details refresh when the
- * language is set (stale ones only), on pull-to-refresh and on retry (always). Favorite taps are stored in tap order.
+ * language is set (stale ones only), on pull-to-refresh and on retry (always).
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class TitleDetailsViewModel(
@@ -45,21 +45,6 @@ internal class TitleDetailsViewModel(
     private val failed = MutableStateFlow(emptySet<Language>())
     private val manualRefresh = MutableStateFlow(false)
 
-    /** The last tapped favorite value, shown until the database has stored every tap. */
-    private val pendingFavorite = MutableStateFlow<Boolean?>(null)
-    private val queuedFavoriteWrites = MutableStateFlow(0)
-    private val favoriteWrites = Channel<Boolean>(Channel.UNLIMITED)
-
-    // The pending value stays until the stored one matches it, so the heart never flashes back between a write
-    // and the database's next emission.
-    private val isFavorite: Flow<Boolean> = combine(
-        favorites.observeIsFavorite(titleId),
-        pendingFavorite,
-        queuedFavoriteWrites,
-    ) { stored, pending, queued ->
-        if (pending != null && (queued > 0 || stored != pending)) pending else stored
-    }.distinctUntilChanged()
-
     val state: StateFlow<TitleDetailsUiState> = language
         .filterNotNull()
         .flatMapLatest { current ->
@@ -71,7 +56,7 @@ internal class TitleDetailsViewModel(
                 TitleDetailsUiState(load = load(details, current in failedLanguages), isRefreshing = refreshing)
             }
         }
-        .combine(isFavorite) { state, favorite -> state.copy(isFavorite = favorite) }
+        .combine(favorites.observeIsFavorite(titleId)) { state, favorite -> state.copy(isFavorite = favorite) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), TitleDetailsUiState())
 
     private val _effects = Channel<TitleDetailsEffect>(Channel.BUFFERED)
@@ -84,12 +69,6 @@ internal class TitleDetailsViewModel(
             .distinctUntilChanged()
             .onEach { current -> viewModelScope.launch { refresh(current, force = false) } }
             .launchIn(viewModelScope)
-        viewModelScope.launch {
-            for (value in favoriteWrites) {
-                favorites.setFavorite(titleId, value)
-                queuedFavoriteWrites.update { it - 1 }
-            }
-        }
     }
 
     fun onIntent(intent: TitleDetailsIntent) {
@@ -104,12 +83,9 @@ internal class TitleDetailsViewModel(
         }
     }
 
-    /** Each tap flips the shown value at once; the writes follow in tap order, so the last tap is stored last. */
     private fun toggleFavorite() {
         val current = state.value.isFavorite ?: return
-        pendingFavorite.value = !current
-        queuedFavoriteWrites.update { it + 1 }
-        favoriteWrites.trySend(!current)
+        viewModelScope.launch { favorites.setFavorite(titleId, !current) }
     }
 
     private fun openTrailer() {

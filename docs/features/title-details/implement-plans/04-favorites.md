@@ -295,3 +295,10 @@ get lost. The heart sits in the fixed top bar and is shown only in the Loaded st
   - Not run: `./gradlew assemble` for every target. The iOS code of `core:ios` was compiled and tested on the
     simulator.
   - Not checked by hand: How to test 1–7 (heart on a device, restart, airplane mode, TalkBack / VoiceOver).
+- **Simpler heart state** (from user, after the PR was opened):
+  - Removed: `pendingFavorite`, `queuedFavoriteWrites` and the write `Channel`.
+  - The heart now shows `observeIsFavorite(titleId)` as stored.
+  - A tap launches `setFavorite(titleId, !current)`.
+  - The trade-off for EC-1: two taps faster than a database write can both read the same value, so they may store
+    the same state instead of toggling twice. `quickTapsEndOnLastTap` still passes, because the fake writes at
+    once.

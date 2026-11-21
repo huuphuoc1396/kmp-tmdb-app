@@ -16,7 +16,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/** The heart, on a standard dispatcher so writes can still be queued while the user taps. */
+/** The heart, on a standard dispatcher so each tap is checked after its write ran. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class TitleDetailsViewModelFavoriteTest : MainDispatcherTest(StandardTestDispatcher()) {
     private val repository = FakeTitleDetailsRepository(mapOf(CONTRACT_MOVIE_ID to CONTRACT_MOVIE_DETAILS))
