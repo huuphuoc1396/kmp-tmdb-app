@@ -319,3 +319,6 @@ Verification after the last step (from the repo root, then `native-ios/`):
   `[TitleItem]`.
 - Rating ring value: `Text(verbatim:)` concatenation, so no stray keys reach the string catalog.
 
+- Heart icons without the design's 65% `#303243` circle (from user, after review): only the heart (outline white /
+  filled `#FF1F8A`), 32pt with no extra 44pt frame, so the navigation bar draws its button background around it as it
+  does for the back button. Off = `ic_favorite_off.svg` (the heart path of `ic_favorite_button.svg`).

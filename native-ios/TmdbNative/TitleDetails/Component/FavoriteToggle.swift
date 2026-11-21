@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// The heart over its translucent circle. A `Toggle`, so VoiceOver reads it as the "Favorite" switch with its
-/// on/off value; each tap reports once and the shown value is always the stored one.
+/// The heart alone, like the system back button: the navigation bar draws the button's background. A `Toggle`, so
+/// VoiceOver reads it as the "Favorite" switch with its on/off value; each tap reports once and the shown value is
+/// always the stored one.
 struct FavoriteToggle: View {
     let isOn: Bool
     let onTap: () -> Void
@@ -22,8 +23,6 @@ private struct FavoriteToggleStyle: ToggleStyle {
             Image(configuration.isOn ? "FavoriteOn" : "FavoriteOff")
                 .resizable()
                 .frame(width: 32, height: 32)
-                // The 44pt touch target around the 32pt circle.
-                .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
