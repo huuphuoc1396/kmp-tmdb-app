@@ -10,10 +10,11 @@ Current state: early. Production code exists in `core:common` (`AppResult`, `App
 `core:security` (master key cipher, `DatabaseKeys`), `core:datastore` (encrypted DataStore), `core:network` (TMDB client,
 `apiCall`), `core:database` (`DatabaseDriverFactory`; SQLCipher), `core:model` (`TitleId`, `Title`, `Language`), `core:di`
 (`initKoin()`), the `settings` context (`service/settings/{domain,data,fake}`, onboarding state), the `title` context
-(`service/title/{domain,data,fake}`, featured and popular lists cached in SQLDelight), `core:testing` (`MainDispatcherTest`),
+(`service/title/{domain,data,fake}`, featured and popular lists and title details cached in SQLDelight), the `favorites` context
+(`service/favorites/{domain,data,fake}`, local favorites in SQLDelight), `core:testing` (`MainDispatcherTest`),
 the `cmp/` features onboarding (`cmp/feature/onboarding/ui`) and Home (`cmp/feature/home/ui`), and the `native-ios`
 onboarding and Home (`native-ios/TmdbNative/{Onboarding,Home}`). The other `core/*` modules are still
-skeletons with a `*SmokeTest` placeholder. The `favorites` context is created by the first feature that needs it. New code follows `docs/architecture.md` (sections 5–8), not the
+skeletons with a `*SmokeTest` placeholder. New code follows `docs/architecture.md` (sections 5–8), not the
 skeleton or existing examples.
 
 ## Repository layout
@@ -153,12 +154,13 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | SQLite driver for a context's database | `DatabaseDriverFactory(context)` / `DatabaseDriverFactory()` | `core:database` |
 | A context's SQLDelight database | `.sq` files in `src/commonMain/sqldelight/<namespace path>/generated/`; `tmdb.module` generates `<Context>Database` | `service/<ctx>/data` |
 | Featured and popular title lists (observe, refresh) | `TitleListsRepository` | `service:title:domain` |
+| A title's favorite state (observe, set; local only, not per language) | `FavoritesRepository` | `service:favorites:domain` |
 | Koin start-up | `initKoin(appDeclaration)` | `core:di` |
 | Test Main dispatcher (ViewModel tests) | extend `MainDispatcherTest` | `core:testing` |
 | Remote images (posters) | Coil 3 `AsyncImage`; the loader (Ktor network fetcher) is set in `App()` | `cmp/*` |
 | Remote images in `native-ios` | Nuke `LazyImage` (`NukeUI`, Swift package, disk cache) | `native-ios` |
 | Compose resources (strings, drawables) | `composeResources/` in the module; `Res` is in `<namespace>.generated.resources` | `cmp/*` (set by `tmdb.module`) |
-| Repository test double | `Fake<Repository>` (e.g. `FakeSettingsRepository`, `FakeTitleListsRepository` with `setRemoteTitles` per list) | `service/<ctx>/fake` |
+| Repository test double | `Fake<Repository>` (e.g. `FakeSettingsRepository`, `FakeTitleListsRepository` with `setRemoteTitles` per list, `FakeFavoritesRepository`) | `service/<ctx>/fake` |
 | Module build setup | `tmdb.module` (shared modules), `tmdb.detekt` (JVM modules) | `build-logic/convention` |
 
 ## Do not

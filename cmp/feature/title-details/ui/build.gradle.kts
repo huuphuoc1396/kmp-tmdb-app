@@ -6,6 +6,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(projects.core.model)
+            implementation(projects.service.favorites.domain)
             implementation(projects.service.title.domain)
             implementation(projects.cmp.designsystem)
             implementation(libs.androidx.navigation.compose)
@@ -16,6 +17,7 @@ kotlin {
             implementation(libs.coil.compose)
         }
         androidHostTest.dependencies {
+            implementation(projects.service.favorites.fake)
             implementation(projects.service.title.fake)
             implementation(projects.core.testing)
             implementation(libs.turbine)

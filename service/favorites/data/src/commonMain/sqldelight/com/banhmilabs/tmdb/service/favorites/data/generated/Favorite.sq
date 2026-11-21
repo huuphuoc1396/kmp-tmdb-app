@@ -1,0 +1,19 @@
+-- Titles the user marked as favorites; local only, the same in every language. addedAt is in epoch milliseconds.
+CREATE TABLE favorite (
+    tmdbId INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    addedAt INTEGER NOT NULL,
+    PRIMARY KEY (tmdbId, type)
+);
+
+isFavorite:
+SELECT EXISTS(SELECT 1 FROM favorite WHERE tmdbId = ? AND type = ?);
+
+selectAddedAt:
+SELECT addedAt FROM favorite WHERE tmdbId = ? AND type = ?;
+
+insert:
+INSERT OR IGNORE INTO favorite (tmdbId, type, addedAt) VALUES (?, ?, ?);
+
+delete:
+DELETE FROM favorite WHERE tmdbId = ? AND type = ?;

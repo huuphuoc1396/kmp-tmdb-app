@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Title details](../design/title-details.md)
 Depends on: 02-cmp-title-details-happy-path
-Status: Todo
+Status: Done
 
 ## Goal
 Users can mark a title as a favorite from Title details in `cmp` with the heart button, and unmark it. Favorites are stored on the device only, survive app restarts, work offline and do not depend on the language. This creates the `favorites` context in the shared core.

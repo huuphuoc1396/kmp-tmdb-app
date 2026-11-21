@@ -10,4 +10,5 @@
     <string name="details_rating_description">Rating %1$d%%</string>
     <string name="details_error">Couldn&apos;t load this title.</string>
     <string name="details_retry">Try again</string>
+    <string name="details_favorite">Favorite</string>
 </resources>

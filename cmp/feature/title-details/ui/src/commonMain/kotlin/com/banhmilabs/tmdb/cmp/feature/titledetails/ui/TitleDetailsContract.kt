@@ -19,6 +19,8 @@ internal data class TitleDetailsUiState(
     val load: DetailsLoad = DetailsLoad.Loading,
     /** A pull-to-refresh is running; automatic refreshes don't set it. */
     val isRefreshing: Boolean = false,
+    /** Whether the title is a favorite; `null` until the stored value is known. */
+    val isFavorite: Boolean? = null,
 ) {
     val details: TitleDetails? get() = (load as? DetailsLoad.Loaded)?.details
 }
@@ -35,6 +37,8 @@ internal sealed interface TitleDetailsIntent {
     data object Refresh : TitleDetailsIntent
 
     data object Retry : TitleDetailsIntent
+
+    data object FavoriteClicked : TitleDetailsIntent
 }
 
 internal sealed interface TitleDetailsEffect {

@@ -29,6 +29,13 @@ class SharedCoreTest {
     }
 
     @Test
+    fun startProvidesFavoritesRepository() {
+        SharedCore.start()
+
+        assertNotNull(SharedCore.favoritesRepository)
+    }
+
+    @Test
     fun startTwiceKeepsTheSameCore() {
         SharedCore.start()
         val repository = SharedCore.settingsRepository
