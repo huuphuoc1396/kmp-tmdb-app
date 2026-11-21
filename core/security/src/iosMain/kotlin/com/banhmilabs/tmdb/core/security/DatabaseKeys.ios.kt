@@ -9,13 +9,17 @@ import platform.Foundation.NSApplicationSupportDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
-/** iOS: keys in Application Support, encrypted with the Keychain master key. */
-fun DatabaseKeys(): DatabaseKeys = EnvelopeDatabaseKeys(
-    directory = applicationSupportDirectory() / "database-keys",
-    fileSystem = FileSystem.SYSTEM,
-    cipher = masterKeyCipher(DATABASE_MASTER_KEY_ALIAS),
-    generateKey = { CryptographyRandom.nextBytes(DATABASE_KEY_SIZE_BYTES) },
-)
+/** iOS: keys in Application Support, excluded from backups and encrypted with the Keychain master key. */
+fun DatabaseKeys(): DatabaseKeys {
+    val directory = applicationSupportDirectory() / "database-keys"
+    excludeFromBackup(directory.toString())
+    return EnvelopeDatabaseKeys(
+        directory = directory,
+        fileSystem = FileSystem.SYSTEM,
+        cipher = masterKeyCipher(DATABASE_MASTER_KEY_ALIAS),
+        generateKey = { CryptographyRandom.nextBytes(DATABASE_KEY_SIZE_BYTES) },
+    )
+}
 
 @OptIn(ExperimentalForeignApi::class)
 private fun applicationSupportDirectory(): Path {

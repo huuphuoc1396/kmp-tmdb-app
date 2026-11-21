@@ -67,6 +67,22 @@ final class SharedCoreApiTests: XCTestCase {
         XCTAssertNotEqual(header, Data("SQLite format 3\0".utf8))
     }
 
+    @MainActor
+    func testDatabaseFilesAreExcludedFromBackup() async throws {
+        var iterator = SharedCoreTitleLists().observe(listKey(.movies, .featured, .enUs)).makeAsyncIterator()
+
+        // Reading the cache creates the title database and its key file.
+        _ = await iterator.next()
+
+        let databases = try XCTUnwrap(titleDatabaseFile(), "title.db was not created").deletingLastPathComponent()
+        let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        let keys = support.appendingPathComponent("database-keys", isDirectory: true)
+        for directory in [databases, keys] {
+            let values = try directory.resourceValues(forKeys: [.isExcludedFromBackupKey])
+            XCTAssertEqual(values.isExcludedFromBackup, true, "\(directory.lastPathComponent) is backed up")
+        }
+    }
+
     private func titleDatabaseFile() -> URL? {
         let library = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)[0]
         let files = FileManager.default.enumerator(at: library, includingPropertiesForKeys: nil)

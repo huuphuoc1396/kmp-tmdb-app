@@ -3,6 +3,8 @@
 
     <application
         android:name=".TmdbApplication"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:label="TMDB"
         android:theme="@style/Theme.Tmdb.Starting">
         <activity
