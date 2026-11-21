@@ -7,4 +7,11 @@ enum Theme {
     static let accent = Color(red: 0xFF / 255, green: 0x1F / 255, blue: 0x8A / 255)
     static let surfaceVariant = Color(red: 0x36 / 255, green: 0x07 / 255, blue: 0x6B / 255)
     static let homeGradientTop = Color(red: 0x30 / 255, green: 0x32 / 255, blue: 0x43 / 255)
+    /// Rating ring track, cast photo border, genre chips and the details' navigation bar.
+    static let track = Color(red: 0x30 / 255, green: 0x32 / 255, blue: 0x43 / 255)
+    /// The details page below the artwork.
+    static let page = Color(red: 0x21 / 255, green: 0x22 / 255, blue: 0x2E / 255)
+    static let ringCenter = Color(red: 0x15 / 255, green: 0x16 / 255, blue: 0x1D / 255)
+    static let dateLine = Color(red: 0xBB / 255, green: 0xBB / 255, blue: 0xBB / 255)
+    static let synopsis = Color(red: 0xCC / 255, green: 0xCC / 255, blue: 0xCC / 255)
 }

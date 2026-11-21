@@ -1,13 +1,6 @@
 import Foundation
 import TmdbCore
 
-/// A title as Home shows it; `id` is unique across films and series (`movie-550`, `tv-1396`).
-struct TitleItem: Hashable, Identifiable {
-    let id: String
-    let name: String
-    let posterURL: URL?
-}
-
 struct TitleListKey: Hashable {
     let category: TitleCategory
     let listType: TitleListType
@@ -50,15 +43,5 @@ struct SharedCoreTitleLists: TitleLists {
             force: force
         )
         return result is AppResultSuccess<AnyObject>
-    }
-}
-
-private extension TitleItem {
-    init(_ title: Title) {
-        self.init(
-            id: "\(title.id.type.name.lowercased())-\(title.id.tmdbId)",
-            name: title.name,
-            posterURL: title.posterUrl.flatMap(URL.init(string:))
-        )
     }
 }

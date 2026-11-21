@@ -56,6 +56,36 @@ final class SharedCoreApiTests: XCTestCase {
     }
 
     @MainActor
+    func testTitleDetailsAdapterEmitsWithoutWaitingForNetwork() async {
+        var iterator = SharedCoreTitleDetails().observe(detailsTitleId, language: .enUs).makeAsyncIterator()
+
+        // The first value is the cache, `nil` when never loaded; the stream does not end.
+        let first: TitleDetailsItem?? = await iterator.next()
+
+        guard case .some = first else { return XCTFail("The stream ended without a value") }
+    }
+
+    @MainActor
+    func testTitleDetailsAdapterRefreshCompletes() async {
+        // `true` or `false` depending on network and token; it must return instead of throwing.
+        _ = await SharedCoreTitleDetails().refresh(detailsTitleId, language: .enUs, force: false)
+    }
+
+    @MainActor
+    func testFavoritesAdapterStoresAndClearsFavorite() async {
+        let favorites = SharedCoreFavorites()
+        let id = TitleId(tmdbId: 9_999_001, type: .tv)
+
+        await favorites.setFavorite(id, true)
+        let stored = await firstValue(of: favorites.observeIsFavorite(id))
+        await favorites.setFavorite(id, false)
+        let cleared = await firstValue(of: favorites.observeIsFavorite(id))
+
+        XCTAssertEqual(stored, true)
+        XCTAssertEqual(cleared, false)
+    }
+
+    @MainActor
     func testTitleDatabaseIsEncrypted() async throws {
         var iterator = SharedCoreTitleLists().observe(listKey(.movies, .featured, .enUs)).makeAsyncIterator()
 
@@ -87,6 +117,14 @@ final class SharedCoreApiTests: XCTestCase {
         let library = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)[0]
         let files = FileManager.default.enumerator(at: library, includingPropertiesForKeys: nil)
         return files?.compactMap { $0 as? URL }.first { $0.lastPathComponent == "title.db" }
+    }
+
+    @MainActor
+    private func firstValue(of stream: AsyncStream<Bool>) async -> Bool? {
+        for await value in stream {
+            return value
+        }
+        return nil
     }
 
     private func firstValue(of flow: SkieSwiftFlow<KotlinBoolean>) async -> Bool? {

@@ -146,7 +146,7 @@ struct HomeContent: View {
         case let .titles(titles) where titles.isEmpty:
             RowMessage(message: "home.rowEmpty")
         case let .titles(titles):
-            PosterRow(titles: titles, category: state.selectedCategory, savedPosition: position) {
+            PosterRow(titles: titles, rowKey: state.selectedCategory.name, savedPosition: position) {
                 onIntent(.titleTapped($0))
             }
         }
