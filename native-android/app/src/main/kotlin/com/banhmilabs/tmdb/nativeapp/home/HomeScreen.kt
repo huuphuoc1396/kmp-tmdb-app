@@ -3,6 +3,7 @@ package com.banhmilabs.tmdb.nativeapp.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -46,9 +47,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
 import com.banhmilabs.tmdb.nativeapp.R
+import com.banhmilabs.tmdb.nativeapp.designsystem.component.PosterRow
 import com.banhmilabs.tmdb.nativeapp.home.component.CategoryTabs
 import com.banhmilabs.tmdb.nativeapp.home.component.HomeHeader
-import com.banhmilabs.tmdb.nativeapp.home.component.PosterRow
 import com.banhmilabs.tmdb.nativeapp.home.component.RowMessage
 import com.banhmilabs.tmdb.nativeapp.home.component.RowMinHeight
 import com.banhmilabs.tmdb.nativeapp.home.component.SearchField
@@ -194,8 +195,9 @@ private fun TitleRow(row: RowState, category: TitleCategory, listType: TitleList
         } else {
             PosterRow(
                 titles = row.titles,
-                listState = listState,
                 onTitleClick = { onIntent(HomeIntent.TitleClicked(it)) },
+                listState = listState,
+                contentPadding = PaddingValues(start = ScreenPadding),
             )
         }
     }

@@ -1,4 +1,4 @@
-package com.banhmilabs.tmdb.nativeapp.home.component
+package com.banhmilabs.tmdb.nativeapp.designsystem.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.banhmilabs.tmdb.core.model.Title
-import com.banhmilabs.tmdb.nativeapp.home.ScreenPadding
 
 private val PosterWidth = 124.dp
 private val PosterHeight = 188.dp
@@ -49,17 +49,19 @@ private val PlaceholderNameStyle = TextStyle(
     textAlign = TextAlign.Center,
 )
 
+/** Posters scrolling sideways, each a button with its title's name; a name tile when there is no image. */
 @Composable
 internal fun PosterRow(
     titles: List<Title>,
-    listState: LazyListState,
     onTitleClick: (Title) -> Unit,
     modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState(),
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     LazyRow(
         modifier = modifier.height(PosterHeight),
         state = listState,
-        contentPadding = PaddingValues(start = ScreenPadding),
+        contentPadding = contentPadding,
         horizontalArrangement = Arrangement.spacedBy(PosterSpacing),
     ) {
         // Lazy list keys must be saveable on Android, so the id becomes a string.

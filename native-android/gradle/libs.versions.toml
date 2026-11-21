@@ -22,6 +22,7 @@ coil = "3.6.3"
 shared-core-di = { module = "com.banhmilabs.tmdb:core-di", version.ref = "shared-core" }
 shared-core-settings-domain = { module = "com.banhmilabs.tmdb:service-settings-domain", version.ref = "shared-core" }
 shared-core-title-domain = { module = "com.banhmilabs.tmdb:service-title-domain", version.ref = "shared-core" }
+shared-core-favorites-domain = { module = "com.banhmilabs.tmdb:service-favorites-domain", version.ref = "shared-core" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
