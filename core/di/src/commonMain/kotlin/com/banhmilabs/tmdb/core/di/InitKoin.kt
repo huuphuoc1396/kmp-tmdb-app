@@ -3,6 +3,7 @@ package com.banhmilabs.tmdb.core.di
 import com.banhmilabs.tmdb.core.common.DefaultDispatcherProvider
 import com.banhmilabs.tmdb.core.common.DispatcherProvider
 import com.banhmilabs.tmdb.core.network.createTmdbHttpClient
+import com.banhmilabs.tmdb.service.favorites.data.di.favoritesDataModule
 import com.banhmilabs.tmdb.service.settings.data.di.settingsDataModule
 import com.banhmilabs.tmdb.service.title.data.di.titleDataModule
 import org.koin.core.KoinApplication
@@ -23,5 +24,5 @@ private val coreModule = module {
  */
 fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication = startKoin {
     appDeclaration()
-    modules(coreModule, platformModule, settingsDataModule, titleDataModule)
+    modules(coreModule, platformModule, settingsDataModule, titleDataModule, favoritesDataModule)
 }

@@ -3,6 +3,7 @@ package com.banhmilabs.tmdb.cmp.feature.titledetails.ui
 import com.banhmilabs.tmdb.core.common.AppError
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.testing.MainDispatcherTest
+import com.banhmilabs.tmdb.service.favorites.fake.FakeFavoritesRepository
 import com.banhmilabs.tmdb.service.title.fake.FakeTitleDetailsRepository
 import com.banhmilabs.tmdb.service.title.fake.TitleDetailsRepositoryContract.Companion.CONTRACT_MOVIE_DETAILS
 import com.banhmilabs.tmdb.service.title.fake.TitleDetailsRepositoryContract.Companion.CONTRACT_MOVIE_ID
@@ -16,7 +17,7 @@ import kotlin.test.assertTrue
 /** Loading, error, retry and cached details. */
 class TitleDetailsViewModelStateTest : MainDispatcherTest() {
     private val repository = FakeTitleDetailsRepository(mapOf(CONTRACT_MOVIE_ID to CONTRACT_MOVIE_DETAILS))
-    private val viewModel by lazy { TitleDetailsViewModel(CONTRACT_MOVIE_ID, repository) }
+    private val viewModel by lazy { TitleDetailsViewModel(CONTRACT_MOVIE_ID, repository, FakeFavoritesRepository()) }
     private val states = mutableListOf<TitleDetailsUiState>()
 
     @Test
@@ -38,7 +39,7 @@ class TitleDetailsViewModelStateTest : MainDispatcherTest() {
 
     @Test
     fun missingTitleShowsError() = runTest(testDispatcher) {
-        val missing = TitleDetailsViewModel(CONTRACT_MOVIE_ID, FakeTitleDetailsRepository())
+        val missing = TitleDetailsViewModel(CONTRACT_MOVIE_ID, FakeTitleDetailsRepository(), FakeFavoritesRepository())
         backgroundScope.launch { missing.state.collect {} }
 
         missing.onIntent(TitleDetailsIntent.LanguageChanged(Language.EN_US))

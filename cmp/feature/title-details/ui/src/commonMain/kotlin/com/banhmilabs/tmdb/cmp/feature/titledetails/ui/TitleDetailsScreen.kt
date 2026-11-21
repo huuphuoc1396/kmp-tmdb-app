@@ -146,7 +146,12 @@ internal fun TitleDetailsContent(
             )
         }
         // Drawn last, so it stays fixed above the scrolling content.
-        DetailsTopBar(onBack = { onIntent(TitleDetailsIntent.BackClicked) })
+        DetailsTopBar(
+            onBack = { onIntent(TitleDetailsIntent.BackClicked) },
+            // No heart while Loading or Error.
+            isFavorite = state.isFavorite.takeIf { state.load is DetailsLoad.Loaded },
+            onFavoriteClick = { onIntent(TitleDetailsIntent.FavoriteClicked) },
+        )
     }
 }
 

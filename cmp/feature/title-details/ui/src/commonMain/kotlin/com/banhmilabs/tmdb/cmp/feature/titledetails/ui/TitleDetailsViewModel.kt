@@ -6,6 +6,7 @@ import com.banhmilabs.tmdb.core.common.AppResult
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
 import com.banhmilabs.tmdb.core.model.TitleId
+import com.banhmilabs.tmdb.service.favorites.domain.FavoritesRepository
 import com.banhmilabs.tmdb.service.title.domain.TitleDetails
 import com.banhmilabs.tmdb.service.title.domain.TitleDetailsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,18 +29,36 @@ import kotlinx.coroutines.launch
 private const val STOP_TIMEOUT_MILLIS = 5_000L
 
 /**
- * Shows the details of [titleId] in the device language. They refresh when the language is set (stale ones only),
- * on pull-to-refresh and on retry (always).
+ * Shows the details of [titleId] in the device language and whether it is a favorite. Details refresh when the
+ * language is set (stale ones only), on pull-to-refresh and on retry (always). Favorite taps are stored in tap order.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class TitleDetailsViewModel(private val titleId: TitleId, private val repository: TitleDetailsRepository) :
-    ViewModel() {
+internal class TitleDetailsViewModel(
+    private val titleId: TitleId,
+    private val repository: TitleDetailsRepository,
+    private val favorites: FavoritesRepository,
+) : ViewModel() {
     /** `null` until the screen reports the device language; nothing is observed or refreshed before that. */
     private val language = MutableStateFlow<Language?>(null)
 
     /** Languages whose last refresh failed, so an error never shows in the other language. */
     private val failed = MutableStateFlow(emptySet<Language>())
     private val manualRefresh = MutableStateFlow(false)
+
+    /** The last tapped favorite value, shown until the database has stored every tap. */
+    private val pendingFavorite = MutableStateFlow<Boolean?>(null)
+    private val queuedFavoriteWrites = MutableStateFlow(0)
+    private val favoriteWrites = Channel<Boolean>(Channel.UNLIMITED)
+
+    // The pending value stays until the stored one matches it, so the heart never flashes back between a write
+    // and the database's next emission.
+    private val isFavorite: Flow<Boolean> = combine(
+        favorites.observeIsFavorite(titleId),
+        pendingFavorite,
+        queuedFavoriteWrites,
+    ) { stored, pending, queued ->
+        if (pending != null && (queued > 0 || stored != pending)) pending else stored
+    }.distinctUntilChanged()
 
     val state: StateFlow<TitleDetailsUiState> = language
         .filterNotNull()
@@ -52,6 +71,7 @@ internal class TitleDetailsViewModel(private val titleId: TitleId, private val r
                 TitleDetailsUiState(load = load(details, current in failedLanguages), isRefreshing = refreshing)
             }
         }
+        .combine(isFavorite) { state, favorite -> state.copy(isFavorite = favorite) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), TitleDetailsUiState())
 
     private val _effects = Channel<TitleDetailsEffect>(Channel.BUFFERED)
@@ -64,6 +84,12 @@ internal class TitleDetailsViewModel(private val titleId: TitleId, private val r
             .distinctUntilChanged()
             .onEach { current -> viewModelScope.launch { refresh(current, force = false) } }
             .launchIn(viewModelScope)
+        viewModelScope.launch {
+            for (value in favoriteWrites) {
+                favorites.setFavorite(titleId, value)
+                queuedFavoriteWrites.update { it - 1 }
+            }
+        }
     }
 
     fun onIntent(intent: TitleDetailsIntent) {
@@ -74,7 +100,16 @@ internal class TitleDetailsViewModel(private val titleId: TitleId, private val r
             is TitleDetailsIntent.RecommendationClicked -> openTitle(intent.title)
             TitleDetailsIntent.Refresh -> refreshManually()
             TitleDetailsIntent.Retry -> retry()
+            TitleDetailsIntent.FavoriteClicked -> toggleFavorite()
         }
+    }
+
+    /** Each tap flips the shown value at once; the writes follow in tap order, so the last tap is stored last. */
+    private fun toggleFavorite() {
+        val current = state.value.isFavorite ?: return
+        pendingFavorite.value = !current
+        queuedFavoriteWrites.update { it + 1 }
+        favoriteWrites.trySend(!current)
     }
 
     private fun openTrailer() {

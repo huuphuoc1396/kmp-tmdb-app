@@ -3,6 +3,7 @@ package com.banhmilabs.tmdb.cmp.feature.titledetails.ui
 import app.cash.turbine.test
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.testing.MainDispatcherTest
+import com.banhmilabs.tmdb.service.favorites.fake.FakeFavoritesRepository
 import com.banhmilabs.tmdb.service.title.fake.FakeTitleDetailsRepository
 import com.banhmilabs.tmdb.service.title.fake.TitleDetailsRepositoryContract.Companion.CONTRACT_MOVIE_DETAILS
 import com.banhmilabs.tmdb.service.title.fake.TitleDetailsRepositoryContract.Companion.CONTRACT_MOVIE_ID
@@ -17,7 +18,7 @@ class TitleDetailsViewModelTest : MainDispatcherTest() {
     private val repository = FakeTitleDetailsRepository(mapOf(CONTRACT_MOVIE_ID to CONTRACT_MOVIE_DETAILS))
 
     // Created after MainDispatcherTest sets the Main dispatcher: the ViewModel starts collecting in its init.
-    private val viewModel by lazy { TitleDetailsViewModel(CONTRACT_MOVIE_ID, repository) }
+    private val viewModel by lazy { TitleDetailsViewModel(CONTRACT_MOVIE_ID, repository, FakeFavoritesRepository()) }
 
     @Test
     fun nothingObservedBeforeLanguage() = runTest(testDispatcher) {
@@ -31,7 +32,10 @@ class TitleDetailsViewModelTest : MainDispatcherTest() {
     fun showsDetailsAfterLanguage() = runTest(testDispatcher) {
         start()
 
-        assertEquals(TitleDetailsUiState(DetailsLoad.Loaded(CONTRACT_MOVIE_DETAILS)), viewModel.state.value)
+        assertEquals(
+            TitleDetailsUiState(DetailsLoad.Loaded(CONTRACT_MOVIE_DETAILS), isFavorite = false),
+            viewModel.state.value,
+        )
     }
 
     @Test

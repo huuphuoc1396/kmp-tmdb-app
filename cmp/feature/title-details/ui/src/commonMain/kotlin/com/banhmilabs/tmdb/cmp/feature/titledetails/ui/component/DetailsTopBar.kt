@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -25,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,7 +35,10 @@ import androidx.compose.ui.unit.sp
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.DetailsColors
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_back
+import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_favorite
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.ic_back_arrow
+import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.ic_favorite_off
+import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.ic_favorite_on
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -46,11 +52,23 @@ private val ArrowSize = 24.dp
 private val ArrowToLabel = 6.dp
 private const val PILL_ALPHA = 0.65f
 
+/** The 48dp touch target adds 8dp around the 32dp heart, so the heart's edge stays 30dp from the screen edge. */
+private val FavoriteEnd = 22.dp
+private val FavoriteSize = 32.dp
+
 private val LabelStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
-/** The row fixed below the status bar: the "Voltar" pill, readable over any content scrolled under it. */
+/**
+ * The row fixed below the status bar: the "Voltar" pill and, when [isFavorite] is known, the heart, both readable
+ * over any content scrolled under them.
+ */
 @Composable
-internal fun DetailsTopBar(onBack: () -> Unit, modifier: Modifier = Modifier) {
+internal fun DetailsTopBar(
+    onBack: () -> Unit,
+    isFavorite: Boolean?,
+    onFavoriteClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -77,5 +95,28 @@ internal fun DetailsTopBar(onBack: () -> Unit, modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.width(ArrowToLabel))
             Text(text = stringResource(Res.string.details_back), style = LabelStyle)
         }
+        if (isFavorite != null) {
+            FavoriteButton(
+                isFavorite = isFavorite,
+                onClick = onFavoriteClick,
+                modifier = Modifier.align(Alignment.CenterEnd).padding(end = FavoriteEnd),
+            )
+        }
     }
+}
+
+/** The heart over its translucent circle, announced as the "Favorite" toggle with its on/off state. */
+@Composable
+private fun FavoriteButton(isFavorite: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val label = stringResource(Res.string.details_favorite)
+    Image(
+        painter = painterResource(if (isFavorite) Res.drawable.ic_favorite_on else Res.drawable.ic_favorite_off),
+        contentDescription = null,
+        modifier = modifier
+            .minimumInteractiveComponentSize()
+            .size(FavoriteSize)
+            .clip(CircleShape)
+            .toggleable(value = isFavorite, role = Role.Switch, onValueChange = { onClick() })
+            .semantics { contentDescription = label },
+    )
 }

@@ -10,6 +10,7 @@ kotlin {
             implementation(projects.core.network)
             implementation(projects.core.database)
             implementation(projects.core.security)
+            implementation(projects.service.favorites.data)
             implementation(projects.service.settings.data)
             implementation(projects.service.title.data)
         }
@@ -17,6 +18,7 @@ kotlin {
             implementation(libs.koin.android)
         }
         androidDeviceTest.dependencies {
+            implementation(projects.service.favorites.domain)
             implementation(projects.service.settings.domain)
             implementation(projects.service.title.domain)
             implementation(libs.koin.android)
