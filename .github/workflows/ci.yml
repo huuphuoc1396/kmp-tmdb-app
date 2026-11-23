@@ -31,7 +31,6 @@ jobs:
         with:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
-      # Each check runs even if an earlier check failed, but not after a cancel or a failed setup.
       - name: Static analysis (Detekt + ktlint)
         if: ${{ !cancelled() && steps.gradle.outcome == 'success' }}
         run: ./gradlew detekt --continue
