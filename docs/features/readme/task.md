@@ -31,8 +31,8 @@ TMDB API.
    2. **Overview**: what the app is (TMDB discovery for films, series, anime and novelas; English and pt-BR), its
       features (onboarding, Home with featured and popular lists, title details, favorites), and the three apps
       that share one business core (`cmp/`, `native-android/`, `native-ios/`).
-   3. **Screenshots**: a table with Android and iOS images per screen (onboarding, Home, title details,
-      favorites), pointing to fixed paths.
+   3. **Screenshots**: one image per screen (onboarding, Home, title details, favorites), not split by
+      platform, pointing to fixed paths.
    4. **Acknowledgements**: the reference design
       (https://www.figma.com/community/file/1059842558004825230/tmdb) and the TMDB API (https://www.themoviedb.org/).
    5. **Architecture**:
@@ -102,7 +102,7 @@ Not applicable (documentation only).
 - **AC-8** Screenshot placeholders
   - Given the Screenshots section
   - When the owner adds images later
-  - Then each image has a fixed, documented path per screen and platform, and the README shows how they are laid out
+  - Then each image has a fixed, documented path per screen (not per platform), and the README shows how they are laid out
 
 ## Edge cases
 - **EC-1** Image files not added yet -> the Screenshots table still reads correctly (broken images are acceptable
@@ -120,9 +120,10 @@ Not applicable (documentation only).
 - Follows TMDB's attribution requirements for the disclaimer.
 
 ## Open questions
-- [x] Exact screenshot image folder: `docs/images/screenshots/<platform>-<screen>.png`.
+- [x] Exact screenshot image folder: `docs/images/screenshots/<screen>.png`.
 
 ## Change log
 - 2026-11-23: Initial version.
 - 2026-11-23: Screenshot path set to docs/images/screenshots/<platform>-<screen>.png.
 - 2026-11-23: Native apps run by opening their own project; the run scripts are not documented.
+- 2026-11-23: Screenshots are one image per screen, not split by platform (`docs/images/screenshots/<screen>.png`).

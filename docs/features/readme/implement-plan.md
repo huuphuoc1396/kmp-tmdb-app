@@ -13,8 +13,8 @@ verification is a manual review of the rendered page and of the commands against
 ## Decisions
 - Favorites are listed as a full feature (mark/unmark on Title details and a My favorites list), with a fourth
   screenshot row — user's choice over "list only what works today" (see Risks: the list screen is not built yet).
-- Screenshots live in `docs/images/screenshots/<platform>-<screen>.png`, platform `android` | `ios`, screen
-  `onboarding` | `home` | `title-details` | `favorites` (8 files) — user's choice; resolves task.md's open question.
+- Screenshots live in `docs/images/screenshots/<screen>.png`, screen
+  `onboarding` | `home` | `title-details` | `favorites` (4 files, not split by platform) — user's choice; resolves task.md's open question.
 - TMDB disclaimer is text plus a link to https://www.themoviedb.org/, no logo file — user's choice over committing or
   hotlinking the official logo.
 - No library versions in the README text (they drift); the tech table names libraries and points to
@@ -72,8 +72,8 @@ verification is a manual review of the rendered page and of the commands against
     favorites list). Table of the three apps: `cmp/` (Compose Multiplatform, shared ViewModel + UI),
     `native-android/` (Jetpack Compose, core as published Android libraries), `native-ios/` (SwiftUI, core as a
     local Swift Package). One sentence: same business core, different amounts of shared presentation.
-  - `## Screenshots`: table, columns Onboarding | Home | Title details | Favorites, rows Android | iOS, each cell
-    `<img src="docs/images/screenshots/<platform>-<screen>.png" width="200">`; one line under it listing the folder
+  - `## Screenshots`: table, columns Onboarding | Home | Title details | Favorites, one row, each cell
+    `<img src="docs/images/screenshots/<screen>.png" width="200">`; one line under it listing the folder
     and naming pattern so the owner can drop files in.
   - `## Acknowledgements`: design based on the TMDB Figma community file
     (https://www.figma.com/community/file/1059842558004825230/tmdb); data from the TMDB API
@@ -172,7 +172,7 @@ verification is a manual review of the rendered page and of the commands against
 | AC-5 | 2, 5 | Manual: Figma link, TMDB link and disclaimer sentence present |
 | AC-6 | 5 | Manual: `diff` each command block against `CLAUDE.md` Commands; spot-run `./gradlew :architecture-test:test` |
 | AC-7 | 1, 5 | Manual: `LICENSE` is MIT, 2026, Phuoc Bui; README links it |
-| AC-8 | 2 | Manual: 8 image paths follow `docs/images/screenshots/<platform>-<screen>.png` |
+| AC-8 | 2 | Manual: 4 image paths follow `docs/images/screenshots/<screen>.png` |
 | EC-1 | 2 | Manual: table readable with images missing; naming line present |
 | EC-2 | 3, 4 | Manual: text before each diagram explains it alone |
 | EC-3 | 5 | Manual: missing-token behaviour described |
@@ -203,3 +203,4 @@ verification is a manual review of the rendered page and of the commands against
   run as their own projects; `scripts/` dropped from the project tree.
 - README condensed at the user's request (477 → ~230 lines): same 11 sections and 4 diagrams; Getting started and
   Testing keep only the main commands and link the native app READMEs for the rest.
+- Screenshots changed to one row of 4 images, not split by platform, at the user's request.
