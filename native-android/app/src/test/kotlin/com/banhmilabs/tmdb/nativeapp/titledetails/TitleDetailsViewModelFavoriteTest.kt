@@ -7,11 +7,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -45,29 +45,69 @@ class TitleDetailsViewModelFavoriteTest {
     }
 
     @Test
-    fun secondClickRemovesFavorite() = runTest(mainDispatcherRule.dispatcher) {
+    fun clickOnFavoriteAsksToConfirm() = runTest(mainDispatcherRule.dispatcher) {
+        favorites = FakeFavoritesRepository(setOf(MOVIE_ID))
         start()
 
         tapFavorite()
-        tapFavorite()
 
-        assertEquals(false, viewModel.state.value.isFavorite)
-        assertEquals(listOf(true, false), favorites.writes.map { it.second })
+        assertTrue(viewModel.state.value.isRemoveConfirmationShown)
+        assertEquals(true, viewModel.state.value.isFavorite)
+        assertTrue(favorites.writes.isEmpty())
     }
 
     @Test
-    fun quickTapsEndOnLastTap() = runTest(mainDispatcherRule.dispatcher) {
+    fun confirmRemovesFavorite() = runTest(mainDispatcherRule.dispatcher) {
+        favorites = FakeFavoritesRepository(setOf(MOVIE_ID))
         start()
+        tapFavorite()
 
-        listOf(true, false, true).forEach { expected ->
-            viewModel.onIntent(TitleDetailsIntent.FavoriteClicked)
-            runCurrent()
-            assertEquals(expected, viewModel.state.value.isFavorite)
-        }
+        viewModel.onIntent(TitleDetailsIntent.RemoveFavoriteConfirmed)
         advanceUntilIdle()
 
+        assertFalse(viewModel.state.value.isRemoveConfirmationShown)
+        assertEquals(false, viewModel.state.value.isFavorite)
+        assertEquals(listOf(MOVIE_ID to false), favorites.writes)
+    }
+
+    @Test
+    fun confirmTwiceWritesOnce() = runTest(mainDispatcherRule.dispatcher) {
+        favorites = FakeFavoritesRepository(setOf(MOVIE_ID))
+        start()
+        tapFavorite()
+
+        viewModel.onIntent(TitleDetailsIntent.RemoveFavoriteConfirmed)
+        viewModel.onIntent(TitleDetailsIntent.RemoveFavoriteConfirmed)
+        advanceUntilIdle()
+
+        assertEquals(listOf(MOVIE_ID to false), favorites.writes)
+    }
+
+    @Test
+    fun dismissKeepsFavorite() = runTest(mainDispatcherRule.dispatcher) {
+        favorites = FakeFavoritesRepository(setOf(MOVIE_ID))
+        start()
+        tapFavorite()
+
+        viewModel.onIntent(TitleDetailsIntent.RemoveFavoriteDismissed)
+        advanceUntilIdle()
+
+        assertFalse(viewModel.state.value.isRemoveConfirmationShown)
         assertEquals(true, viewModel.state.value.isFavorite)
-        assertEquals(listOf(true, false, true), favorites.writes.map { it.second })
+        assertTrue(favorites.writes.isEmpty())
+    }
+
+    @Test
+    fun quickTapsOnFavoriteKeepOneConfirmation() = runTest(mainDispatcherRule.dispatcher) {
+        favorites = FakeFavoritesRepository(setOf(MOVIE_ID))
+        start()
+
+        repeat(3) { viewModel.onIntent(TitleDetailsIntent.FavoriteClicked) }
+        advanceUntilIdle()
+
+        assertTrue(viewModel.state.value.isRemoveConfirmationShown)
+        assertEquals(true, viewModel.state.value.isFavorite)
+        assertTrue(favorites.writes.isEmpty())
     }
 
     @Test

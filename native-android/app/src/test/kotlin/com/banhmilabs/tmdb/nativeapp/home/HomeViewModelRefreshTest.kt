@@ -1,6 +1,5 @@
 package com.banhmilabs.tmdb.nativeapp.home
 
-import androidx.lifecycle.SavedStateHandle
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.nativeapp.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,7 +20,7 @@ class HomeViewModelRefreshTest {
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
     private val repository = homeTestRepository()
-    private val viewModel by lazy { HomeViewModel(repository, SavedStateHandle()) }
+    private val viewModel by lazy { homeViewModel(repository) }
     private val states = mutableListOf<HomeUiState>()
 
     @Test

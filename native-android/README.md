@@ -4,8 +4,9 @@ A standalone native Android app (Jetpack Compose). It uses the shared core of th
 uses an SDK: through the published Android libraries in `../build/maven-repo`, never through the Kotlin
 Multiplatform build itself.
 
-Screens: onboarding, Home and Title details (favorites through `service-favorites-domain`, title data through
-`service-title-domain`).
+Screens: onboarding, Home (with a Favorites section), My favorites and Title details (favorites through
+`service-favorites-domain`, title data and the favorites list through `service-title-domain`). Removing a favorite
+always asks for confirmation.
 
 ## Prerequisites
 - JDK 21.

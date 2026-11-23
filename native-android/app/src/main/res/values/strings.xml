@@ -25,4 +25,23 @@
     <string name="details_error">Couldn\'t load this title.</string>
     <string name="details_retry">Try again</string>
     <string name="details_favorite">Favorite</string>
+    <string name="remove_favorite_title">Remove from favorites?</string>
+    <string name="remove_favorite_message">“%1$s” will be removed from your list. You can add it again later.</string>
+    <string name="remove_favorite_message_unknown">This title will be removed from your list. You can add it again later.</string>
+    <string name="remove_favorite_cancel">Cancel</string>
+    <string name="remove_favorite_confirm">Remove</string>
+    <string name="remove_favorite_heart">Remove from favorites</string>
+    <string name="home_favorites_title">Favorites</string>
+    <string name="home_favorites_subtitle">Saved to watch whenever you like.</string>
+    <string name="home_favorites_view_all">View all</string>
+    <string name="home_favorites_loading">Loading title</string>
+    <string name="favorites_back">Back</string>
+    <string name="favorites_title">My Favorites</string>
+    <string name="favorites_subtitle">All your saved titles, in one place.</string>
+    <string name="favorites_loading">Loading title</string>
+    <string name="favorites_empty">No favorites yet. Tap the heart on a title to save it here.</string>
+    <plurals name="favorites_count">
+        <item quantity="one">%d title</item>
+        <item quantity="other">%d titles</item>
+    </plurals>
 </resources>

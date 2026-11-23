@@ -16,6 +16,7 @@ internal data class TitleDetailsUiState(
     val load: DetailsLoad = DetailsLoad.Loading,
     val isRefreshing: Boolean = false,
     val isFavorite: Boolean? = null,
+    val isRemoveConfirmationShown: Boolean = false,
 ) {
     val details: TitleDetails? get() = (load as? DetailsLoad.Loaded)?.details
 }
@@ -34,6 +35,10 @@ internal sealed interface TitleDetailsIntent {
     data object Retry : TitleDetailsIntent
 
     data object FavoriteClicked : TitleDetailsIntent
+
+    data object RemoveFavoriteConfirmed : TitleDetailsIntent
+
+    data object RemoveFavoriteDismissed : TitleDetailsIntent
 }
 
 internal sealed interface TitleDetailsEffect {
