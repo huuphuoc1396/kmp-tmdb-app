@@ -2,6 +2,8 @@ package com.banhmilabs.tmdb.nativeapp.titledetails
 
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.nativeapp.MainDispatcherRule
+import com.banhmilabs.tmdb.service.favorites.fake.FakeFavoritesRepository
+import com.banhmilabs.tmdb.service.title.fake.FakeTitleDetailsRepository
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -15,10 +17,10 @@ class TitleDetailsViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(UnconfinedTestDispatcher())
 
-    private val repository = TitleDetailsTestRepository()
+    private val repository = titleDetailsTestRepository()
 
     private val viewModel by lazy {
-        TitleDetailsViewModel(MOVIE_ID, repository.mock, FavoritesTestRepository().mock)
+        TitleDetailsViewModel(MOVIE_ID, repository, FakeFavoritesRepository())
     }
     private val effects = mutableListOf<TitleDetailsEffect>()
 
@@ -47,7 +49,10 @@ class TitleDetailsViewModelTest {
         viewModel.onIntent(TitleDetailsIntent.LanguageChanged(Language.EN_US))
 
         assertEquals(
-            listOf(DetailsRefresh(Language.PT_BR, force = false), DetailsRefresh(Language.EN_US, force = false)),
+            listOf(
+                FakeTitleDetailsRepository.RefreshRequest(MOVIE_ID, Language.PT_BR, force = false),
+                FakeTitleDetailsRepository.RefreshRequest(MOVIE_ID, Language.EN_US, force = false),
+            ),
             repository.refreshRequests,
         )
     }
@@ -56,7 +61,7 @@ class TitleDetailsViewModelTest {
     fun languageChangeShowsOtherLanguage() = runTest(mainDispatcherRule.dispatcher) {
         start(Language.PT_BR)
         val english = MOVIE_DETAILS.copy(name = "English name")
-        repository.remoteDetails = english
+        repository.setRemoteDetails(MOVIE_ID, english)
 
         viewModel.onIntent(TitleDetailsIntent.LanguageChanged(Language.EN_US))
 
@@ -75,7 +80,7 @@ class TitleDetailsViewModelTest {
 
     @Test
     fun trailerClickWithoutTrailerDoesNothing() = runTest(mainDispatcherRule.dispatcher) {
-        repository.remoteDetails = MOVIE_DETAILS.copy(trailer = null)
+        repository.setRemoteDetails(MOVIE_ID, MOVIE_DETAILS.copy(trailer = null))
         start()
 
         viewModel.onIntent(TitleDetailsIntent.TrailerClicked)

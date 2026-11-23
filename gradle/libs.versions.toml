@@ -12,7 +12,6 @@ kover = "0.9.11"
 skie = "0.10.16"
 konsist = "0.18.1"
 junit = "6.1.3"
-mockk = "1.14.12"
 datastore = "1.3.0"
 cryptography = "0.6.0"
 kotlinx-serialization = "1.12.0"
@@ -41,7 +40,6 @@ junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 detekt-rules-ktlint-wrapper = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
 androidx-datastore-core-okio = { module = "androidx.datastore:datastore-core-okio", version.ref = "datastore" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }

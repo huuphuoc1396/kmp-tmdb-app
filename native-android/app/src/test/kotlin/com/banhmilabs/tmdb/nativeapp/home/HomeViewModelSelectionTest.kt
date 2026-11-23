@@ -17,10 +17,10 @@ class HomeViewModelSelectionTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(UnconfinedTestDispatcher())
 
-    private val repository = HomeTestRepository()
+    private val repository = homeTestRepository()
     private val savedState = SavedStateHandle()
 
-    private val viewModel by lazy { HomeViewModel(repository.mock, savedState) }
+    private val viewModel by lazy { HomeViewModel(repository, savedState) }
 
     @Test
     fun tabSwitchRefreshesWithoutForce() = runTest(mainDispatcherRule.dispatcher) {

@@ -45,10 +45,10 @@ internal fun Project.configureKotlinMultiplatform(iosFramework: String? = null) 
 
         sourceSets.getByName("commonTest").dependencies {
             implementation(libs.findLibrary("kotlin-test").get())
+            implementation(libs.findLibrary("kotlinx-coroutines-test").get())
         }
         sourceSets.getByName("androidHostTest").dependencies {
             implementation(libs.findLibrary("kotlin-test").get())
-            implementation(libs.findLibrary("mockk").get())
         }
         sourceSets.getByName("androidDeviceTest").dependencies {
             implementation(libs.findLibrary("androidx-test-runner").get())

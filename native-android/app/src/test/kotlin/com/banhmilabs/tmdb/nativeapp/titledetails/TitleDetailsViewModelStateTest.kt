@@ -3,6 +3,8 @@ package com.banhmilabs.tmdb.nativeapp.titledetails
 import com.banhmilabs.tmdb.core.common.AppError
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.nativeapp.MainDispatcherRule
+import com.banhmilabs.tmdb.service.favorites.fake.FakeFavoritesRepository
+import com.banhmilabs.tmdb.service.title.fake.FakeTitleDetailsRepository
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -16,9 +18,9 @@ class TitleDetailsViewModelStateTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(UnconfinedTestDispatcher())
 
-    private val repository = TitleDetailsTestRepository()
+    private var repository = titleDetailsTestRepository()
     private val viewModel by lazy {
-        TitleDetailsViewModel(MOVIE_ID, repository.mock, FavoritesTestRepository().mock)
+        TitleDetailsViewModel(MOVIE_ID, repository, FakeFavoritesRepository())
     }
     private val states = mutableListOf<TitleDetailsUiState>()
 
@@ -41,7 +43,7 @@ class TitleDetailsViewModelStateTest {
 
     @Test
     fun missingTitleShowsError() = runTest(mainDispatcherRule.dispatcher) {
-        repository.remoteDetails = null
+        repository = FakeTitleDetailsRepository()
 
         start()
 

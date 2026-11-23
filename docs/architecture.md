@@ -315,16 +315,16 @@ UI ◄── ViewModel ◄── (UseCase) ◄── Repository.observe()  ◄�
 
 | Level | Tools | Source set |
 |---|---|---|
-| Domain and data unit tests | `kotlin.test`, Turbine, Kotest assertions, service fakes, MockK | `androidHostTest` (default) |
-| Pure multiplatform logic that should also run on Kotlin/Native | `kotlin.test`, Turbine, Kotest assertions, service fakes (no MockK) | `commonTest` (allowed; Android host, device, iOS simulator) |
+| Domain and data unit tests | `kotlin.test`, Turbine, Kotest assertions, service fakes, private stubs | `androidHostTest` (default) |
+| Pure multiplatform logic that should also run on Kotlin/Native | `kotlin.test`, Turbine, Kotest assertions, service fakes | `commonTest` (allowed; Android host, device, iOS simulator) |
 | Network | HTTP client mock engine + fixture JSON (each `data` module's test resources) | `androidHostTest` |
 | Database | SQLDelight in-memory driver, real database, not mocked | `androidHostTest` |
-| Encrypted storage on the host | A MockK cipher that returns its input; the real cipher is never called on the host | `androidHostTest` |
+| Encrypted storage on the host | A private stub cipher that returns its input; the real cipher is never called on the host | `androidHostTest` |
 | Platform code (`actual`) | Android: device tests (real Keystore). iOS: `kotlin.test`, no mocks; the Keychain path through the `native-ios` tests | `androidDeviceTest` / `iosTest`, local |
 | Repository fakes | Contract test shared by `data` and `fake` | `androidHostTest` |
-| Shared ViewModels (`cmp/`) | `kotlinx-coroutines-test`, Turbine, service fakes, MockK | `androidHostTest` |
+| Shared ViewModels (`cmp/`) | `kotlinx-coroutines-test`, Turbine, service fakes | `androidHostTest` |
 | Compose UI (`cmp/`) | Checked manually on device and simulator | — |
-| Native Android (`native-android/`) | JUnit 4 + MockK ViewModel tests against the published domain API; UI checked manually on device | JVM, run locally |
+| Native Android (`native-android/`) | JUnit 4 ViewModel tests against the published domain API with the published service fakes; UI checked manually on device | JVM, run locally |
 | Native iOS (`native-ios/`) | XCTest: ViewModels against small Swift protocols with Swift test doubles; the adapters over `SharedCore` in the app's test host against the real shared core (Swift can't implement a Kotlin `Flow`); UI checked manually on the simulator | simulator, run locally |
 | Architecture | Konsist | JVM |
 | Coverage and static analysis | Kover (80% line on `domain` and `data`), Detekt | CI |
@@ -332,23 +332,27 @@ UI ◄── ViewModel ◄── (UseCase) ◄── Repository.observe()  ◄�
 Rules:
 
 - **`androidHostTest` is the default** for unit tests: Android host tests run on the developer's JVM and on CI, are
-  fast, and can use MockK. They never reach the real Keystore or Keychain: code that needs a cipher gets a MockK
-  cipher that returns its input.
-- **`commonTest` is allowed** for tests that use only multiplatform libraries (no MockK) and are worth running on
-  Kotlin/Native too: concurrency and `Flow` timing, formatting, parsing, date and time. `commonTest` tests run on the
-  Android host (so on CI), in Android device tests and on the iOS simulator.
+  fast. They never reach the real Keystore or Keychain: code that needs a cipher gets a stub cipher that returns
+  its input.
+- **`commonTest` only when it pays off.** A test goes there when the code under test runs on iOS, touches something
+  Kotlin/Native can run differently from the JVM (file I/O, encryption, number/date/string formatting, concurrency
+  and `Flow` timing, a platform driver), and the test needs no JVM-only API. Pure logic and fakes stay in
+  `androidHostTest`. A JVM-bound suite with a real iOS risk (SQLDelight native driver + SQLCipher) gets a small
+  targeted `iosTest` instead of moving. `commonTest` tests run on the Android host (so on CI), in Android device
+  tests and on the iOS simulator, so each one also slows device tests.
 - **Test doubles across modules are the service fakes.** Each `service/<ctx>/fake` holds an in-memory, controllable
   fake per repository interface. ViewModel and use case tests run the real use cases on top of a fake repository.
 - **Fakes are kept honest by contract tests.** An abstract `<Repository>Contract` in the `fake` module describes the
   behavior; both `<Repository>ImplTest` (in `data`) and `Fake<Repository>Test` (in `fake`) extend it.
-- **MockK** is for collaborators inside the same module and for verifying interactions, in `androidHostTest` only. No other
-  hand-written fakes, no Mokkery.
+- **No mocking library.** Inside a module, tests use the real collaborator; when it is platform-bound or a test must
+  inject a failure, a small `private` stub in the test class stands in (a pass-through cipher, a `DataStore` that
+  fails to read). Commands are checked through state or the fake's recorded calls, not by verifying calls.
 - The HTTP mock engine and the in-memory database driver are test engines, not fakes; the database and HTTP client
   are never mocked.
 - **Platform code is tested on its platform**, locally: Android `actual` code with device tests (`androidDeviceTest`,
   for example the real Keystore cipher), iOS `actual` code on the simulator with `kotlin.test`. Kotlin iOS tests run
   without an app bundle, so they can't reach the Keychain; that path is covered by the `native-ios` Swift tests in the
-  app's test host. Never MockK there.
+  app's test host. No test doubles there.
 
 ---
 
@@ -460,8 +464,8 @@ native-android/
 
 - One `:app` module to start; designsystem and feature modules are split out when a second feature needs them.
 - Dependencies are the published root coordinates `com.banhmilabs.tmdb:core-di` (Koin start-up, brings the data
-  layer at runtime) and `com.banhmilabs.tmdb:service-<ctx>-domain` (repository interfaces, use cases, models).
-  Gradle metadata selects the Android variant.
+  layer at runtime) and `com.banhmilabs.tmdb:service-<ctx>-domain` (repository interfaces, use cases, models);
+  unit tests add `com.banhmilabs.tmdb:service-<ctx>-fake`. Gradle metadata selects the Android variant.
 - ViewModels and UI are Android-only (Android ViewModel, Jetpack Compose). The feature rules are the same as in
   `cmp/`: a screen reads repositories through `domain`, never through `data`.
 - Workflow: `./gradlew publishSharedCore` at the root, then build in `native-android/` (its `README.md`).
@@ -512,7 +516,7 @@ native-ios/
 | Settings | DataStore KMP + AES-GCM (Android Keystore; `cryptography-kotlin` on iOS) |
 | Images | Coil 3 (Compose); a disk-caching image library on SwiftUI |
 | iOS interop | SKIE (in the `TmdbCore` XCFramework) |
-| Testing | Android host tests with `kotlin.test`, MockK, Turbine, Kotest assertions; Android device tests; Konsist; Kover |
+| Testing | Android host tests with `kotlin.test`, Turbine, Kotest assertions, service fakes; Android device tests; Konsist; Kover |
 | Build | Gradle version catalog, convention plugins in `build-logic` |
 
 ---
@@ -555,8 +559,8 @@ xcodebuild -project TmdbNative.xcodeproj -scheme TmdbNative -destination 'platfo
 
 The KMP build publishes the shared core so that standalone apps can use it like any SDK.
 
-- **What:** every production module of `core/` and `service/` that has code. Never `service/*/fake`, `core:testing`
-  or app modules. Each module publishes all its Kotlin Multiplatform publications: the root Gradle metadata module,
+- **What:** every production module of `core/` and `service/` that has code, plus the `service/*/fake` test doubles
+  (for consumers' unit tests). Never `core:testing` or app modules. Each module publishes all its Kotlin Multiplatform publications: the root Gradle metadata module,
   Android (AAR) and the iOS klibs (macOS + Xcode).
 - **Coordinates:** `com.banhmilabs.tmdb:<path-with-dashes>:0.1.0-SNAPSHOT`, for example `core-di` and
   `service-settings-domain`, with the platform suffixes `-android`, `-iosarm64` and `-iossimulatorarm64`. The POM and Gradle

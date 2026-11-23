@@ -1,11 +1,6 @@
 package com.banhmilabs.tmdb.nativeapp
 
-import com.banhmilabs.tmdb.service.settings.domain.SettingsRepository
-import io.mockk.every
-import io.mockk.mockk
-import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
+import com.banhmilabs.tmdb.service.settings.fake.FakeSettingsRepository
 import org.junit.Rule
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,11 +11,7 @@ class AppViewModelTest {
 
     @Test
     fun loadingUntilOnboardingStateIsRead() {
-        val repository = mockk<SettingsRepository> {
-            every { observeOnboardingCompleted() } returns flow { awaitCancellation() }
-        }
-        val viewModel = AppViewModel(repository)
-        mainDispatcherRule.dispatcher.scheduler.advanceUntilIdle()
+        val viewModel = AppViewModel(FakeSettingsRepository())
 
         assertEquals(StartDestination.Loading, viewModel.startDestination.value)
     }
@@ -41,7 +32,5 @@ class AppViewModelTest {
         assertEquals(StartDestination.Home, viewModel.startDestination.value)
     }
 
-    private fun repositoryWithCompleted(completed: Boolean) = mockk<SettingsRepository> {
-        every { observeOnboardingCompleted() } returns flowOf(completed)
-    }
+    private fun repositoryWithCompleted(completed: Boolean) = FakeSettingsRepository(onboardingCompleted = completed)
 }
