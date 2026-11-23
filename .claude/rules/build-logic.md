@@ -60,7 +60,7 @@ paths:
 
 ## Do / Don't
 - Keep build logic configuration-cache safe (`org.gradle.configuration-cache=true`): no `project` access inside task actions; declare extra inputs explicitly, like `inputs.files(...)` in `architecture-test/build.gradle.kts`.
-- Unit test deps are set in `configureKotlinMultiplatform()`: `commonTest` has `kotlin-test` (other multiplatform test libraries such as Turbine and Kotest assertions go there once a module needs them); `androidHostTest` has `kotlin-test` (JVM-only test libraries only there; no mocking library); `androidDeviceTest` has the AndroidX test runner. Targets are Android (host and device tests) and iOS; there is no JVM target.
+- Unit test deps are set in `configureKotlinMultiplatform()`: `commonTest` has `kotlin-test` and `kotlinx-coroutines-test` (other multiplatform test libraries such as Turbine and Kotest assertions go there once a module needs them); `androidHostTest` has `kotlin-test` (JVM-only test libraries only there; no mocking library); `androidDeviceTest` has the AndroidX test runner. Targets are Android (host and device tests) and iOS; there is no JVM target.
 - Root `build.gradle.kts` applies Kover with no rules (so `koverVerify` exists with no gated module) and registers a root `testAndroidHostTest` that depends on `build-logic`'s `:convention:test`, so `./gradlew testAndroidHostTest` runs every module's host tests and the build-logic tests.
 
 ## Testing

@@ -12,10 +12,8 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.koin.android)
         }
-        androidHostTest.dependencies {
+        commonTest.dependencies {
             implementation(projects.service.settings.fake)
-            implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.turbine)
         }
     }
 }
