@@ -2,7 +2,6 @@ import SwiftUI
 import UIKit
 import ComposeApp
 
-/// Hosts the shared Compose `App()`.
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
         MainViewControllerKt.MainViewController()

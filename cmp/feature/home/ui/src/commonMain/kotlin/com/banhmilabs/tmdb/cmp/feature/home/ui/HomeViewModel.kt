@@ -31,10 +31,6 @@ import kotlinx.coroutines.launch
 private const val STOP_TIMEOUT_MILLIS = 5_000L
 internal const val SELECTED_CATEGORY_KEY = "selectedCategory"
 
-/**
- * Shows both lists of the selected category in the device language. Lists refresh when shown (stale ones only),
- * on pull-to-refresh and on retry (always). The selected category survives process death.
- */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class HomeViewModel(
     private val repository: TitleListsRepository,
@@ -44,11 +40,9 @@ internal class HomeViewModel(
         savedStateHandle.get<String>(SELECTED_CATEGORY_KEY)?.let(TitleCategory::valueOf) ?: TitleCategory.MOVIES,
     )
 
-    /** `null` until the screen reports the device language; nothing is observed or refreshed before that. */
     private val language = MutableStateFlow<Language?>(null)
     private val selection = combine(category, language.filterNotNull(), ::Selection).distinctUntilChanged()
 
-    /** Lists whose last refresh failed, per category and language, so results never leak into another tab. */
     private val failed = MutableStateFlow(emptySet<ListKey>())
     private val manualRefresh = MutableStateFlow(false)
 
@@ -78,7 +72,6 @@ internal class HomeViewModel(
     val effects: Flow<HomeEffect> = _effects.receiveAsFlow()
 
     init {
-        // Showing a category refreshes its lists; the repository skips the ones that are still fresh.
         selection
             .onEach { current ->
                 TitleListType.entries.forEach { listType ->

@@ -34,7 +34,6 @@ private val MessageStyle = TextStyle(
 )
 private val RetryStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
 
-/** A short message, vertically centered, with a "Try again" pill below it when [onRetry] is set. */
 @Composable
 fun RetryMessage(
     message: String,

@@ -14,7 +14,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/** Loading, error, retry and cached details. */
 class TitleDetailsViewModelStateTest : MainDispatcherTest() {
     private val repository = FakeTitleDetailsRepository(mapOf(CONTRACT_MOVIE_ID to CONTRACT_MOVIE_DETAILS))
     private val viewModel by lazy { TitleDetailsViewModel(CONTRACT_MOVIE_ID, repository, FakeFavoritesRepository()) }

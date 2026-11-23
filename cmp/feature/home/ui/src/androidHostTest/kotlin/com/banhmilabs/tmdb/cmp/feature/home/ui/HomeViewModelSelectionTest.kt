@@ -15,7 +15,6 @@ class HomeViewModelSelectionTest : MainDispatcherTest() {
     private val repository = homeTestRepository()
     private val savedState = SavedStateHandle()
 
-    // Created after MainDispatcherTest sets the Main dispatcher: the ViewModel starts collecting in its init.
     private val viewModel by lazy { HomeViewModel(repository, savedState) }
 
     @Test

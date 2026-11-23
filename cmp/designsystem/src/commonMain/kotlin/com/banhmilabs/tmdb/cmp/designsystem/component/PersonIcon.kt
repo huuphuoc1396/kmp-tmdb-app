@@ -9,7 +9,6 @@ import org.jetbrains.compose.resources.painterResource
 
 private const val PERSON_ICON_ALPHA = 0.5f
 
-/** A generic, decorative person icon in white at 50%, for avatars and missing photos. */
 @Composable
 fun PersonIcon(modifier: Modifier = Modifier) {
     Image(

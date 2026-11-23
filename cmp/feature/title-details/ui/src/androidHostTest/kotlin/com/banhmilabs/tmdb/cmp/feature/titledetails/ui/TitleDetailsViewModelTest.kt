@@ -17,7 +17,6 @@ import kotlin.test.assertTrue
 class TitleDetailsViewModelTest : MainDispatcherTest() {
     private val repository = FakeTitleDetailsRepository(mapOf(CONTRACT_MOVIE_ID to CONTRACT_MOVIE_DETAILS))
 
-    // Created after MainDispatcherTest sets the Main dispatcher: the ViewModel starts collecting in its init.
     private val viewModel by lazy { TitleDetailsViewModel(CONTRACT_MOVIE_ID, repository, FakeFavoritesRepository()) }
 
     @Test
@@ -110,7 +109,6 @@ class TitleDetailsViewModelTest : MainDispatcherTest() {
         }
     }
 
-    /** Keeps the state subscribed for the whole test and reports the device [language]. */
     private fun TestScope.start(language: Language = Language.EN_US) {
         backgroundScope.launch { viewModel.state.collect {} }
         viewModel.onIntent(TitleDetailsIntent.LanguageChanged(language))
