@@ -26,11 +26,11 @@ One Kotlin core (network, storage, business logic) backs three apps:
 
 ## Screenshots
 
-| Onboarding | Home | Title details | Favorites |
-|---|---|---|---|
-| <img src="docs/images/screenshots/onboarding.png" width="200"> | <img src="docs/images/screenshots/home.png" width="200"> | <img src="docs/images/screenshots/title-details.png" width="200"> | <img src="docs/images/screenshots/favorites.png" width="200"> |
+| Onboarding | Home | Title details |
+|---|---|---|
+| <img src="docs/images/screenshots/onboarding.png" width="250"> | <img src="docs/images/screenshots/home.png" width="250"> | <img src="docs/images/screenshots/title-details.png" width="250"> |
 
-Images: `docs/images/screenshots/<onboarding|home|title-details|favorites>.png`.
+Images: `docs/images/screenshots/<onboarding|home|title-details>.png`.
 
 ## Acknowledgements
 

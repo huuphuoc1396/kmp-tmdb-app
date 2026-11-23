@@ -31,8 +31,8 @@ TMDB API.
    2. **Overview**: what the app is (TMDB discovery for films, series, anime and novelas; English and pt-BR), its
       features (onboarding, Home with featured and popular lists, title details, favorites), and the three apps
       that share one business core (`cmp/`, `native-android/`, `native-ios/`).
-   3. **Screenshots**: one image per screen (onboarding, Home, title details, favorites), not split by
-      platform, pointing to fixed paths.
+   3. **Screenshots**: one image per screen (onboarding, Home, title details; favorites appear inside
+      Home and title details), not split by platform, pointing to fixed paths.
    4. **Acknowledgements**: the reference design
       (https://www.figma.com/community/file/1059842558004825230/tmdb) and the TMDB API (https://www.themoviedb.org/).
    5. **Architecture**:
@@ -127,3 +127,4 @@ Not applicable (documentation only).
 - 2026-11-23: Screenshot path set to docs/images/screenshots/<platform>-<screen>.png.
 - 2026-11-23: Native apps run by opening their own project; the run scripts are not documented.
 - 2026-11-23: Screenshots are one image per screen, not split by platform (`docs/images/screenshots/<screen>.png`).
+- 2026-11-23: Screenshots limited to onboarding, Home and title details; favorites show inside Home and title details.
