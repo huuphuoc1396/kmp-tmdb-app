@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
 class FavoritesRepositoryImplTest : FavoritesRepositoryContract() {
@@ -22,7 +23,7 @@ class FavoritesRepositoryImplTest : FavoritesRepositoryContract() {
         JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY).also { FavoritesDatabase.Schema.create(it) },
     )
     private var now: Instant = Instant.parse("2026-11-21T10:00:00Z")
-    private val clock = mockk<Clock> { every { now() } answers { now } }
+    private val clock = mockk<Clock> { every { now() } answers { now.also { now += 1.milliseconds } } }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun TestScope.createRepository(): FavoritesRepository {
@@ -35,7 +36,6 @@ class FavoritesRepositoryImplTest : FavoritesRepositoryContract() {
         val repository = createRepository()
         val firstAdded = now
         repository.setFavorite(CONTRACT_MOVIE_ID, isFavorite = true)
-        now = Instant.parse("2026-11-22T10:00:00Z")
 
         repository.setFavorite(CONTRACT_MOVIE_ID, isFavorite = true)
 

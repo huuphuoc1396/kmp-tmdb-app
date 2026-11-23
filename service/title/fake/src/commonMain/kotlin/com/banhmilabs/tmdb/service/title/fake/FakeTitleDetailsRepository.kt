@@ -6,6 +6,7 @@ import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.TitleId
 import com.banhmilabs.tmdb.service.title.domain.TitleDetails
 import com.banhmilabs.tmdb.service.title.domain.TitleDetailsRepository
+import com.banhmilabs.tmdb.service.title.domain.TitleSummary
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -30,6 +31,19 @@ class FakeTitleDetailsRepository(remoteDetails: Map<TitleId, TitleDetails> = emp
 
     override fun observe(id: TitleId, language: Language): Flow<TitleDetails?> =
         cache.map { it[id to language] }.distinctUntilChanged()
+
+    override fun observeSummary(id: TitleId, language: Language): Flow<TitleSummary?> =
+        observe(id, language).map { details ->
+            details?.let {
+                TitleSummary(
+                    id = it.id,
+                    name = it.name,
+                    posterUrl = it.artworkUrl,
+                    releaseYear = it.releaseYear,
+                    firstGenre = it.genres.firstOrNull(),
+                )
+            }
+        }
 
     override suspend fun refresh(id: TitleId, language: Language, force: Boolean): AppResult<Unit> {
         _refreshRequests += RefreshRequest(id, language, force)

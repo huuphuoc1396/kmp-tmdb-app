@@ -8,6 +8,9 @@ CREATE TABLE favorite (
 isFavorite:
 SELECT EXISTS(SELECT 1 FROM favorite WHERE tmdbId = ? AND type = ?);
 
+selectAllNewestFirst:
+SELECT tmdbId, type FROM favorite ORDER BY addedAt DESC, tmdbId DESC, type DESC;
+
 selectAddedAt:
 SELECT addedAt FROM favorite WHERE tmdbId = ? AND type = ?;
 

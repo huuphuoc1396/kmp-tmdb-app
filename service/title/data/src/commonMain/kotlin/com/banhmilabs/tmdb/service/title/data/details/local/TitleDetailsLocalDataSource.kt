@@ -11,9 +11,11 @@ import com.banhmilabs.tmdb.service.title.data.TmdbImages
 import com.banhmilabs.tmdb.service.title.data.details.TitleDetailsEntry
 import com.banhmilabs.tmdb.service.title.data.details.TitleDetailsKey
 import com.banhmilabs.tmdb.service.title.data.generated.SelectDetails
+import com.banhmilabs.tmdb.service.title.data.generated.SelectSummary
 import com.banhmilabs.tmdb.service.title.data.generated.TitleDatabase
 import com.banhmilabs.tmdb.service.title.domain.CastMember
 import com.banhmilabs.tmdb.service.title.domain.TitleDetails
+import com.banhmilabs.tmdb.service.title.domain.TitleSummary
 import com.banhmilabs.tmdb.service.title.domain.Trailer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -21,6 +23,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 import kotlin.time.Instant
@@ -32,6 +35,14 @@ internal class TitleDetailsLocalDataSource(
     private val queries by lazy { database.value.titleDetailsQueries }
 
     fun observe(key: TitleDetailsKey): Flow<TitleDetails?> = flow { emitAll(observeCached(key)) }
+        .flowOn(dispatchers.io)
+
+    fun observeSummary(key: TitleDetailsKey): Flow<TitleSummary?> = flow {
+        val (tmdbId, type, language) = key.columns()
+        emitAll(queries.selectSummary(tmdbId, type, language).asFlow().mapToOneOrNull(dispatchers.io))
+    }
+        .map { row -> row?.toSummary(key.id) }
+        .distinctUntilChanged()
         .flowOn(dispatchers.io)
 
     private fun observeCached(key: TitleDetailsKey): Flow<TitleDetails?> {
@@ -120,4 +131,12 @@ private fun SelectDetails.toDetails(
     cast = cast,
     trailer = trailerKey?.let(::Trailer),
     recommendations = recommendations,
+)
+
+private fun SelectSummary.toSummary(id: TitleId) = TitleSummary(
+    id = id,
+    name = name,
+    posterUrl = artworkPath?.takeIf { artworkIsPoster != 0L }?.let(TmdbImages::poster),
+    releaseYear = releaseDate?.let(LocalDate::parse)?.year,
+    firstGenre = firstGenre,
 )

@@ -8,5 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface TitleDetailsRepository {
     fun observe(id: TitleId, language: Language): Flow<TitleDetails?>
 
+    fun observeSummary(id: TitleId, language: Language): Flow<TitleSummary?>
+
     suspend fun refresh(id: TitleId, language: Language, force: Boolean = false): AppResult<Unit>
 }

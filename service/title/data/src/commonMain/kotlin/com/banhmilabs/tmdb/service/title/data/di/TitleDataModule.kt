@@ -11,6 +11,7 @@ import com.banhmilabs.tmdb.service.title.data.generated.TitleDatabase
 import com.banhmilabs.tmdb.service.title.data.list.TitleListsRepositoryImpl
 import com.banhmilabs.tmdb.service.title.data.list.local.TitleListLocalDataSource
 import com.banhmilabs.tmdb.service.title.data.list.remote.TitleListRemoteDataSource
+import com.banhmilabs.tmdb.service.title.domain.ObserveFavoriteTitles
 import com.banhmilabs.tmdb.service.title.domain.TitleDetailsRepository
 import com.banhmilabs.tmdb.service.title.domain.TitleListsRepository
 import kotlinx.coroutines.CoroutineScope
@@ -49,6 +50,7 @@ val titleDataModule = module {
             clock = get(),
         )
     }
+    factory { ObserveFavoriteTitles(favorites = get(), details = get()) }
 }
 
 private fun Scope.refreshScope() = CoroutineScope(SupervisorJob() + get<DispatcherProvider>().io)

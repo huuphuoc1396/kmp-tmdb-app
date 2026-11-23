@@ -11,7 +11,8 @@ Current state: early. Production code exists in `core:common` (`AppResult`, `App
 `apiCall`), `core:database` (`DatabaseDriverFactory`; SQLCipher), `core:model` (`TitleId`, `Title`, `Language`), `core:di`
 (`initKoin()`), the `settings` context (`service/settings/{domain,data,fake}`, onboarding state), the `title` context
 (`service/title/{domain,data,fake}`, featured and popular lists and title details cached in SQLDelight), the `favorites` context
-(`service/favorites/{domain,data,fake}`, local favorites in SQLDelight), `core:testing` (`MainDispatcherTest`),
+(`service/favorites/{domain,data,fake}`, local favorites in SQLDelight; the favorites list with title data is the
+`ObserveFavoriteTitles` use case in `service:title:domain`), `core:testing` (`MainDispatcherTest`),
 the `cmp/` features onboarding (`cmp/feature/onboarding/ui`) and Home (`cmp/feature/home/ui`), and the `native-ios`
 onboarding and Home (`native-ios/TmdbNative/{Onboarding,Home}`). The other `core/*` modules are still
 skeletons with a `*SmokeTest` placeholder. New code follows `docs/architecture.md` (sections 5–8), not the
@@ -155,7 +156,9 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | SQLite driver for a context's database | `DatabaseDriverFactory(context)` / `DatabaseDriverFactory()` | `core:database` |
 | A context's SQLDelight database | `.sq` files in `src/commonMain/sqldelight/<namespace path>/generated/`; `tmdb.module` generates `<Context>Database` | `service/<ctx>/data` |
 | Featured and popular title lists (observe, refresh) | `TitleListsRepository` | `service:title:domain` |
-| A title's favorite state (observe, set; local only, not per language) | `FavoritesRepository` | `service:favorites:domain` |
+| A title's favorite state (observe, set; local only, not per language) and all favorite IDs, newest first (`observeFavorites`) | `FavoritesRepository` | `service:favorites:domain` |
+| Favorites with title data (newest first, other-language fallback, refresh when missing) | `ObserveFavoriteTitles` | `service:title:domain` |
+| A title's name, year, poster and first genre (light, per language) | `TitleDetailsRepository.observeSummary` | `service:title:domain` |
 | Koin start-up | `initKoin(appDeclaration)` | `core:di` |
 | Test Main dispatcher (ViewModel tests) | extend `MainDispatcherTest` | `core:testing` |
 | Remote images (posters) | Coil 3 `AsyncImage`; the loader (Ktor network fetcher) is set in `App()` | `cmp/*` |
