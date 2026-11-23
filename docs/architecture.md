@@ -334,9 +334,12 @@ Rules:
 - **`androidHostTest` is the default** for unit tests: Android host tests run on the developer's JVM and on CI, are
   fast. They never reach the real Keystore or Keychain: code that needs a cipher gets a stub cipher that returns
   its input.
-- **`commonTest` is allowed** for tests that use only multiplatform libraries and are worth running on
-  Kotlin/Native too: concurrency and `Flow` timing, formatting, parsing, date and time. `commonTest` tests run on the
-  Android host (so on CI), in Android device tests and on the iOS simulator.
+- **`commonTest` only when it pays off.** A test goes there when the code under test runs on iOS, touches something
+  Kotlin/Native can run differently from the JVM (file I/O, encryption, number/date/string formatting, concurrency
+  and `Flow` timing, a platform driver), and the test needs no JVM-only API. Pure logic and fakes stay in
+  `androidHostTest`. A JVM-bound suite with a real iOS risk (SQLDelight native driver + SQLCipher) gets a small
+  targeted `iosTest` instead of moving. `commonTest` tests run on the Android host (so on CI), in Android device
+  tests and on the iOS simulator, so each one also slows device tests.
 - **Test doubles across modules are the service fakes.** Each `service/<ctx>/fake` holds an in-memory, controllable
   fake per repository interface. ViewModel and use case tests run the real use cases on top of a fake repository.
 - **Fakes are kept honest by contract tests.** An abstract `<Repository>Contract` in the `fake` module describes the
