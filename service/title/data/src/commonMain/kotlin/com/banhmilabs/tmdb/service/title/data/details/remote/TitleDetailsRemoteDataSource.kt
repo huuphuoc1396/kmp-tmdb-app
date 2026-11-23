@@ -23,9 +23,7 @@ private const val YOUTUBE = "YouTube"
 private const val TRAILER = "Trailer"
 private const val ENGLISH = "en"
 
-/** Fetches a title's details from TMDB. */
 internal class TitleDetailsRemoteDataSource(private val httpClient: HttpClient) {
-    /** One request with credits, videos and recommendations appended; a response without a name is Unknown. */
     suspend fun fetch(key: TitleDetailsKey): AppResult<TitleDetailsEntry> {
         val path = when (key.id.type) {
             TitleType.MOVIE -> "movie"
@@ -47,14 +45,12 @@ internal class TitleDetailsRemoteDataSource(private val httpClient: HttpClient) 
     }
 }
 
-/** ISO 639-1 code of TMDB videos in this language. */
 private val Language.videoLanguage: String
     get() = when (this) {
         Language.PT_BR -> "pt"
         Language.EN_US -> ENGLISH
     }
 
-/** Maps TMDB details to the cached entry; `null` without a name. */
 internal fun TmdbTitleDetailsDto.toEntry(key: TitleDetailsKey): TitleDetailsEntry? {
     val displayName = title ?: name ?: return null
     return TitleDetailsEntry(
@@ -74,13 +70,11 @@ internal fun TmdbTitleDetailsDto.toEntry(key: TitleDetailsKey): TitleDetailsEntr
     )
 }
 
-/** A film's runtime; for a series, one episode's: `episode_run_time`, else the latest aired episode's. */
 private fun TmdbTitleDetailsDto.runtimeMinutes(type: TitleType): Int? = when (type) {
     TitleType.MOVIE -> runtime
     TitleType.TV -> episodeRunTime.firstOrNull() ?: lastEpisodeToAir?.runtime
 }
 
-/** The YouTube trailer in [language], else in English; official videos first, then TMDB order. */
 private fun List<TmdbVideoDto>.trailerKey(language: String): String? {
     val trailers = filter { it.site == YOUTUBE && it.type == TRAILER }
     fun inLanguage(code: String) = trailers.filter { it.language == code }.sortedByDescending { it.official }

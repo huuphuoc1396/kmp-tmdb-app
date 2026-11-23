@@ -41,7 +41,6 @@ final class SharedCoreApiTests: XCTestCase {
         let titleLists = SharedCoreTitleLists()
         var iterator = titleLists.observe(listKey(.movies, .featured, .enUs)).makeAsyncIterator()
 
-        // The first value is the cache, `nil` when never loaded; the stream does not end.
         let first: [TitleItem]?? = await iterator.next()
 
         guard case .some = first else { return XCTFail("The stream ended without a value") }
@@ -51,7 +50,6 @@ final class SharedCoreApiTests: XCTestCase {
     func testTitleListsAdapterRefreshCompletes() async {
         let titleLists = SharedCoreTitleLists()
 
-        // `true` or `false` depending on network and token; it must return instead of throwing.
         _ = await titleLists.refresh(listKey(.movies, .featured, .enUs), force: false)
     }
 
@@ -59,7 +57,6 @@ final class SharedCoreApiTests: XCTestCase {
     func testTitleDetailsAdapterEmitsWithoutWaitingForNetwork() async {
         var iterator = SharedCoreTitleDetails().observe(detailsTitleId, language: .enUs).makeAsyncIterator()
 
-        // The first value is the cache, `nil` when never loaded; the stream does not end.
         let first: TitleDetailsItem?? = await iterator.next()
 
         guard case .some = first else { return XCTFail("The stream ended without a value") }
@@ -67,7 +64,6 @@ final class SharedCoreApiTests: XCTestCase {
 
     @MainActor
     func testTitleDetailsAdapterRefreshCompletes() async {
-        // `true` or `false` depending on network and token; it must return instead of throwing.
         _ = await SharedCoreTitleDetails().refresh(detailsTitleId, language: .enUs, force: false)
     }
 
@@ -89,7 +85,6 @@ final class SharedCoreApiTests: XCTestCase {
     func testTitleDatabaseIsEncrypted() async throws {
         var iterator = SharedCoreTitleLists().observe(listKey(.movies, .featured, .enUs)).makeAsyncIterator()
 
-        // Reading the cache opens the title database with its Keychain-protected key.
         _ = await iterator.next()
 
         let file = try XCTUnwrap(titleDatabaseFile(), "title.db was not created")
@@ -101,7 +96,6 @@ final class SharedCoreApiTests: XCTestCase {
     func testDatabaseFilesAreExcludedFromBackup() async throws {
         var iterator = SharedCoreTitleLists().observe(listKey(.movies, .featured, .enUs)).makeAsyncIterator()
 
-        // Reading the cache creates the title database and its key file.
         _ = await iterator.next()
 
         let databases = try XCTUnwrap(titleDatabaseFile(), "title.db was not created").deletingLastPathComponent()

@@ -5,7 +5,6 @@ import okio.FileSystem
 import okio.Path.Companion.toOkioPath
 import java.security.SecureRandom
 
-/** Android: keys in `noBackupFilesDir`, so they are never part of a backup, encrypted with the Keystore. */
 fun DatabaseKeys(context: Context): DatabaseKeys = EnvelopeDatabaseKeys(
     directory = context.noBackupFilesDir.toOkioPath() / "database-keys",
     fileSystem = FileSystem.SYSTEM,

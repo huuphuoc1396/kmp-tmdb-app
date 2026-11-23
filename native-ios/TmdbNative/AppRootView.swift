@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// A details screen in the navigation stack; `index` is its depth, so each screen keeps its own saved positions even
-/// when the same title is stacked twice.
 struct DetailsRoute: Hashable, Codable {
     let title: TitleItem
     let index: Int
@@ -11,7 +9,6 @@ struct AppRootView: View {
     @StateObject private var viewModel: AppViewModel
     @State private var path: [DetailsRoute] = []
     @State private var pathRestored = false
-    /// The stack of details screens, restored when the system relaunches the app after killing it in the background.
     @SceneStorage("app.path") private var savedPath: Data?
     private let settings: any OnboardingSettings
     private let titleLists: any TitleLists

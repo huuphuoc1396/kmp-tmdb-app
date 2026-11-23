@@ -52,7 +52,6 @@ private val NameStyle = TextStyle(
     textAlign = TextAlign.Center,
 )
 
-/** The main cast: round photos with a border and the name below, scrolling sideways; not clickable. */
 @Composable
 internal fun CastRow(
     cast: List<CastMember>,
@@ -66,7 +65,6 @@ internal fun CastRow(
         contentPadding = PaddingValues(start = startPadding),
         horizontalArrangement = Arrangement.spacedBy(ItemSpacing),
     ) {
-        // Names may repeat, so the position is part of the key.
         itemsIndexed(cast, key = { index, member -> "$index-${member.name}" }) { _, member ->
             CastItem(member)
         }

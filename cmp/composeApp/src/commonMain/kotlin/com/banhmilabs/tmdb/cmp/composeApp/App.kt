@@ -18,7 +18,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App(viewModel: AppViewModel = koinViewModel()) {
-    // Registered explicitly so remote images load on every platform, not only where service loaders work.
     setSingletonImageLoaderFactory { context ->
         ImageLoader.Builder(context).components { add(KtorNetworkFetcherFactory()) }.build()
     }

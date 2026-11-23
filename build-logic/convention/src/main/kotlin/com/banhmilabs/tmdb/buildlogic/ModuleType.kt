@@ -1,6 +1,5 @@
 package com.banhmilabs.tmdb.buildlogic
 
-/** Module kinds from `docs/architecture.md` 5.2. */
 internal enum class ModuleKind {
     COMMON,
     MODEL,
@@ -20,10 +19,6 @@ internal enum class ModuleKind {
     ANDROID_APP,
 }
 
-/**
- * A module's kind; for service and feature modules, the context or feature that owns it; for modules under `cmp/`,
- * the app they belong to (`null` for the shared core).
- */
 internal data class ModuleType(val kind: ModuleKind, val owner: String? = null, val app: String? = null)
 
 private val CORE_KINDS = mapOf(
@@ -58,10 +53,6 @@ private val FEATURE_KINDS = mapOf(
     "ui" to ModuleKind.UI,
 )
 
-/**
- * `:service:title:domain` -> `ModuleType(DOMAIN, "title")`; `:cmp:feature:home:ui` -> `ModuleType(UI, "home",
- * "cmp")`; `null` when the path matches no known type.
- */
 internal fun moduleTypeOf(path: String): ModuleType? {
     val segments = path.removePrefix(":").split(":")
     return when {

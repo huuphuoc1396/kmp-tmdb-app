@@ -5,7 +5,6 @@ import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.db.SqlSchema
 
-/** One-table schema for driver tests. */
 internal object TestSchema : SqlSchema<QueryResult.Value<Unit>> {
     override val version: Long = 1
 

@@ -1,8 +1,5 @@
 import SwiftUI
 
-/// A horizontal row starting at the screen padding. It saves its first visible item in `savedPosition`
-/// (`"<rowKey>|<item id>"`) and scrolls back to it the first time it shows, so the position survives the app being
-/// killed. A new `rowKey` starts the row at the beginning.
 struct RestoringRow<Item: Identifiable, Cell: View>: View where Item.ID == String {
     let items: [Item]
     let itemWidth: CGFloat
@@ -47,17 +44,12 @@ struct RestoringRow<Item: Identifiable, Cell: View>: View where Item.ID == Strin
         restored = true
         guard savedPosition.hasPrefix(positionPrefix) else { return }
         let id = String(savedPosition.dropFirst(positionPrefix.count))
-        // The first item is already where it belongs.
         guard let index = items.firstIndex(where: { $0.id == id }), index > 0, rowWidth > itemWidth else { return }
-        // `scrollTo` lines up the same unit point of the item and the row, so this anchor puts the item at the
-        // screen padding instead of the row's edge.
         let anchor = UnitPoint(x: homeScreenPadding / (rowWidth - itemWidth), y: 0)
-        // After the first layout pass, so the lazy stack can find the item.
         DispatchQueue.main.async { proxy.scrollTo(id, anchor: anchor) }
     }
 
     private func savePosition() {
-        // Nothing is visible while another screen covers the row; keep the last position then.
         guard restored, let first = visible.min(), items.indices.contains(first) else { return }
         savedPosition = positionPrefix + items[first].id
     }

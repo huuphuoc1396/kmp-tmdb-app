@@ -28,20 +28,14 @@ import kotlinx.coroutines.launch
 
 private const val STOP_TIMEOUT_MILLIS = 5_000L
 
-/**
- * Shows the details of [titleId] in the device language and whether it is a favorite. Details refresh when the
- * language is set (stale ones only), on pull-to-refresh and on retry (always).
- */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class TitleDetailsViewModel(
     private val titleId: TitleId,
     private val repository: TitleDetailsRepository,
     private val favorites: FavoritesRepository,
 ) : ViewModel() {
-    /** `null` until the screen reports the device language; nothing is observed or refreshed before that. */
     private val language = MutableStateFlow<Language?>(null)
 
-    /** Languages whose last refresh failed, so an error never shows in the other language. */
     private val failed = MutableStateFlow(emptySet<Language>())
     private val manualRefresh = MutableStateFlow(false)
 
@@ -63,7 +57,6 @@ internal class TitleDetailsViewModel(
     val effects: Flow<TitleDetailsEffect> = _effects.receiveAsFlow()
 
     init {
-        // The repository skips the refresh while the cached details are still fresh.
         language
             .filterNotNull()
             .distinctUntilChanged()

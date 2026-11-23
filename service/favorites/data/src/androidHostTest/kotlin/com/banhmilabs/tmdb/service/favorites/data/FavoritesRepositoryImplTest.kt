@@ -17,7 +17,6 @@ import kotlin.test.assertEquals
 import kotlin.time.Clock
 import kotlin.time.Instant
 
-/** The real repository over an in-memory database, with a controllable clock. */
 class FavoritesRepositoryImplTest : FavoritesRepositoryContract() {
     private val database = FavoritesDatabase(
         JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY).also { FavoritesDatabase.Schema.create(it) },

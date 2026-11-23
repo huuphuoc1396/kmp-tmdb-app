@@ -13,10 +13,6 @@ private const val SWIFT_PACKAGE_DIR = "build/swift-package"
 private const val SWIFT_TOOLS = "5.9"
 private const val SQLCIPHER_RELEASES = "https://github.com/sqlcipher/SQLCipher.swift/releases/download"
 
-/**
- * `Package.swift` of the local Swift Package that serves the `TmdbCore` XCFramework to standalone iOS apps. The
- * product also carries the official `SQLCipher` framework that `TmdbCore` links against, so apps embed it.
- */
 internal fun swiftPackageManifest(iosMajor: Int, sqlCipherVersion: String, sqlCipherChecksum: String): String =
     """
     // swift-tools-version:$SWIFT_TOOLS
@@ -37,11 +33,6 @@ internal fun swiftPackageManifest(iosMajor: Int, sqlCipherVersion: String, sqlCi
     )
     """.trimIndent() + "\n"
 
-/**
- * iOS entry point of the shared core: SKIE (analytics off), a dynamic release XCFramework `TmdbCore` (device + Apple Silicon
- * simulator) that exports the module's `commonMain` `api` dependencies, and `publishSharedCore`, which syncs it
- * with its `Package.swift` into `build/swift-package/TmdbCore` at the repo root (macOS only).
- */
 internal fun Project.configureIosSdk() {
     pluginManager.apply("co.touchlab.skie")
     extensions.configure<SkieExtension> {

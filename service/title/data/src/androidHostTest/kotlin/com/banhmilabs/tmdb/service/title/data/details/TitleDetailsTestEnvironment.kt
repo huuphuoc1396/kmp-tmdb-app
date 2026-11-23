@@ -9,7 +9,6 @@ import com.banhmilabs.tmdb.service.title.data.details.local.TitleDetailsLocalDat
 import com.banhmilabs.tmdb.service.title.data.details.remote.TitleDetailsRemoteDataSource
 import com.banhmilabs.tmdb.service.title.data.generated.TitleDatabase
 import com.banhmilabs.tmdb.service.title.domain.TitleDetailsRepository
-import com.banhmilabs.tmdb.service.title.fake.TitleDetailsRepositoryContract.Companion.CONTRACT_MOVIE_DETAILS
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.respondError
@@ -27,17 +26,11 @@ import kotlinx.io.IOException
 import kotlin.time.Clock
 import kotlin.time.Instant
 
-/**
- * A real [TitleDetailsRepositoryImpl] over an in-memory database and a `MockEngine` that serves [responseBody] (or
- * [nextError] once), with a controllable clock. Records every request in [requests]. The default response is
- * `movie_details.json`, which maps to [CONTRACT_MOVIE_DETAILS].
- */
 internal class TitleDetailsTestEnvironment {
     val requests = mutableListOf<HttpRequestData>()
     var responseBody = fixture("movie_details.json")
     var nextError: AppError? = null
 
-    /** When set, requests wait for it after [requestStarted] completes. */
     var gate: CompletableDeferred<Unit>? = null
     val requestStarted = CompletableDeferred<Unit>()
     var now: Instant = Instant.parse("2026-11-20T12:00:00Z")

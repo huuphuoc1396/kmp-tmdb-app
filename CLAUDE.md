@@ -137,6 +137,7 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 - Host tests never call `masterKeyCipher(…)`; they pass a MockK cipher that returns its input (encryption itself is tested on a device).
 - Platform `actual` code is tested on its platform, locally: Android device tests (`androidDeviceTest`); iOS `iosTest` with `kotlin.test` and no mocks. Kotlin iOS tests have no app bundle, so the Keychain path is covered by the `native-ios` Swift tests.
 - Inject dispatchers via `DispatcherProvider` (`core:common`) and time via `kotlin.time.Clock`.
+- Code has no comments (no KDoc, no `//` or `/* */`, no XML or `#` comments); names and tests explain it. Exceptions: shebangs, comments a tool reads (lint directives, `swift-tools-version`), tool-managed files (Xcode project, Gradle wrapper) and `*.example` templates.
 - Max line length 120 (`config/detekt/detekt.yml`).
 - Commits: short imperative subject, no prefix (`Split CI checks into separate steps`).
 - Feature work is specced in `docs/features/<feature>/task.md` with an `implement-plan.md` alongside.
@@ -164,6 +165,7 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | Module build setup | `tmdb.module` (shared modules), `tmdb.detekt` (JVM modules) | `build-logic/convention` |
 
 ## Do not
+- Don't add comments or KDoc; rename or add a test instead.
 - Don't use MockK or JVM-only APIs in `commonTest`; such tests go in `androidHostTest`.
 - Don't call the real Keystore or Keychain from a host test; use a MockK cipher, or write a device test.
 - Don't write ad-hoc `Fake*` classes in test code; add the fake to `service/<ctx>/fake` with its contract test, or use MockK.

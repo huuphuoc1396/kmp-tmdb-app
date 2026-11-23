@@ -1,8 +1,6 @@
 import Foundation
 import TmdbCore
 
-/// A title as Home and the details' recommendations show it; `id` is unique across films and series (`movie-550`,
-/// `tv-1396`).
 struct TitleItem: Hashable, Identifiable, Codable {
     let id: String
     let name: String
@@ -18,7 +16,6 @@ extension TitleItem {
         )
     }
 
-    /// The shared core's id of this title; `nil` when `id` is not `<movie|tv>-<tmdbId>`.
     var titleId: TitleId? {
         let parts = id.split(separator: "-", maxSplits: 1)
         guard parts.count == 2, let tmdbId = Int64(parts[1]) else { return nil }

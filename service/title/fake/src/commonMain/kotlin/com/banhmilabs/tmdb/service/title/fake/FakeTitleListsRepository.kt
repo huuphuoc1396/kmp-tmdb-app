@@ -13,25 +13,18 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
-/**
- * In-memory [TitleListsRepository] for tests; kept honest by [TitleListsRepositoryContract]. Every refresh stores
- * the list's titles from [setRemoteTitles], else [remoteTitles] (no staleness check).
- */
 class FakeTitleListsRepository(private val remoteTitles: List<Title> = emptyList()) : TitleListsRepository {
     private val lists = MutableStateFlow<Map<Key, List<Title>>>(emptyMap())
     private val remoteByList = mutableMapOf<Pair<TitleCategory, TitleListType>, List<Title>>()
     private var nextRefreshError: AppError? = null
     private val _refreshRequests = mutableListOf<RefreshRequest>()
 
-    /** Every [refresh] call so far, failed ones included, in call order. */
     val refreshRequests: List<RefreshRequest> get() = _refreshRequests.toList()
 
-    /** Refreshes of this list, in any language, store [titles] instead of [remoteTitles]. */
     fun setRemoteTitles(category: TitleCategory, listType: TitleListType, titles: List<Title>) {
         remoteByList[category to listType] = titles
     }
 
-    /** The next [refresh] fails with [error] and leaves the cache unchanged. */
     fun failNextRefresh(error: AppError) {
         nextRefreshError = error
     }

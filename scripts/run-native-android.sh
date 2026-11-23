@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Publishes the shared core, then builds, installs and launches native-android on the connected device or emulator.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

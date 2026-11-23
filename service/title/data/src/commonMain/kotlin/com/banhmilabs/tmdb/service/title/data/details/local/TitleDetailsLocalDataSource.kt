@@ -25,16 +25,12 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 import kotlin.time.Instant
 
-/**
- * Title details cached in SQLDelight, per title and language. The database opens on first use, on the IO dispatcher.
- */
 internal class TitleDetailsLocalDataSource(
     private val database: Lazy<TitleDatabase>,
     private val dispatchers: DispatcherProvider,
 ) {
     private val queries by lazy { database.value.titleDetailsQueries }
 
-    /** Cached details; `null` until they were stored once. */
     fun observe(key: TitleDetailsKey): Flow<TitleDetails?> = flow { emitAll(observeCached(key)) }
         .flowOn(dispatchers.io)
 
@@ -57,13 +53,11 @@ internal class TitleDetailsLocalDataSource(
         }.distinctUntilChanged()
     }
 
-    /** When the details were last stored, or `null` if never. */
     suspend fun fetchedAt(key: TitleDetailsKey): Instant? = withContext(dispatchers.io) {
         val (tmdbId, type, language) = key.columns()
         queries.selectFetchedAt(tmdbId, type, language).executeAsOneOrNull()?.let(Instant::fromEpochMilliseconds)
     }
 
-    /** Replaces the details, their genres, cast and recommendations, and their fetch time in one transaction. */
     suspend fun upsert(key: TitleDetailsKey, entry: TitleDetailsEntry, fetchedAt: Instant): Unit =
         withContext(dispatchers.io) {
             val (tmdbId, type, language) = key.columns()
@@ -107,7 +101,6 @@ internal class TitleDetailsLocalDataSource(
         }
 }
 
-/** The key's database columns: TMDB ID, type name and language tag. */
 private fun TitleDetailsKey.columns() = Triple(id.tmdbId, id.type.name, language.tag)
 
 private fun SelectDetails.toDetails(

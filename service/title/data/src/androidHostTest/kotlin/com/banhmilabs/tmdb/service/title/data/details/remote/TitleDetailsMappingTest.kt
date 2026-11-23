@@ -9,7 +9,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-/** How a TMDB details response becomes the cached entry: dates, runtime, rating, text and artwork. */
 class TitleDetailsMappingTest {
     @Test
     fun seriesUsesFirstAirDateAndEpisodeRuntime() {

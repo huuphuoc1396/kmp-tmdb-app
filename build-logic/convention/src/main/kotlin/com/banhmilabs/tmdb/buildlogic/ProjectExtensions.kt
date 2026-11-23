@@ -11,6 +11,5 @@ internal val Project.libs: VersionCatalog
 internal fun VersionCatalog.version(alias: String): String =
     findVersion(alias).get().requiredVersion
 
-/** `:core:common` -> `com.banhmilabs.tmdb.core.common` */
 internal fun Project.derivedNamespace(): String =
     "com.banhmilabs.tmdb." + path.removePrefix(":").split(":").joinToString(".") { it.replace("-", "") }

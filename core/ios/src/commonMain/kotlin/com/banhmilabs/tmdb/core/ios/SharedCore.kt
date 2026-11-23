@@ -7,14 +7,9 @@ import com.banhmilabs.tmdb.service.title.domain.TitleDetailsRepository
 import com.banhmilabs.tmdb.service.title.domain.TitleListsRepository
 import org.koin.core.Koin
 
-/**
- * Entry point of the shared core for iOS apps (`SharedCore.shared` in Swift). Call [start] once at launch, then read
- * the domain's repositories from it.
- */
 object SharedCore {
     private var koin: Koin? = null
 
-    /** Starts the shared core; later calls do nothing. */
     fun start() {
         if (koin == null) koin = initKoin().koin
     }

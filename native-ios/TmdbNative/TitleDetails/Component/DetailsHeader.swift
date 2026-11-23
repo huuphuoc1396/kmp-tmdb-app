@@ -4,7 +4,6 @@ import TmdbCore
 private let ringToName: CGFloat = 16
 private let nameToDateLine: CGFloat = 5
 
-/// The rating ring next to "Name (year)" and the release date • runtime line.
 struct DetailsHeader: View {
     let details: TitleDetailsItem
     let language: Language
@@ -31,8 +30,6 @@ struct DetailsHeader: View {
     }
 }
 
-/// Date and runtime; a missing part is left out together with its separator. At large text sizes the runtime moves
-/// below the date instead of being cut.
 private struct DateLine: View {
     let date: String?
     let runtime: String?

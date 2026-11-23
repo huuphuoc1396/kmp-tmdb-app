@@ -20,14 +20,12 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlin.time.Instant
 
-/** The title lists cached in SQLDelight, per language. The database opens on first use, on the IO dispatcher. */
 internal class TitleListLocalDataSource(
     private val database: Lazy<TitleDatabase>,
     private val dispatchers: DispatcherProvider,
 ) {
     private val queries by lazy { database.value.titleListQueries }
 
-    /** Cached titles in TMDB order; `null` until the list was stored once, which differs from a list stored empty. */
     fun observe(key: TitleListKey): Flow<List<Title>?> = flow { emitAll(observeCached(key)) }
         .flowOn(dispatchers.io)
 
@@ -42,14 +40,12 @@ internal class TitleListLocalDataSource(
             .distinctUntilChanged()
     }
 
-    /** When the list was last stored, or `null` if never. */
     suspend fun fetchedAt(key: TitleListKey): Instant? = withContext(dispatchers.io) {
         queries.selectFetchedAt(list = key.list, language = key.language)
             .executeAsOneOrNull()
             ?.let(Instant::fromEpochMilliseconds)
     }
 
-    /** Replaces the list and its fetch time in one transaction, keeping the order of [entries]. */
     suspend fun replace(key: TitleListKey, entries: List<TitleEntry>, fetchedAt: Instant): Unit =
         withContext(dispatchers.io) {
             database.value.transaction {

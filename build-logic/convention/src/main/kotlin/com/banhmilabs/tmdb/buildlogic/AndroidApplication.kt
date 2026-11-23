@@ -8,7 +8,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 private const val VERSION_CODE = 1
 private const val VERSION_NAME = "0.1.0"
 
-/** Android application of an app shell (`:cmp:androidApp`), with Compose and AGP's built-in Kotlin. */
 internal fun Project.configureAndroidApplication(app: String) {
     pluginManager.apply("com.android.application")
     pluginManager.apply("org.jetbrains.kotlin.plugin.compose")

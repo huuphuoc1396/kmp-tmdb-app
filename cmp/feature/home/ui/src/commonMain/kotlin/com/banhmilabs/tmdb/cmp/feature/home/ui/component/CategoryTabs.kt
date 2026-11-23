@@ -33,7 +33,6 @@ import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
-/** At least the 48dp touch target; the design's row is 34dp, so the screen trims 7dp of spacing above and below. */
 private val TabsMinHeight = 48.dp
 private val TabsStart = 33.dp
 private val TabSpacing = 29.dp

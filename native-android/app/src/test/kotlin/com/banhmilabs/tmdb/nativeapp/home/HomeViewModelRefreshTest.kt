@@ -15,7 +15,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-/** Pull-to-refresh, on a standard dispatcher so a refresh is still running between two pulls. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelRefreshTest {
     @get:Rule

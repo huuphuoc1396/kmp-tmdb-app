@@ -12,18 +12,14 @@ private const val MAVEN_REPO_DIR = "build/maven-repo"
 
 private val UNPUBLISHED_KINDS = setOf(ModuleKind.FAKE, ModuleKind.TESTING, ModuleKind.IOS_SDK)
 
-/** Production modules of the shared core; test-only, iOS SDK and app modules are never published to Maven. */
 internal fun isPublished(type: ModuleType): Boolean = type.app == null && type.kind !in UNPUBLISHED_KINDS
 
-/** A module without Kotlin sources in a `*Main` source set (a skeleton) has nothing to publish. */
 internal fun Project.hasProductionSources(): Boolean =
     file("src").listFiles { dir -> dir.isDirectory && dir.name.endsWith("Main") }.orEmpty()
         .any { dir -> dir.walk().any { it.isFile && it.extension == "kt" } }
 
-/** `:service:settings:domain` -> `service-settings-domain` */
 internal fun artifactIdOf(path: String): String = path.removePrefix(":").replace(':', '-')
 
-/** Publishes every Kotlin Multiplatform publication to the in-repo Maven repository (`publishSharedCore`). */
 internal fun Project.configurePublishing() {
     pluginManager.apply("maven-publish")
     val baseArtifactId = artifactIdOf(path)

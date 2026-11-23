@@ -8,9 +8,7 @@ final class TitleListsStub: TitleLists {
         let force: Bool
     }
 
-    /// Result of `refresh` per list; `true` when missing.
     var refreshResults: [TitleListKey: Bool] = [:]
-    /// While `true`, `refresh` calls wait until `releaseRefreshes()`.
     var holdRefreshes = false
     private(set) var refreshRequests: [RefreshRequest] = []
     private(set) var observedKeys: [TitleListKey] = []
@@ -19,7 +17,6 @@ final class TitleListsStub: TitleLists {
     private var observers: [TitleListKey: [AsyncStream<[TitleItem]?>.Continuation]] = [:]
     private var heldRefreshes: [CheckedContinuation<Void, Never>] = []
 
-    /// Sets the cached value of a list; observers get it now and new observers get it first.
     func send(_ titles: [TitleItem]?, for key: TitleListKey) {
         values[key] = .some(titles)
         observers[key]?.forEach { $0.yield(titles) }
@@ -52,7 +49,6 @@ func listKey(_ category: TitleCategory, _ listType: TitleListType, _ language: L
     TitleListKey(category: category, listType: listType, language: language)
 }
 
-/// A Movies list.
 func listKey(_ listType: TitleListType, _ language: Language = .enUs) -> TitleListKey {
     listKey(.movies, listType, language)
 }
@@ -61,7 +57,6 @@ func titles(_ prefix: String, count: Int = 2) -> [TitleItem] {
     (1...count).map { TitleItem(id: "movie-\(prefix)\($0)", name: "\(prefix) \($0)", posterURL: nil) }
 }
 
-/// Waits until `condition` holds, for at most `timeout`; `false` when it never did.
 @MainActor
 func eventually(timeout: Duration = .seconds(2), _ condition: () -> Bool) async -> Bool {
     let deadline = ContinuousClock.now + timeout
@@ -72,7 +67,6 @@ func eventually(timeout: Duration = .seconds(2), _ condition: () -> Bool) async 
     return true
 }
 
-/// Lets started tasks run, for checks that something did not happen.
 func settle() async {
     try? await Task.sleep(for: .milliseconds(100))
 }

@@ -6,18 +6,15 @@ private let photoSize: CGFloat = 60
 private let borderWidth: CGFloat = 4
 private let photoToName: CGFloat = 3
 
-/// The main cast: round photos with a border and the name below, scrolling sideways; not tappable.
 struct CastRow: View {
     let cast: [CastItem]
     let rowKey: String
     @Binding var savedPosition: String
 
-    /// Room for two lines of the name.
     @ScaledMetric(relativeTo: .caption) private var nameHeight: CGFloat = 31
 
     var body: some View {
         RestoringRow(
-            // Names may repeat, so the position is part of the id.
             items: cast.enumerated().map { CastEntry(id: "\($0.offset)-\($0.element.name)", member: $0.element) },
             itemWidth: itemWidth,
             spacing: 4,

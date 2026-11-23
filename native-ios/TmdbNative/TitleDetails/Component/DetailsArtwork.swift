@@ -3,7 +3,6 @@ import SwiftUI
 
 let artworkHeight: CGFloat = 493
 
-/// Where the design's fade starts and becomes solid, as fractions of the artwork's height.
 private let fadeStart = 260 / artworkHeight
 private let fadeEnd = 412 / artworkHeight
 
@@ -18,7 +17,6 @@ private let fade = LinearGradient(
     endPoint: .bottom
 )
 
-/// The decorative artwork at the top, fading into the page; a plain tile when there is no image.
 struct DetailsArtwork: View {
     let url: URL?
 

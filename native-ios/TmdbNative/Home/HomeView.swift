@@ -3,11 +3,9 @@ import TmdbCore
 
 let homeScreenPadding: CGFloat = 30
 
-/// The design's 64pt title offset, less the 44pt status bar that the safe area already covers.
 private let contentTopPadding: CGFloat = 20
 private let contentBottomPadding: CGFloat = 79
 private let headerToSearch: CGFloat = 17
-/// The design's 31pt and 37pt, less 5pt each: the tab row grows from 34pt to its 44pt touch target.
 private let searchToTabs: CGFloat = 26
 private let tabsToFeatured: CGFloat = 32
 private let featuredToHeading: CGFloat = 23
@@ -33,7 +31,6 @@ struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     private let onTitleTap: (TitleItem) -> Void
 
-    // Restored when the system relaunches the app after killing it in the background.
     @SceneStorage("home.selectedCategory") private var savedCategory = ""
     @SceneStorage("home.featured.position") private var featuredPosition = ""
     @SceneStorage("home.popular.position") private var popularPosition = ""
@@ -52,7 +49,6 @@ struct HomeView: View {
             popularPosition: $popularPosition
         )
         .task {
-            // The saved tab goes first, so only that category is loaded once the language is known.
             if let saved = TitleCategory.allCases.first(where: { $0.name == savedCategory }) {
                 viewModel.onIntent(.categorySelected(saved))
             }
@@ -100,7 +96,6 @@ struct HomeContent: View {
                     .padding(.top, contentTopPadding)
                     .padding(.bottom, contentBottomPadding)
                     .background(alignment: .top) {
-                        // From the top of the screen, behind the status bar; it scrolls with the content.
                         headerGlow
                             .frame(height: headerGlowHeight)
                             .offset(y: -geometry.safeAreaInsets.top)

@@ -10,10 +10,6 @@ import kotlinx.serialization.KSerializer
 import okio.FileSystem
 import okio.Path
 
-/**
- * DataStore of [T] stored at [path] as JSON encrypted with [cipher]. A file that can't be decrypted or parsed is
- * replaced by [defaultValue]. Create one instance per [path] per process.
- */
 fun <T> encryptedDataStore(
     serializer: KSerializer<T>,
     defaultValue: T,

@@ -8,7 +8,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-/** How TMDB images and lists of a title become the cached entry. */
 class TitleDetailsArtworkMappingTest {
     @Test
     fun posterIsArtwork() {

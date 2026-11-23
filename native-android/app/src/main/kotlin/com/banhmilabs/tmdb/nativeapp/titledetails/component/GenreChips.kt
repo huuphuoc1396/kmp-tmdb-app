@@ -26,7 +26,6 @@ private val LineSpacing = 10.dp
 
 private val LabelStyle = TextStyle(color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Medium)
 
-/** One chip per genre, as wide as its name, wrapping onto more lines; not clickable. */
 @Composable
 internal fun GenreChips(genres: List<String>, modifier: Modifier = Modifier) {
     FlowRow(

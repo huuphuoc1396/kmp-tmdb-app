@@ -1,7 +1,6 @@
 import SwiftUI
 import TmdbCore
 
-/// The header starts 117pt above the artwork's bottom, on its faded part.
 private let headerTop: CGFloat = 376
 private let headerToDivider: CGFloat = 21
 private let dividerToSynopsis: CGFloat = 20
@@ -11,7 +10,6 @@ private let castHeadingToRow: CGFloat = 16
 private let toSectionHeading: CGFloat = 41
 private let headingToContent: CGFloat = 20
 private let bottomPadding: CGFloat = 40
-/// The vertical position is saved and restored to the nearest of these steps (iOS 16 can't scroll to an offset).
 private let markerStep: CGFloat = 100
 private let scrollSpace = "details.scroll"
 
@@ -22,8 +20,6 @@ struct TitleDetailsView: View {
 
     @Environment(\.openURL) private var openURL
 
-    // Restored when the system relaunches the app after killing it in the background; one set per stack depth, each
-    // value prefixed with the title's id so a value of another title at this depth is ignored.
     @SceneStorage private var scrollPosition: String
     @SceneStorage private var castPosition: String
     @SceneStorage private var recommendationsPosition: String
@@ -61,12 +57,10 @@ struct TitleDetailsView: View {
         )
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.visible, for: .navigationBar)
-        // Transparent over the artwork; the color shows once content scrolls under the bar.
         .toolbarBackground(Theme.track, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                // No heart while Loading or Error.
                 if viewModel.state.details != nil, let isFavorite = viewModel.state.isFavorite {
                     FavoriteToggle(isOn: isFavorite) { viewModel.onIntent(.favoriteTapped) }
                 }
@@ -77,7 +71,6 @@ struct TitleDetailsView: View {
             for await effect in viewModel.effects {
                 switch effect {
                 case let .openTrailer(url):
-                    // When nothing can open the link, the screen stays as it is.
                     openURL(url)
                 case let .openTitle(title):
                     onTitleTap(title)
@@ -87,7 +80,6 @@ struct TitleDetailsView: View {
     }
 }
 
-/// Saved scroll positions of one details screen; `key` (the title's id) prefixes every value.
 struct DetailsPositions {
     let key: String
     @Binding var scroll: String
@@ -168,7 +160,6 @@ private struct LoadedContent: View {
         }
     }
 
-    /// Invisible steps the saved vertical position scrolls back to.
     private var markers: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
@@ -191,7 +182,6 @@ private struct LoadedContent: View {
         let prefix = "\(positions.key)|"
         if positions.scroll.hasPrefix(prefix), let saved = Int(positions.scroll.dropFirst(prefix.count)), saved > 0 {
             marker = saved
-            // After the first layout pass, so the markers exist.
             DispatchQueue.main.async {
                 proxy.scrollTo(markerId(saved), anchor: .top)
                 restored = true

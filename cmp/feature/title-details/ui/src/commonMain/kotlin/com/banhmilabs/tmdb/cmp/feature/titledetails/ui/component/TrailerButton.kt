@@ -40,11 +40,9 @@ private val IconToLabel = 10.dp
 
 private val LabelStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
 
-/** The full-width "Assistir trailer" pill with the design's purple gradient. */
 @Composable
 internal fun TrailerButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
-    // The design's 148.66° gradient runs from the top-left to the bottom-right of the pill.
     val gradient = Brush.linearGradient(
         colors = listOf(colors.primary, colors.primaryContainer),
         start = Offset.Zero,

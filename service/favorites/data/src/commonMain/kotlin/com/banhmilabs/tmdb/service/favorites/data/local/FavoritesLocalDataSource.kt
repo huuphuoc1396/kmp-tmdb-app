@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlin.time.Instant
 
-/** The favorites stored in SQLDelight. The database opens on first use, on the IO dispatcher. */
 internal class FavoritesLocalDataSource(
     private val database: Lazy<FavoritesDatabase>,
     private val dispatchers: DispatcherProvider,
@@ -26,7 +25,6 @@ internal class FavoritesLocalDataSource(
         .distinctUntilChanged()
         .flowOn(dispatchers.io)
 
-    /** Adds [id]; a title that is already a favorite keeps its first [addedAt]. */
     suspend fun insert(id: TitleId, addedAt: Instant): Unit = withContext(dispatchers.io) {
         queries.insert(tmdbId = id.tmdbId, type = id.type.name, addedAt = addedAt.toEpochMilliseconds())
     }

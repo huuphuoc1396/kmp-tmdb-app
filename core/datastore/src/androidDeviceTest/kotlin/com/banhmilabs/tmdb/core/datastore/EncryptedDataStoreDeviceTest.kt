@@ -20,7 +20,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
-/** Runs on an Android device: the real Keystore cipher. */
 class EncryptedDataStoreDeviceTest {
     private val fileSystem = FileSystem.SYSTEM
     private val directory: Path = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "encrypted-datastore-${Random.nextLong()}"
@@ -60,7 +59,6 @@ class EncryptedDataStoreDeviceTest {
     private fun newCipher(): MasterKeyCipher =
         masterKeyCipher("EncryptedDataStoreDeviceTest-${Random.nextLong()}".also(aliases::add))
 
-    /** Creates a store, runs [block], then cancels the store's scope so the next store may open the same file. */
     private suspend fun TestScope.withStore(
         storeCipher: MasterKeyCipher = cipher,
         block: suspend (DataStore<Stored>) -> Unit,

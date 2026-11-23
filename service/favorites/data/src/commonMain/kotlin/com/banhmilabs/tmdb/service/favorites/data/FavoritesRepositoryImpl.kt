@@ -6,7 +6,6 @@ import com.banhmilabs.tmdb.service.favorites.domain.FavoritesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Clock
 
-/** [FavoritesRepository] over the local database only; there is nothing to fetch. */
 internal class FavoritesRepositoryImpl(private val local: FavoritesLocalDataSource, private val clock: Clock) :
     FavoritesRepository {
     override fun observeIsFavorite(id: TitleId): Flow<Boolean> = local.observe(id)

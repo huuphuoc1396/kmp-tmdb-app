@@ -65,7 +65,6 @@ import org.koin.core.parameter.parametersOf
 
 private val ScreenPadding = 30.dp
 
-/** The header starts 117dp above the artwork's bottom, on its faded part. */
 private val HeaderTop = 376.dp
 private val HeaderToDivider = 21.dp
 private val DividerToSynopsis = 20.dp
@@ -98,10 +97,7 @@ internal fun TitleDetailsScreen(
         viewModel.effects.collect { effect ->
             when (effect) {
                 TitleDetailsEffect.NavigateBack -> currentOnBack()
-
                 is TitleDetailsEffect.OpenTitle -> currentOnTitleClick(effect.title)
-
-                // A device with nothing that can open the link leaves the screen as it is.
                 is TitleDetailsEffect.OpenTrailer -> runCatching { uriHandler.openUri(effect.url) }
             }
         }
@@ -116,7 +112,6 @@ internal fun TitleDetailsContent(
     onIntent: (TitleDetailsIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Hoisted above the states, so the positions survive the moment of Loading after process death.
     val scroll = DetailsScroll(
         screen = rememberScrollState(),
         cast = rememberSaveable(saver = LazyListState.Saver) { LazyListState() },
@@ -145,17 +140,14 @@ internal fun TitleDetailsContent(
                 onIntent = onIntent,
             )
         }
-        // Drawn last, so it stays fixed above the scrolling content.
         DetailsTopBar(
             onBack = { onIntent(TitleDetailsIntent.BackClicked) },
-            // No heart while Loading or Error.
             isFavorite = state.isFavorite.takeIf { state.load is DetailsLoad.Loaded },
             onFavoriteClick = { onIntent(TitleDetailsIntent.FavoriteClicked) },
         )
     }
 }
 
-/** The screen's vertical scroll and the positions of its two sideways rows. */
 private class DetailsScroll(val screen: ScrollState, val cast: LazyListState, val recommendations: LazyListState)
 
 @Composable

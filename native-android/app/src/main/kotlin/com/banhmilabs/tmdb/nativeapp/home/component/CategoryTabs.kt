@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 
-/** At least the 48dp touch target; the design's row is 34dp, so the screen trims 7dp of spacing above and below. */
 private val TabsMinHeight = 48.dp
 private val TabsStart = 33.dp
 private val TabSpacing = 29.dp

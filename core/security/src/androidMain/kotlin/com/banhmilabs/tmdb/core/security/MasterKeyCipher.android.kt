@@ -14,7 +14,6 @@ actual fun masterKeyCipher(alias: String): MasterKeyCipher = AndroidKeystoreCiph
 internal const val ANDROID_KEYSTORE = "AndroidKeyStore"
 private const val TRANSFORMATION = "AES/GCM/NoPadding"
 
-/** AES-GCM with a non-exportable Android Keystore key; the key never leaves the Keystore. */
 internal class AndroidKeystoreCipher(private val alias: String) : MasterKeyCipher {
     private val key: SecretKey by lazy { loadOrCreateKey() }
 

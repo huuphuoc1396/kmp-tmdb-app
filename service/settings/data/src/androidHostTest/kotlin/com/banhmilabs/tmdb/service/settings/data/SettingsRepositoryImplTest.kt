@@ -85,7 +85,6 @@ class SettingsRepositoryImplTest : SettingsRepositoryContract() {
         scope = scope,
     )
 
-    /** Runs [block] with a repository whose store is closed afterwards, so the next one may open the same file. */
     private suspend fun TestScope.withRepository(
         storeCipher: MasterKeyCipher = cipher,
         block: suspend (SettingsRepository) -> Unit,

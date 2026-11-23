@@ -12,7 +12,6 @@ import com.banhmilabs.tmdb.cmp.composeApp.AppViewModel
 import com.banhmilabs.tmdb.cmp.composeApp.StartDestination
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/** Hosts the shared Compose [App]. */
 class MainActivity : ComponentActivity() {
     private val appViewModel: AppViewModel by viewModel()
 
@@ -20,7 +19,6 @@ class MainActivity : ComponentActivity() {
         installSplashScreen().setKeepOnScreenCondition {
             appViewModel.startDestination.value == StartDestination.Loading
         }
-        // The app is always dark, so system bar icons stay light regardless of the device theme.
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),

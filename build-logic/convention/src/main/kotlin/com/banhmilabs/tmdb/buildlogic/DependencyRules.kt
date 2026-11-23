@@ -17,15 +17,12 @@ import com.banhmilabs.tmdb.buildlogic.ModuleKind.SECURITY
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.TESTING
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.UI
 
-/** Allowed module dependencies from `docs/architecture.md` 5.3 and 9. */
 internal object DependencyRules {
-    /** Allowed `domain -> domain` pairs, as `source context to target context`, one level deep. */
     val domainAllowlist: Set<Pair<String, String>> = setOf("title" to "favorites")
 
     private val KERNEL = setOf(COMMON, MODEL)
     private val TEST_ONLY = setOf(FAKE, TESTING)
 
-    /** Returns `null` when [from] may depend on [to], otherwise the broken rule. */
     fun violation(
         from: ModuleType,
         to: ModuleType,
@@ -51,7 +48,6 @@ internal object DependencyRules {
         return if (allowed) null else ruleFor(from.kind)
     }
 
-    /** Returns a message when a context is both a source and a target, which would allow chains deeper than one. */
     fun allowlistViolation(allowlist: Set<Pair<String, String>> = domainAllowlist): String? {
         val chained = allowlist.map { it.first }.toSet() intersect allowlist.map { it.second }.toSet()
         return if (chained.isEmpty()) {
@@ -61,7 +57,6 @@ internal object DependencyRules {
         }
     }
 
-    /** The shared core never depends on an app. */
     private fun appViolation(from: ModuleType, to: ModuleType): String? =
         if (from.app == null && to.app != null) "the shared core (core, service) never depends on an app" else null
 

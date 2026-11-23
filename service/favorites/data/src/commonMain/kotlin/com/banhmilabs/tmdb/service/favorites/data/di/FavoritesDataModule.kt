@@ -10,7 +10,6 @@ import org.koin.dsl.module
 
 internal const val FAVORITES_DATABASE_NAME = "favorites.db"
 
-/** Koin bindings of the favorites context. */
 val favoritesDataModule = module {
     single {
         val driver = get<DatabaseDriverFactory>().create(

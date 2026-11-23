@@ -11,9 +11,7 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-/** Behavior every [FavoritesRepository] must have; extended by the real implementation's and the fake's tests. */
 abstract class FavoritesRepositoryContract {
-    /** A repository with no favorites. */
     protected abstract fun TestScope.createRepository(): FavoritesRepository
 
     @Test

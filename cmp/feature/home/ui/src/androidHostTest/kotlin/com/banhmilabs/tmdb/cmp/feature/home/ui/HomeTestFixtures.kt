@@ -17,7 +17,6 @@ internal val ANIME_POPULAR = listOf(testTitle(5, TitleType.TV))
 
 internal fun testTitle(id: Long, type: TitleType) = Title(TitleId(id, type), name = "Title $id", posterUrl = null)
 
-/** A fake whose Movies and Anime lists have distinct titles; other lists are empty. */
 internal fun homeTestRepository() = FakeTitleListsRepository().apply {
     setRemoteTitles(TitleCategory.MOVIES, TitleListType.FEATURED, MOVIES_FEATURED)
     setRemoteTitles(TitleCategory.MOVIES, TitleListType.POPULAR, MOVIES_POPULAR)
@@ -25,7 +24,6 @@ internal fun homeTestRepository() = FakeTitleListsRepository().apply {
     setRemoteTitles(TitleCategory.ANIME, TitleListType.POPULAR, ANIME_POPULAR)
 }
 
-/** Keeps [viewModel]'s state subscribed for the whole test and reports the device [language]. */
 internal fun TestScope.start(viewModel: HomeViewModel, language: Language = Language.EN_US) {
     backgroundScope.launch { viewModel.state.collect {} }
     viewModel.onIntent(HomeIntent.LanguageChanged(language))

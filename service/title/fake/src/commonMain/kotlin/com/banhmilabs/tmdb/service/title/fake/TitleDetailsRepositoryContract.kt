@@ -19,12 +19,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 
-/** Behavior every [TitleDetailsRepository] must have; extended by the real implementation's and the fake's tests. */
 abstract class TitleDetailsRepositoryContract {
-    /** A repository with nothing cached whose remote serves [CONTRACT_MOVIE_DETAILS] for [CONTRACT_MOVIE_ID]. */
     protected abstract fun TestScope.createRepository(): TitleDetailsRepository
 
-    /** The next refresh of the repository last created fails with [error]. */
     protected abstract fun failNextRefresh(error: AppError)
 
     @Test
@@ -83,7 +80,6 @@ abstract class TitleDetailsRepositoryContract {
     companion object {
         val CONTRACT_MOVIE_ID = TitleId(550, TitleType.MOVIE)
 
-        /** A film with every field: one cast member and one recommendation without an image. */
         val CONTRACT_MOVIE_DETAILS = TitleDetails(
             id = CONTRACT_MOVIE_ID,
             name = "Fight Club",

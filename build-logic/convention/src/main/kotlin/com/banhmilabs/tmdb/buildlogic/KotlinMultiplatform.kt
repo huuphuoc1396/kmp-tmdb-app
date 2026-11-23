@@ -9,13 +9,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 
 private const val ANDROID_TEST_RUNNER = "androidx.test.runner.AndroidJUnitRunner"
 
-/**
- * Kotlin Multiplatform library targeting Android and iOS (device + simulator), with kotlinx.serialization.
- * Unit tests default to `androidHostTest` (`kotlin-test`, MockK). `commonTest` (`kotlin-test`, no MockK) also runs
- * on the Android host, in the Android device tests and on the iOS simulator. iOS binaries link SQLCipher (in place of
- * the system sqlite3) for SQLDelight; test executables find it through an rpath to `build/sqlcipher`.
- * With [iosFramework], the iOS targets also build a static framework of that name (app shells).
- */
 internal fun Project.configureKotlinMultiplatform(iosFramework: String? = null) {
     pluginManager.apply("org.jetbrains.kotlin.multiplatform")
     pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")

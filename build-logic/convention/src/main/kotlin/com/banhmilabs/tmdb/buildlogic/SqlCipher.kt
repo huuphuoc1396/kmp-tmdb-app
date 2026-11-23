@@ -12,21 +12,15 @@ private const val SQLCIPHER_CONFIGURATION = "sqlCipherXcframework"
 private const val SQLCIPHER_DIR = "sqlcipher"
 private const val XCFRAMEWORK = "SQLCipher.xcframework"
 
-/** The `SQLCipher.xcframework` slice an iOS target links against. */
 internal fun sqlCipherSlice(targetName: String): String = when (targetName) {
     "iosArm64" -> "ios-arm64"
     "iosSimulatorArm64" -> "ios-arm64_x86_64-simulator"
     else -> error("No SQLCipher slice for target $targetName")
 }
 
-/** Directory of the unpacked `SQLCipher.framework` for [targetName], passed to the linker with `-F`. */
 internal fun Project.sqlCipherFrameworkDir(targetName: String): String =
     layout.buildDirectory.dir("$SQLCIPHER_DIR/$XCFRAMEWORK/${sqlCipherSlice(targetName)}").get().asFile.path
 
-/**
- * Resolves the official `SQLCipher.xcframework.zip` (version and SHA-256 from the catalog), checks its checksum and
- * unpacks the iOS slices into `build/sqlcipher`. Resolution only happens when an iOS binary is linked.
- */
 internal fun Project.registerSqlCipherUnpack(): TaskProvider<Sync> {
     val configuration = configurations.create(SQLCIPHER_CONFIGURATION) {
         isCanBeConsumed = false

@@ -11,9 +11,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import kotlin.time.Instant
 
-/** Fetches title lists from TMDB. */
 internal class TitleListRemoteDataSource(private val httpClient: HttpClient) {
-    /** Page 1 of the list's agreed endpoint, in TMDB order; entries without a name are dropped. */
     suspend fun fetch(key: TitleListKey, now: Instant): AppResult<List<TitleEntry>> {
         val request = titleListRequest(category = key.category, listType = key.listType, now = now)
         return apiCall {

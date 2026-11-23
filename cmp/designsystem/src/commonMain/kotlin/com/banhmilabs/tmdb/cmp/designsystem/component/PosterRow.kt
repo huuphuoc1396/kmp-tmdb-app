@@ -49,10 +49,6 @@ private val PlaceholderNameStyle = TextStyle(
     textAlign = TextAlign.Center,
 )
 
-/**
- * A horizontal row of 124×188dp posters; a title without a poster shows its name on a plain tile. Each poster is
- * announced as a button with the title's name.
- */
 @Composable
 fun PosterRow(
     titles: List<Title>,
@@ -67,7 +63,6 @@ fun PosterRow(
         contentPadding = contentPadding,
         horizontalArrangement = Arrangement.spacedBy(PosterSpacing),
     ) {
-        // Lazy list keys must be saveable on Android, so the id becomes a string.
         items(titles, key = { "${it.id.type}-${it.id.tmdbId}" }) { title ->
             Poster(title = title, onClick = { onTitleClick(title) })
         }
@@ -81,7 +76,6 @@ private fun Poster(title: Title, onClick: () -> Unit) {
             .size(width = PosterWidth, height = PosterHeight)
             .clip(PosterShape)
             .background(MaterialTheme.colorScheme.surfaceVariant)
-            // Announced once, as a button with the title's name, whether it shows an image or the placeholder.
             .semantics(mergeDescendants = true) { contentDescription = title.name }
             .clickable(role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,

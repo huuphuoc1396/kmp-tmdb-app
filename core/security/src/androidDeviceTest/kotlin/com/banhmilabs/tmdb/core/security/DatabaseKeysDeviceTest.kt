@@ -9,7 +9,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 
-/** Runs on an Android device (Keystore, app files). */
 class DatabaseKeysDeviceTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val name = "test-${Random.nextLong()}.db"

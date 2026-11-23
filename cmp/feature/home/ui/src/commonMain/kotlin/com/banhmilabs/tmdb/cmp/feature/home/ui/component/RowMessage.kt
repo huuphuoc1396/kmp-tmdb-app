@@ -12,7 +12,6 @@ import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_retry
 import org.jetbrains.compose.resources.stringResource
 
-/** Same height as a poster row, so the layout doesn't jump when a row has no posters. */
 internal val RowMinHeight = 188.dp
 
 @Composable

@@ -1,14 +1,10 @@
 import Foundation
 import TmdbCore
 
-/// Shows both lists of the selected category in the device language. Lists refresh when shown (stale ones only),
-/// on pull-to-refresh and on retry (always).
 @MainActor
 final class HomeViewModel: ObservableObject {
     @Published private(set) var state = HomeUiState()
 
-    /// A new stream for each collector, which replaces the previous one: the view collects again each time it
-    /// reappears (after details close), and a cancelled `AsyncStream` can't be iterated again.
     var effects: AsyncStream<HomeEffect> {
         let (stream, continuation) = AsyncStream.makeStream(of: HomeEffect.self)
         effectsContinuation?.finish()
@@ -19,11 +15,8 @@ final class HomeViewModel: ObservableObject {
     private let titleLists: any TitleLists
     private var effectsContinuation: AsyncStream<HomeEffect>.Continuation?
 
-    /// `nil` until the view reports the device language; nothing is observed or refreshed before that.
     private var language: Language?
-    /// Latest values of the current selection's lists; a missing entry means never loaded.
     private var observed: [TitleListType: [TitleItem]] = [:]
-    /// Lists whose last refresh failed, per category and language, so results never leak into another tab.
     private var failed: Set<TitleListKey> = []
     private let observations = TaskBag()
     private var pullRefresh: Task<Void, Never>?
@@ -45,8 +38,6 @@ final class HomeViewModel: ObservableObject {
         }
     }
 
-    /// Pull-to-refresh: forces both lists of the selection and returns when both end. A pull while one is
-    /// running waits for it instead of starting another.
     func refresh() async {
         if let running = pullRefresh {
             await running.value
@@ -77,7 +68,6 @@ final class HomeViewModel: ObservableObject {
         showSelection()
     }
 
-    /// Observes the selection's lists instead of the previous ones and refreshes the stale ones.
     private func showSelection() {
         observations.cancelAll()
         observed = [:]
@@ -130,7 +120,6 @@ final class HomeViewModel: ObservableObject {
     }
 }
 
-/// Holds the observation tasks and cancels them when the ViewModel goes away.
 final class TaskBag: @unchecked Sendable {
     private var tasks: [Task<Void, Never>] = []
 
