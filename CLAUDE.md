@@ -164,6 +164,7 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | Test Main dispatcher (ViewModel tests) | extend `MainDispatcherTest` | `core:testing` |
 | Test `DispatcherProvider` | `TestDispatcherProvider(dispatcher)` | `core:testing` |
 | Remote images (posters) | Coil 3 `AsyncImage`; the loader (Ktor network fetcher) is set in `App()` | `cmp/*` |
+| Confirm removing a favorite (cmp; `removeFavoriteLabel()` for the heart button) | `RemoveFavoriteDialog` | `cmp/designsystem` |
 | Poster image or name placeholder at any size (cmp) | `PosterTile` (`PosterRow` for a row of 124×188 posters) | `cmp/designsystem` |
 | "year · genre" line, unknown parts left out (cmp) | `metaLine(year, genre)` | `cmp/designsystem` |
 | Remote images in `native-ios` | Nuke `LazyImage` (`NukeUI`, Swift package, disk cache) | `native-ios` |

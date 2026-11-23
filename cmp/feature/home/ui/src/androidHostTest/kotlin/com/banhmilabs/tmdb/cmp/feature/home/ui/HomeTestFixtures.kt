@@ -33,7 +33,7 @@ internal fun homeViewModel(
     savedState: SavedStateHandle = SavedStateHandle(),
     favorites: FakeFavoritesRepository = FakeFavoritesRepository(),
     details: FakeTitleDetailsRepository = FakeTitleDetailsRepository(),
-) = HomeViewModel(repository, ObserveFavoriteTitles(favorites, details), savedState)
+) = HomeViewModel(repository, ObserveFavoriteTitles(favorites, details), favorites, savedState)
 
 internal fun TestScope.start(viewModel: HomeViewModel, language: Language = Language.EN_US) {
     backgroundScope.launch { viewModel.state.collect {} }

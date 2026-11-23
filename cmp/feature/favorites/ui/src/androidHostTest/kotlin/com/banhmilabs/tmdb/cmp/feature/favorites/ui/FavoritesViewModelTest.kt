@@ -18,7 +18,7 @@ import kotlin.test.assertEquals
 class FavoritesViewModelTest : MainDispatcherTest() {
     private val favorites = FakeFavoritesRepository()
     private val details = FakeTitleDetailsRepository()
-    private val viewModel by lazy { FavoritesViewModel(ObserveFavoriteTitles(favorites, details)) }
+    private val viewModel by lazy { FavoritesViewModel(ObserveFavoriteTitles(favorites, details), favorites) }
 
     @Test
     fun listsAllFavoritesNewestFirst() = runTest(testDispatcher) {

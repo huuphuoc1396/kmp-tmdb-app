@@ -22,6 +22,7 @@ internal data class HomeUiState(
     val isRefreshing: Boolean = false,
     val favorites: List<FavoriteTitle> = emptyList(),
     val favoritesCount: Int = 0,
+    val pendingRemoval: FavoriteTitle? = null,
 )
 
 internal sealed interface HomeIntent {
@@ -38,6 +39,12 @@ internal sealed interface HomeIntent {
     data class FavoriteClicked(val id: TitleId) : HomeIntent
 
     data object SeeAllFavoritesClicked : HomeIntent
+
+    data class RemoveFavoriteClicked(val favorite: FavoriteTitle) : HomeIntent
+
+    data object RemoveFavoriteConfirmed : HomeIntent
+
+    data object RemoveFavoriteDismissed : HomeIntent
 }
 
 internal sealed interface HomeEffect {

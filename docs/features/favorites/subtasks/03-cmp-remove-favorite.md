@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Remove favorite dialog](../design/remove-favorite-dialog.md), [Home – Favorites section](../design/home-favorites.md), [My favorites](../design/my-favorites.md)
 Depends on: 02-cmp-browse-favorites
-Status: Todo
+Status: Done
 
 ## Goal
 In the cmp app, users remove a favorite from Home, My favorites or Title details, always after confirming in the
@@ -70,8 +70,8 @@ popup. Cancelling leaves everything as it was, and My favorites shows its empty 
 - **EC-1** Heart or "Remover" tapped repeatedly or quickly -> only one popup opens and the title is removed once.
 - **EC-5** Very long title name (partial: popup; truncation in 02) -> in the popup message it wraps and is shown
   in full.
-- **EC-6** Rotation or process death while the popup is open -> the popup is closed and the title is still a
-  favorite.
+- **EC-6** Rotation while the popup is open -> the popup stays open and nothing changes; process death -> the popup
+  is closed and the title is still a favorite.
 - **EC-11** Largest system font size -> section title, badge, list items and popup stay readable; nothing is
   clipped beyond the truncation in EC-5.
 
@@ -93,3 +93,6 @@ popup. Cancelling leaves everything as it was, and My favorites shows its empty 
 
 ## Change log
 - 2026-11-23: Initial version.
+- 2026-11-23: Plan approved.
+- 2026-11-23: EC-6 changed: the popup stays open on rotation (user, plan 03).
+- 2026-11-23: Implemented (plan 03 done).

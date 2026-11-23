@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -38,6 +39,7 @@ internal class TitleDetailsViewModel(
 
     private val failed = MutableStateFlow(emptySet<Language>())
     private val manualRefresh = MutableStateFlow(false)
+    private val removeConfirmation = MutableStateFlow(false)
 
     val state: StateFlow<TitleDetailsUiState> = language
         .filterNotNull()
@@ -51,6 +53,7 @@ internal class TitleDetailsViewModel(
             }
         }
         .combine(favorites.observeIsFavorite(titleId)) { state, favorite -> state.copy(isFavorite = favorite) }
+        .combine(removeConfirmation) { state, shown -> state.copy(isRemoveConfirmationShown = shown) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), TitleDetailsUiState())
 
     private val _effects = Channel<TitleDetailsEffect>(Channel.BUFFERED)
@@ -72,13 +75,23 @@ internal class TitleDetailsViewModel(
             is TitleDetailsIntent.RecommendationClicked -> openTitle(intent.title)
             TitleDetailsIntent.Refresh -> refreshManually()
             TitleDetailsIntent.Retry -> retry()
-            TitleDetailsIntent.FavoriteClicked -> toggleFavorite()
+            TitleDetailsIntent.FavoriteClicked -> onFavoriteClicked()
+            TitleDetailsIntent.RemoveFavoriteConfirmed -> confirmRemoval()
+            TitleDetailsIntent.RemoveFavoriteDismissed -> removeConfirmation.value = false
         }
     }
 
-    private fun toggleFavorite() {
-        val current = state.value.isFavorite ?: return
-        viewModelScope.launch { favorites.setFavorite(titleId, !current) }
+    private fun onFavoriteClicked() {
+        when (state.value.isFavorite) {
+            true -> removeConfirmation.value = true
+            false -> viewModelScope.launch { favorites.setFavorite(titleId, isFavorite = true) }
+            null -> Unit
+        }
+    }
+
+    private fun confirmRemoval() {
+        if (!removeConfirmation.getAndUpdate { false }) return
+        viewModelScope.launch { favorites.setFavorite(titleId, isFavorite = false) }
     }
 
     private fun openTrailer() {

@@ -3,6 +3,7 @@
     <string name="favorites_title">My Favorites</string>
     <string name="favorites_subtitle">All your saved titles, in one place.</string>
     <string name="favorites_loading">Loading title</string>
+    <string name="favorites_empty">No favorites yet. Tap the heart on a title to save it here.</string>
     <plurals name="favorites_count">
         <item quantity="one">%d title</item>
         <item quantity="other">%d titles</item>
