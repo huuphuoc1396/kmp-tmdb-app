@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -43,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterTile
+import com.banhmilabs.tmdb.cmp.designsystem.component.removeFavoriteLabel
 import com.banhmilabs.tmdb.cmp.designsystem.text.metaLine
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_favorites_loading
@@ -50,6 +52,7 @@ import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_favorite
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_favorites_title
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_favorites_view_all
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.ic_chevron_right
+import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.ic_favorite_remove
 import com.banhmilabs.tmdb.core.model.TitleId
 import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 import org.jetbrains.compose.resources.painterResource
@@ -79,6 +82,8 @@ private val PosterShape = RoundedCornerShape(8.dp)
 private val PosterToName = 12.dp
 private val NameToMeta = 8.dp
 private val BottomPadding = 14.dp
+private val HeartSize = 28.dp
+private val HeartTouchOffset = 4.dp
 private const val NAME_MAX_LINES = 2
 
 private val TitleStyle = TextStyle(color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -93,6 +98,7 @@ internal fun FavoritesSection(
     favorites: List<FavoriteTitle>,
     count: Int,
     onFavoriteClick: (TitleId) -> Unit,
+    onRemoveClick: (FavoriteTitle) -> Unit,
     onSeeAll: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -132,7 +138,11 @@ internal fun FavoritesSection(
             horizontalArrangement = Arrangement.spacedBy(ItemSpacing),
         ) {
             items(favorites, key = { "${it.id.type}-${it.id.tmdbId}" }) { favorite ->
-                FavoriteItem(favorite = favorite, onClick = { onFavoriteClick(favorite.id) })
+                FavoriteItem(
+                    favorite = favorite,
+                    onClick = { onFavoriteClick(favorite.id) },
+                    onRemoveClick = { onRemoveClick(favorite) },
+                )
             }
         }
     }
@@ -176,31 +186,57 @@ private fun ViewAll(onClick: () -> Unit) {
 }
 
 @Composable
-private fun FavoriteItem(favorite: FavoriteTitle, onClick: () -> Unit) {
+private fun FavoriteItem(favorite: FavoriteTitle, onClick: () -> Unit, onRemoveClick: () -> Unit) {
     val summary = favorite.summary
     val label = summary?.name ?: stringResource(Res.string.home_favorites_loading)
-    Column(
-        modifier = Modifier
-            .width(ItemWidth)
-            .clickable(role = Role.Button, onClick = onClick)
-            .clearAndSetSemantics {
-                contentDescription = label
-                role = Role.Button
-            },
-    ) {
-        PosterTile(
-            name = summary?.name,
-            posterUrl = summary?.posterUrl,
-            modifier = Modifier.fillMaxWidth().height(PosterHeight).clip(PosterShape),
-        )
-        if (summary != null) {
-            Spacer(modifier = Modifier.height(PosterToName))
-            Text(text = summary.name, style = NameStyle, maxLines = NAME_MAX_LINES, overflow = TextOverflow.Ellipsis)
-            val meta = metaLine(summary.releaseYear, summary.firstGenre)
-            if (meta.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(NameToMeta))
-                Text(text = meta, style = MetaStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    Box(modifier = Modifier.width(ItemWidth)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(role = Role.Button, onClick = onClick)
+                .clearAndSetSemantics {
+                    contentDescription = label
+                    role = Role.Button
+                },
+        ) {
+            PosterTile(
+                name = summary?.name,
+                posterUrl = summary?.posterUrl,
+                modifier = Modifier.fillMaxWidth().height(PosterHeight).clip(PosterShape),
+            )
+            if (summary != null) {
+                Spacer(modifier = Modifier.height(PosterToName))
+                Text(
+                    text = summary.name,
+                    style = NameStyle,
+                    maxLines = NAME_MAX_LINES,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                val meta = metaLine(summary.releaseYear, summary.firstGenre)
+                if (meta.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(NameToMeta))
+                    Text(text = meta, style = MetaStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
             }
         }
+        RemoveButton(
+            onClick = onRemoveClick,
+            modifier = Modifier.align(Alignment.TopEnd).offset(x = HeartTouchOffset, y = -HeartTouchOffset),
+        )
     }
+}
+
+@Composable
+private fun RemoveButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val label = removeFavoriteLabel()
+    Image(
+        painter = painterResource(Res.drawable.ic_favorite_remove),
+        contentDescription = null,
+        modifier = modifier
+            .minimumInteractiveComponentSize()
+            .size(HeartSize)
+            .clip(CircleShape)
+            .clickable(role = Role.Button, onClick = onClick)
+            .semantics { contentDescription = label },
+    )
 }

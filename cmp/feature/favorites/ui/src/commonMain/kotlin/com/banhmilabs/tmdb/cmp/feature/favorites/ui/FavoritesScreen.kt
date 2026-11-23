@@ -39,13 +39,16 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.banhmilabs.tmdb.cmp.designsystem.component.RemoveFavoriteDialog
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.component.FavoriteCard
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.favorites_back
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.favorites_count
+import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.favorites_empty
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.favorites_subtitle
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.favorites_title
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.ic_back_arrow
@@ -68,10 +71,16 @@ private val HeaderToTitle = 16.dp
 private val TitleToSubtitle = 8.dp
 private val SubtitleToList = 26.dp
 private val CardSpacing = 12.dp
+private val EmptyTopPadding = 48.dp
 
 private val BackStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 private val TitleStyle = TextStyle(color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
 private val SubtitleStyle = TextStyle(color = FavoritesColors.SecondaryText, fontSize = 13.sp)
+private val EmptyStyle = TextStyle(
+    color = FavoritesColors.SecondaryText,
+    fontSize = 14.sp,
+    textAlign = TextAlign.Center,
+)
 private val BadgeStyle = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold)
 
 @Composable
@@ -118,8 +127,28 @@ internal fun FavoritesContent(
             FavoritesHeader(count = state.favorites.size, onBack = onBack)
         }
         items(state.favorites, key = { "${it.id.type}-${it.id.tmdbId}" }) { favorite ->
-            FavoriteCard(favorite = favorite, onClick = { onIntent(FavoritesIntent.TitleClicked(favorite.id)) })
+            FavoriteCard(
+                favorite = favorite,
+                onClick = { onIntent(FavoritesIntent.TitleClicked(favorite.id)) },
+                onRemoveClick = { onIntent(FavoritesIntent.RemoveFavoriteClicked(favorite)) },
+            )
         }
+        if (state.favorites.isEmpty()) {
+            item(key = "empty") {
+                Text(
+                    text = stringResource(Res.string.favorites_empty),
+                    modifier = Modifier.fillMaxWidth().padding(top = EmptyTopPadding),
+                    style = EmptyStyle,
+                )
+            }
+        }
+    }
+    state.pendingRemoval?.let { pending ->
+        RemoveFavoriteDialog(
+            titleName = pending.summary?.name,
+            onConfirm = { onIntent(FavoritesIntent.RemoveFavoriteConfirmed) },
+            onDismiss = { onIntent(FavoritesIntent.RemoveFavoriteDismissed) },
+        )
     }
 }
 

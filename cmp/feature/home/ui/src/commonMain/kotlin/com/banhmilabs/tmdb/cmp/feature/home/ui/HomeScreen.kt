@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterRow
+import com.banhmilabs.tmdb.cmp.designsystem.component.RemoveFavoriteDialog
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.CategoryTabs
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.FavoritesSection
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.HomeHeader
@@ -112,6 +113,13 @@ internal fun HomeScreen(
 @Composable
 internal fun HomeContent(state: HomeUiState, onIntent: (HomeIntent) -> Unit, modifier: Modifier = Modifier) {
     val pullState = rememberPullToRefreshState()
+    state.pendingRemoval?.let { pending ->
+        RemoveFavoriteDialog(
+            titleName = pending.summary?.name,
+            onConfirm = { onIntent(HomeIntent.RemoveFavoriteConfirmed) },
+            onDismiss = { onIntent(HomeIntent.RemoveFavoriteDismissed) },
+        )
+    }
     Box(modifier = modifier.fillMaxSize()) {
         Image(
             painter = painterResource(Res.drawable.home_background),
@@ -200,6 +208,7 @@ private fun Favorites(state: HomeUiState, onIntent: (HomeIntent) -> Unit) {
         favorites = state.favorites,
         count = state.favoritesCount,
         onFavoriteClick = { onIntent(HomeIntent.FavoriteClicked(it)) },
+        onRemoveClick = { onIntent(HomeIntent.RemoveFavoriteClicked(it)) },
         onSeeAll = { onIntent(HomeIntent.SeeAllFavoritesClicked) },
         modifier = Modifier.padding(horizontal = ScreenPadding - FavoritesCardInset),
     )

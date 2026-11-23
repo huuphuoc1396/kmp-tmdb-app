@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterRow
+import com.banhmilabs.tmdb.cmp.designsystem.component.RemoveFavoriteDialog
 import com.banhmilabs.tmdb.cmp.designsystem.component.RetryMessage
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.component.CastRow
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.component.DetailsArtwork
@@ -144,6 +145,13 @@ internal fun TitleDetailsContent(
             onBack = { onIntent(TitleDetailsIntent.BackClicked) },
             isFavorite = state.isFavorite.takeIf { state.load is DetailsLoad.Loaded },
             onFavoriteClick = { onIntent(TitleDetailsIntent.FavoriteClicked) },
+        )
+    }
+    if (state.isRemoveConfirmationShown) {
+        RemoveFavoriteDialog(
+            titleName = state.details?.name,
+            onConfirm = { onIntent(TitleDetailsIntent.RemoveFavoriteConfirmed) },
+            onDismiss = { onIntent(TitleDetailsIntent.RemoveFavoriteDismissed) },
         )
     }
 }

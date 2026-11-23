@@ -1,0 +1,8 @@
+<resources>
+    <string name="remove_favorite_title">Remove from favorites?</string>
+    <string name="remove_favorite_message">“%1$s” will be removed from your list. You can add it again later.</string>
+    <string name="remove_favorite_message_unknown">This title will be removed from your list. You can add it again later.</string>
+    <string name="remove_favorite_cancel">Cancel</string>
+    <string name="remove_favorite_confirm">Remove</string>
+    <string name="remove_favorite_heart">Remove from favorites</string>
+</resources>

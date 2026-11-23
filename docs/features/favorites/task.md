@@ -167,8 +167,8 @@ title in at most two taps, even offline, and never remove a favorite without con
   favorites shows all.
 - **EC-5** Very long title name -> it is truncated in the Home row and the list item; in the popup message it wraps
   and is shown in full.
-- **EC-6** Rotation or process death while the popup is open -> the popup is closed and the title is still a
-  favorite.
+- **EC-6** Rotation while the popup is open -> the popup stays open and nothing changes; process death -> the popup
+  is closed and the title is still a favorite.
 - **EC-7** Rotation or process death on My favorites -> the screen and its scroll position are restored.
 - **EC-8** The same title favorited in both languages -> it appears once (favorites are not per language).
 - **EC-9** Device language changes while the app is running -> the next display uses the new language (per
@@ -207,6 +207,7 @@ title in at most two taps, even offline, and never remove a favorite without con
 - 2026-11-23: Confirmed by the user.
 - 2026-11-23: Split into subtasks 01–05.
 - 2026-11-23: Open question answered: pt-BR title of My favorites is "Meus favoritos".
+- 2026-11-23: EC-6 changed: the popup stays open on rotation and closes on process death (user, plan 03).
 
 ## Subtasks
 1. [01 - Favorites list data (shared core)](subtasks/01-favorites-list-data.md)
