@@ -1,7 +1,6 @@
 import SwiftUI
 import TmdbCore
 
-/// At least the 44pt touch target; the design's row is 34pt, so the screen trims 5pt of spacing above and below.
 let tabsMinHeight: CGFloat = 44
 
 struct CategoryTabs: View {

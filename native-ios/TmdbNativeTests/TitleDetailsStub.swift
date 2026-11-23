@@ -9,9 +9,7 @@ final class TitleDetailsStub: TitleDetailsSource {
         let force: Bool
     }
 
-    /// Result of `refresh` per language; `true` when missing.
     var refreshResults: [Language: Bool] = [:]
-    /// While `true`, `refresh` calls wait until `releaseRefreshes()`.
     var holdRefreshes = false
     private(set) var refreshRequests: [RefreshRequest] = []
     private(set) var observedLanguages: [Language] = []
@@ -20,7 +18,6 @@ final class TitleDetailsStub: TitleDetailsSource {
     private var observers: [Language: [AsyncStream<TitleDetailsItem?>.Continuation]] = [:]
     private var heldRefreshes: [CheckedContinuation<Void, Never>] = []
 
-    /// Sets the cached details in a language; observers get them now and new observers get them first.
     func send(_ details: TitleDetailsItem?, for language: Language) {
         values[language] = .some(details)
         observers[language]?.forEach { $0.yield(details) }
@@ -55,7 +52,6 @@ final class FavoritesStub: Favorites {
     private var value: Bool?
     private var observers: [AsyncStream<Bool>.Continuation] = []
 
-    /// Sets the stored value; observers get it now and new observers get it first. `nil` sends nothing yet.
     init(stored: Bool? = false) {
         value = stored
     }
@@ -78,7 +74,6 @@ final class FavoritesStub: Favorites {
     }
 }
 
-/// A new instance each time: Kotlin objects aren't `Sendable`, so they can't be shared globals.
 var detailsTitleId: TitleId { TitleId(tmdbId: 550, type: .movie) }
 
 func details(

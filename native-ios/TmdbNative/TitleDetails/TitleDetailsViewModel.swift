@@ -1,14 +1,10 @@
 import Foundation
 import TmdbCore
 
-/// Shows the details of one title in the app language and whether it is a favorite. Details refresh when the
-/// language is set (stale ones only), on pull-to-refresh and on retry (always).
 @MainActor
 final class TitleDetailsViewModel: ObservableObject {
     @Published private(set) var state = TitleDetailsUiState()
 
-    /// A new stream for each collector, which replaces the previous one: the view collects again each time it
-    /// reappears (after a pushed title closes), and a cancelled `AsyncStream` can't be iterated again.
     var effects: AsyncStream<TitleDetailsEffect> {
         let (stream, continuation) = AsyncStream.makeStream(of: TitleDetailsEffect.self)
         effectsContinuation?.finish()
@@ -21,11 +17,8 @@ final class TitleDetailsViewModel: ObservableObject {
     private let favorites: any Favorites
     private var effectsContinuation: AsyncStream<TitleDetailsEffect>.Continuation?
 
-    /// `nil` until the view reports the app language; nothing is observed or refreshed before that.
     private var language: Language?
-    /// Latest cached details in `language`; `nil` when never loaded.
     private var observed: TitleDetailsItem?
-    /// Languages whose last refresh failed, so an error never shows in the other language.
     private var failed: Set<Language> = []
     private let detailsObservation = TaskBag()
     private let favoriteObservation = TaskBag()
@@ -62,8 +55,6 @@ final class TitleDetailsViewModel: ObservableObject {
         }
     }
 
-    /// Pull-to-refresh: forces the details and returns when the refresh ends. A pull while one is running waits for
-    /// it instead of starting another; a pull without details does nothing.
     func refresh() async {
         if let running = pullRefresh {
             await running.value
@@ -92,7 +83,6 @@ final class TitleDetailsViewModel: ObservableObject {
                 updateLoad()
             }
         })
-        // The shared core skips the refresh while the cached details are still fresh.
         Task { await refresh(newLanguage, force: false) }
     }
 

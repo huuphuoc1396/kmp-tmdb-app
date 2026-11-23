@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Same height as a poster row, so the layout doesn't jump when a row has no posters.
 let rowMinHeight: CGFloat = 188
 
 struct RowMessage: View {

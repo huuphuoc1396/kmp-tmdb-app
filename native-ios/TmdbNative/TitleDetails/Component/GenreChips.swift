@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// One chip per genre, as wide as its name, wrapping onto more lines; not tappable.
 struct GenreChips: View {
     let genres: [String]
 
@@ -21,7 +20,6 @@ struct GenreChips: View {
     }
 }
 
-/// Places its views left to right and starts a new line when the next one doesn't fit.
 private struct FlowLayout: Layout {
     let spacing: CGFloat
     let lineSpacing: CGFloat
@@ -49,7 +47,6 @@ private struct FlowLayout: Layout {
         var y: CGFloat = 0
         var lineHeight: CGFloat = 0
         for subview in subviews {
-            // A chip wider than the line is limited to it, so its name is cut instead of overflowing.
             var size = subview.sizeThatFits(.unspecified)
             size.width = min(size.width, width)
             if x > 0, x + size.width > width {

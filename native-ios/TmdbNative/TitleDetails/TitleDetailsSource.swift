@@ -1,7 +1,6 @@
 import Foundation
 import TmdbCore
 
-/// A calendar date as TMDB gives it, with no time zone.
 struct ReleaseDate: Equatable {
     let year: Int
     let month: Int
@@ -13,17 +12,12 @@ struct CastItem: Equatable {
     let photoURL: URL?
 }
 
-/// Everything the details screen shows about a title, in one language; a `nil` field is unknown on TMDB.
 struct TitleDetailsItem: Equatable {
     let name: String
-    /// Release date of a film, first air date of a series.
     let releaseDate: ReleaseDate?
-    /// Runtime of a film, or of one episode of a series.
     let runtimeMinutes: Int?
-    /// `nil` when nobody has voted.
     let ratingPercent: Int?
     let synopsis: String?
-    /// Poster, or the backdrop when there is no poster.
     let artworkURL: URL?
     let genres: [String]
     let cast: [CastItem]
@@ -33,10 +27,8 @@ struct TitleDetailsItem: Equatable {
 
 @MainActor
 protocol TitleDetailsSource {
-    /// Cached details; `nil` until a refresh of this title and language has succeeded.
     func observe(_ id: TitleId, language: Language) -> AsyncStream<TitleDetailsItem?>
 
-    /// Fetches the details when stale or `force`d; `false` when it failed (the cache is kept).
     func refresh(_ id: TitleId, language: Language, force: Bool) async -> Bool
 }
 
@@ -59,7 +51,6 @@ struct SharedCoreTitleDetails: TitleDetailsSource {
         await Self.refresh(tmdbId: id.tmdbId, type: id.type, language: language, force: force)
     }
 
-    /// Kotlin objects aren't `Sendable`, so the id is built again off the main actor from its parts.
     private nonisolated static func refresh(
         tmdbId: Int64,
         type: TitleType,

@@ -1,8 +1,5 @@
 import SwiftUI
 
-/// The heart alone, like the system back button: the navigation bar draws the button's background. A `Toggle`, so
-/// VoiceOver reads it as the "Favorite" switch with its on/off value; each tap reports once and the shown value is
-/// always the stored one.
 struct FavoriteToggle: View {
     let isOn: Bool
     let onTap: () -> Void

@@ -5,8 +5,6 @@ private let posterWidth: CGFloat = 124
 private let posterHeight: CGFloat = 188
 private let posterShape = RoundedRectangle(cornerRadius: 8)
 
-/// A horizontal row of posters that restores its scroll position (see `RestoringRow`). `rowKey` names what the row
-/// shows, such as Home's category, so a newly selected tab starts at the beginning.
 struct PosterRow: View {
     let titles: [TitleItem]
     let rowKey: String
@@ -58,7 +56,6 @@ private struct Poster: View {
             .contentShape(posterShape)
         }
         .buttonStyle(.plain)
-        // Announced once, as a button with the title's name, whether it shows an image or the placeholder.
         .accessibilityLabel(title.name)
     }
 }

@@ -17,7 +17,6 @@ struct HomeHeader: View {
     }
 }
 
-/// A decorative, generic avatar with no action; screen readers skip it.
 private struct Avatar: View {
     var body: some View {
         Image(systemName: "person.fill")

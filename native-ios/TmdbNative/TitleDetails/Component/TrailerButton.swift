@@ -1,13 +1,11 @@
 import SwiftUI
 
-/// The design's 148.66° gradient runs from the top-left to the bottom-right of the pill.
 private let gradient = LinearGradient(
     colors: [Theme.primary, Theme.primaryContainer],
     startPoint: .topLeading,
     endPoint: .bottomTrailing
 )
 
-/// The full-width "Assistir trailer" pill.
 struct TrailerButton: View {
     let action: () -> Void
 

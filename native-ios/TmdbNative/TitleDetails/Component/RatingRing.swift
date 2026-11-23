@@ -2,10 +2,8 @@ import SwiftUI
 
 let ratingRingSize: CGFloat = 57
 private let ringWidth: CGFloat = 6
-/// Fixed, so the value never outgrows the fixed ring at large text sizes; VoiceOver still reads the label.
 private let valueSize: CGFloat = 15
 
-/// The TMDB score as a ring filled to `percent`, or an empty ring with "NR" when nobody has voted.
 struct RatingRing: View {
     let percent: Int?
 
