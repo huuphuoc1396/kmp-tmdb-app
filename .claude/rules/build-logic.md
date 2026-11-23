@@ -15,7 +15,7 @@ paths:
 - Repositories are declared only in `settings.gradle.kts` (`RepositoriesMode.FAIL_ON_PROJECT_REPOS`); a `repositories {}` block in a module fails the build.
 
 ## Pattern
-- Convention plugin: one class per file in the default package, `build-logic/convention/src/main/kotlin/<Name>ConventionPlugin.kt`, with a one-line KDoc:
+- Convention plugin: one class per file in the default package, `build-logic/convention/src/main/kotlin/<Name>ConventionPlugin.kt`:
   ```kotlin
   class XConventionPlugin : Plugin<Project> {
       override fun apply(target: Project) = with(target) {
