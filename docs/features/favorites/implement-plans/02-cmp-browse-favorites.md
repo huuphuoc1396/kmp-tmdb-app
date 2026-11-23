@@ -64,7 +64,7 @@ app shell wires "View all" → My favorites and a favorite → Title details. He
 ## Changes overview
 | Module | Files (new / modified) | Why |
 |---|---|---|
-| `cmp/designsystem` | `component/PosterTile.kt` (new), `component/PosterRow.kt` (modify), `text/MetaLine.kt` (new), `src/androidHostTest/.../text/MetaLineTest.kt` (new) | Shared poster and meta line |
+| `cmp/designsystem` | `component/PosterTile.kt` (new), `component/PosterRow.kt` (modify), `text/MetaLine.kt` (new), `src/commonTest/.../text/MetaLineTest.kt` (new) | Shared poster and meta line |
 | `cmp/feature/home/ui` | `HomeContract.kt`, `HomeViewModel.kt`, `HomeScreen.kt`, `navigation/HomeNavigation.kt`, `build.gradle.kts` (modify); `component/FavoritesSection.kt`, `drawable/ic_chevron_right.xml` (new); strings en + pt-BR (modify); tests (modify + new `HomeViewModelFavoritesTest.kt`) | Home section |
 | `cmp/feature/favorites/ui` (new) | `build.gradle.kts`, `FavoritesContract.kt`, `FavoritesViewModel.kt`, `FavoritesScreen.kt`, `component/FavoriteCard.kt`, `FavoritesColors.kt`, `navigation/FavoritesRoute.kt`, `navigation/FavoritesNavigation.kt`, `di/FavoritesUiModule.kt`, strings en + pt-BR, `drawable/ic_back_arrow.xml`, `FavoritesViewModelTest.kt` | My favorites |
 | `settings.gradle.kts` | add `:cmp:feature:favorites:ui` | New module |
@@ -75,7 +75,7 @@ app shell wires "View all" → My favorites and a favorite → Title details. He
 ### Step 1: `PosterTile` and `metaLine` in the design system  (AC-4) ✅
 - Files: `cmp/designsystem/src/commonMain/kotlin/com/banhmilabs/tmdb/cmp/designsystem/component/PosterTile.kt`
   (new), `component/PosterRow.kt` (modify), `text/MetaLine.kt` (new),
-  `cmp/designsystem/src/androidHostTest/kotlin/com/banhmilabs/tmdb/cmp/designsystem/text/MetaLineTest.kt` (new)
+  `cmp/designsystem/src/commonTest/kotlin/com/banhmilabs/tmdb/cmp/designsystem/text/MetaLineTest.kt` (new)
 - What:
   - `@Composable fun PosterTile(name: String?, posterUrl: String?, modifier: Modifier = Modifier)`: `Box` with
     `surfaceVariant` background, `contentAlignment = Center`; `AsyncImage` (crop, `contentDescription = null`)
@@ -232,3 +232,5 @@ and `detekt` on the same modules, `./gradlew :architecture-test:test` (new modul
   only when `favoritesCount > 0`; used both after the featured row and below the full spinner.
 - `CLAUDE.md`'s repository-layout line now lists the real title details screen instead of "a placeholder title
   details screen", in the same sentence that adds My favorites.
+- `MetaLineTest` moved to `commonTest` after #42's testing rules (string formatting that runs on iOS), like
+  `TitleDetailsFormatTest`; it passes on the Android host and the iOS simulator.
