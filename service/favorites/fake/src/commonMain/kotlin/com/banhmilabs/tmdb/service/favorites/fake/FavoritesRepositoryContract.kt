@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -72,8 +73,58 @@ abstract class FavoritesRepositoryContract {
         }
     }
 
+    @Test
+    fun observeFavoritesListsNewestFirst() = runTest {
+        val repository = createRepository()
+
+        repository.setFavorite(CONTRACT_MOVIE_ID, isFavorite = true)
+        repository.setFavorite(OTHER_MOVIE_ID, isFavorite = true)
+        repository.setFavorite(CONTRACT_SERIES_ID, isFavorite = true)
+
+        assertEquals(
+            listOf(CONTRACT_SERIES_ID, OTHER_MOVIE_ID, CONTRACT_MOVIE_ID),
+            repository.observeFavorites().first(),
+        )
+    }
+
+    @Test
+    fun refavoritingKeepsPosition() = runTest {
+        val repository = createRepository()
+        repository.setFavorite(CONTRACT_MOVIE_ID, isFavorite = true)
+        repository.setFavorite(OTHER_MOVIE_ID, isFavorite = true)
+
+        repository.setFavorite(CONTRACT_MOVIE_ID, isFavorite = true)
+
+        assertEquals(listOf(OTHER_MOVIE_ID, CONTRACT_MOVIE_ID), repository.observeFavorites().first())
+    }
+
+    @Test
+    fun removedFavoriteLeavesList() = runTest {
+        val repository = createRepository()
+        repository.setFavorite(CONTRACT_MOVIE_ID, isFavorite = true)
+        repository.setFavorite(OTHER_MOVIE_ID, isFavorite = true)
+
+        repository.setFavorite(CONTRACT_MOVIE_ID, isFavorite = false)
+
+        assertEquals(listOf(OTHER_MOVIE_ID), repository.observeFavorites().first())
+    }
+
+    @Test
+    fun observeFavoritesSeesChanges() = runTest {
+        val repository = createRepository()
+
+        repository.observeFavorites().test {
+            assertEquals(emptyList(), awaitItem())
+            repository.setFavorite(CONTRACT_MOVIE_ID, isFavorite = true)
+            assertEquals(listOf(CONTRACT_MOVIE_ID), awaitItem())
+            repository.setFavorite(CONTRACT_MOVIE_ID, isFavorite = false)
+            assertEquals(emptyList(), awaitItem())
+        }
+    }
+
     companion object {
         val CONTRACT_MOVIE_ID = TitleId(550, TitleType.MOVIE)
         private val OTHER_MOVIE_ID = TitleId(551, TitleType.MOVIE)
+        private val CONTRACT_SERIES_ID = TitleId(550, TitleType.TV)
     }
 }

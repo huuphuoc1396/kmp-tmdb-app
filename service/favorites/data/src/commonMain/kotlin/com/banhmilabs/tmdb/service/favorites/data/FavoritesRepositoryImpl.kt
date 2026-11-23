@@ -8,6 +8,8 @@ import kotlin.time.Clock
 
 internal class FavoritesRepositoryImpl(private val local: FavoritesLocalDataSource, private val clock: Clock) :
     FavoritesRepository {
+    override fun observeFavorites(): Flow<List<TitleId>> = local.observeAll()
+
     override fun observeIsFavorite(id: TitleId): Flow<Boolean> = local.observe(id)
 
     override suspend fun setFavorite(id: TitleId, isFavorite: Boolean) {

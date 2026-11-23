@@ -36,6 +36,13 @@ class SharedCoreTest {
     }
 
     @Test
+    fun startProvidesObserveFavoriteTitles() {
+        SharedCore.start()
+
+        assertNotNull(SharedCore.observeFavoriteTitles)
+    }
+
+    @Test
     fun startTwiceKeepsTheSameCore() {
         SharedCore.start()
         val repository = SharedCore.settingsRepository

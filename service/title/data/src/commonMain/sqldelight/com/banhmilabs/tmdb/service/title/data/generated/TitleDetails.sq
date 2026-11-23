@@ -50,6 +50,13 @@ SELECT name, releaseDate, runtimeMinutes, ratingPercent, synopsis, artworkPath, 
 FROM titleDetails
 WHERE tmdbId = ? AND type = ? AND language = ?;
 
+selectSummary:
+SELECT d.name, d.releaseDate, d.artworkPath, d.artworkIsPoster, g.name AS firstGenre
+FROM titleDetails d
+LEFT JOIN titleDetailsGenre g
+    ON g.tmdbId = d.tmdbId AND g.type = d.type AND g.language = d.language AND g.position = 0
+WHERE d.tmdbId = ? AND d.type = ? AND d.language = ?;
+
 selectFetchedAt:
 SELECT fetchedAt
 FROM titleDetails

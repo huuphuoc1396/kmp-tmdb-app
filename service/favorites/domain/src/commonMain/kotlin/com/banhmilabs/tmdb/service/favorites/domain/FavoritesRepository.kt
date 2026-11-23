@@ -4,6 +4,8 @@ import com.banhmilabs.tmdb.core.model.TitleId
 import kotlinx.coroutines.flow.Flow
 
 interface FavoritesRepository {
+    fun observeFavorites(): Flow<List<TitleId>>
+
     fun observeIsFavorite(id: TitleId): Flow<Boolean>
 
     suspend fun setFavorite(id: TitleId, isFavorite: Boolean)

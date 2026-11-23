@@ -9,6 +9,7 @@ import com.banhmilabs.tmdb.core.model.TitleType
 import com.banhmilabs.tmdb.service.title.domain.CastMember
 import com.banhmilabs.tmdb.service.title.domain.TitleDetails
 import com.banhmilabs.tmdb.service.title.domain.TitleDetailsRepository
+import com.banhmilabs.tmdb.service.title.domain.TitleSummary
 import com.banhmilabs.tmdb.service.title.domain.Trailer
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
@@ -75,6 +76,38 @@ abstract class TitleDetailsRepositoryContract {
         repository.refresh(CONTRACT_MOVIE_ID, Language.EN_US)
 
         assertNull(repository.observe(TitleId(CONTRACT_MOVIE_ID.tmdbId, TitleType.TV), Language.EN_US).first())
+    }
+
+    @Test
+    fun observeSummaryIsNullBeforeRefresh() = runTest {
+        assertNull(createRepository().observeSummary(CONTRACT_MOVIE_ID, Language.EN_US).first())
+    }
+
+    @Test
+    fun refreshStoresSummaryForObserver() = runTest {
+        val repository = createRepository()
+
+        repository.refresh(CONTRACT_MOVIE_ID, Language.EN_US)
+
+        assertEquals(
+            TitleSummary(
+                id = CONTRACT_MOVIE_ID,
+                name = "Fight Club",
+                posterUrl = "https://image.tmdb.org/t/p/w500/fight-club.jpg",
+                releaseYear = 1999,
+                firstGenre = "Drama",
+            ),
+            repository.observeSummary(CONTRACT_MOVIE_ID, Language.EN_US).first(),
+        )
+    }
+
+    @Test
+    fun summaryIsKeptPerLanguage() = runTest {
+        val repository = createRepository()
+
+        repository.refresh(CONTRACT_MOVIE_ID, Language.PT_BR)
+
+        assertNull(repository.observeSummary(CONTRACT_MOVIE_ID, Language.EN_US).first())
     }
 
     companion object {
