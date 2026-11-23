@@ -27,16 +27,11 @@ import kotlinx.io.IOException
 import kotlin.time.Clock
 import kotlin.time.Instant
 
-/**
- * A real [TitleListsRepositoryImpl] over an in-memory database and a `MockEngine` that serves [responseBody] (or
- * [nextError] once), with a controllable clock. Records every request in [requests].
- */
 internal class TitleListTestEnvironment {
     val requests = mutableListOf<HttpRequestData>()
     var responseBody = contractJson()
     var nextError: AppError? = null
 
-    /** When set, requests wait for it after [requestStarted] completes. */
     var gate: CompletableDeferred<Unit>? = null
     val requestStarted = CompletableDeferred<Unit>()
     var now: Instant = Instant.parse("2026-11-18T12:00:00Z")
@@ -70,7 +65,6 @@ internal class TitleListTestEnvironment {
     fun fixture(name: String): String =
         checkNotNull(javaClass.getResource("/fixtures/$name")) { "Missing fixture $name" }.readText()
 
-    /** TMDB JSON for [CONTRACT_TITLES]. */
     private fun contractJson(): String = CONTRACT_TITLES.joinToString(prefix = """{"results":[""", postfix = "]}") {
         val poster = it.posterUrl?.let { url -> "\"${url.substringAfter("w500")}\"" } ?: "null"
         """{"id":${it.id.tmdbId},"title":"${it.name}","poster_path":$poster}"""

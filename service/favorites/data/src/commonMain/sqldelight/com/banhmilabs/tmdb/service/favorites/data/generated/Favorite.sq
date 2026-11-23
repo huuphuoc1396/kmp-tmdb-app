@@ -1,4 +1,3 @@
--- Titles the user marked as favorites; local only, the same in every language. addedAt is in epoch milliseconds.
 CREATE TABLE favorite (
     tmdbId INTEGER NOT NULL,
     type TEXT NOT NULL,

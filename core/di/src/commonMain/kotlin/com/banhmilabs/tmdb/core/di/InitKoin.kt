@@ -18,10 +18,6 @@ private val coreModule = module {
     single { createTmdbHttpClient() }
 }
 
-/**
- * Starts Koin with every shared-core module. Call it once per process from the app shell; platforms add their own
- * declarations through [appDeclaration] (Android: `androidContext(...)`).
- */
 fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication = startKoin {
     appDeclaration()
     modules(coreModule, platformModule, settingsDataModule, titleDataModule, favoritesDataModule)

@@ -7,7 +7,6 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 
-/** Runs on an Android device (Keystore). */
 class MasterKeyCipherTest {
     private val aliases = mutableListOf<String>()
     private val plaintext = "onboardingCompleted=true".encodeToByteArray()

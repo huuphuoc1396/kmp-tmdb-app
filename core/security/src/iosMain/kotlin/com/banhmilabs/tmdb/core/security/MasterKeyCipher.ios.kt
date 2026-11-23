@@ -43,7 +43,6 @@ actual fun masterKeyCipher(alias: String): MasterKeyCipher = KeychainCipher(alia
 
 internal const val KEYCHAIN_SERVICE = "com.banhmilabs.tmdb.core.security"
 
-/** AES-GCM through `cryptography-kotlin` with a key stored in the Keychain, readable only on this device. */
 internal class KeychainCipher(private val alias: String) : MasterKeyCipher {
     private val cipher by lazy {
         CryptographyProvider.Default.get(AES.GCM).keyDecoder()
@@ -97,7 +96,6 @@ internal class KeychainCipher(private val alias: String) : MasterKeyCipher {
     }
 }
 
-/** Runs [block] with a generic-password query for [alias] in [KEYCHAIN_SERVICE] plus [extra] entries. */
 @OptIn(ExperimentalForeignApi::class)
 internal fun <T> withKeychainQuery(
     alias: String,

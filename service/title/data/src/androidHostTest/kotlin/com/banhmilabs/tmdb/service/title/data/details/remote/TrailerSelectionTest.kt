@@ -8,7 +8,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-/** Which TMDB video becomes the trailer. */
 class TrailerSelectionTest {
     @Test
     fun trailerPrefersRequestedLanguage() {

@@ -13,7 +13,6 @@ import com.banhmilabs.tmdb.service.title.domain.TitleListsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Clock
 
-/** [TitleListsRepository]: reads the local cache; refreshes it from TMDB when stale or forced. */
 internal class TitleListsRepositoryImpl(
     private val remote: TitleListRemoteDataSource,
     private val local: TitleListLocalDataSource,

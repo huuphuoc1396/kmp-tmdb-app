@@ -9,7 +9,6 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import net.zetetic.database.sqlcipher.SQLiteNotADatabaseException
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
-/** Android: databases in the app's database directory; encrypted with SQLCipher when given a passphrase. */
 fun DatabaseDriverFactory(context: Context): DatabaseDriverFactory = object : DatabaseDriverFactory {
     override fun create(schema: SqlSchema<QueryResult.Value<Unit>>, name: String, passphrase: ByteArray?): SqlDriver =
         if (passphrase == null) {
@@ -21,7 +20,6 @@ fun DatabaseDriverFactory(context: Context): DatabaseDriverFactory = object : Da
 
 private val sqlCipherLoaded: Unit by lazy { System.loadLibrary("sqlcipher") }
 
-/** Opens [name] now, so a wrong key fails here; a file that isn't a database for [passphrase] is recreated. */
 private fun openEncrypted(
     context: Context,
     schema: SqlSchema<QueryResult.Value<Unit>>,

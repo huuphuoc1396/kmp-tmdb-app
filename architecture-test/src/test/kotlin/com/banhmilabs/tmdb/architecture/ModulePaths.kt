@@ -10,13 +10,10 @@ private val MODULE_DIR = Regex(
         "|cmp/feature/[^/]+/[^/]+)/src/",
 )
 
-/** `…/service/title/domain/src/…` -> `service/title/domain`; `null` outside shared modules. */
 internal fun KoFileDeclaration.modulePath(): String? = MODULE_DIR.find(path)?.groupValues?.get(1)
 
-/** `service/title/domain` -> `com.banhmilabs.tmdb.service.title.domain`, the same as the derived namespace. */
 internal fun packageOf(modulePath: String): String = "$ROOT_PACKAGE." + modulePath.replace('/', '.').replace("-", "")
 
-/** Files whose module path matches [regex], for example `Regex("service/[^/]+/domain")`. */
 internal fun KoScope.filesMatching(regex: Regex): List<KoFileDeclaration> =
     files.filter { file -> file.modulePath()?.let(regex::matches) == true }
 

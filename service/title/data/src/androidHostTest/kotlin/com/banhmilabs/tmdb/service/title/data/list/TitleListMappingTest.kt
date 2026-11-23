@@ -13,7 +13,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-/** How TMDB results become cached [Title]s. */
 class TitleListMappingTest {
     private val env = TitleListTestEnvironment()
 

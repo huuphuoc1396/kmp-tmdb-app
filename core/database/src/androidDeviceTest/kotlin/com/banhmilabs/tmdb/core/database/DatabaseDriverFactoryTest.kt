@@ -8,7 +8,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-/** Runs on an Android device: a real SQLite file, plain or encrypted with SQLCipher. */
 class DatabaseDriverFactoryTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val factory = DatabaseDriverFactory(context)

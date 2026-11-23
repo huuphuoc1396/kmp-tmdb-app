@@ -11,9 +11,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-/** Behavior every [SettingsRepository] must have; extended by the real implementation's and the fake's tests. */
 abstract class SettingsRepositoryContract {
-    /** A repository with nothing stored; anything tied to its lifetime uses [TestScope.backgroundScope]. */
     protected abstract fun TestScope.createRepository(): SettingsRepository
 
     @Test

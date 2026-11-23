@@ -3,7 +3,6 @@ package com.banhmilabs.tmdb.service.title.data.details.remote
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/** A film or series from `movie/{id}` / `tv/{id}` with `credits`, `videos` and `recommendations` appended. */
 @Serializable
 internal data class TmdbTitleDetailsDto(
     val title: String? = null,
@@ -55,7 +54,6 @@ internal data class TmdbVideoDto(
 @Serializable
 internal data class TmdbRecommendationsDto(val results: List<TmdbRecommendationDto> = emptyList())
 
-/** A recommended film (`title`) or series (`name`); [mediaType] is `movie` or `tv`. */
 @Serializable
 internal data class TmdbRecommendationDto(
     val id: Long,

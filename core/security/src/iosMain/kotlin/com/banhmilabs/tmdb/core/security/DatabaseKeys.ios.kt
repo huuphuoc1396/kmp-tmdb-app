@@ -9,7 +9,6 @@ import platform.Foundation.NSApplicationSupportDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
-/** iOS: keys in Application Support, excluded from backups and encrypted with the Keychain master key. */
 fun DatabaseKeys(): DatabaseKeys {
     val directory = applicationSupportDirectory() / "database-keys"
     excludeFromBackup(directory.toString())

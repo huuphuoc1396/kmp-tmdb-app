@@ -6,7 +6,6 @@ import com.banhmilabs.tmdb.core.model.TitleType
 import com.banhmilabs.tmdb.service.title.data.details.TitleDetailsEntry
 import com.banhmilabs.tmdb.service.title.data.details.TitleDetailsKey
 
-/** Test helpers that map hand-built TMDB details DTOs. */
 internal object DetailsDtos {
     val MOVIE_ID = TitleId(550, TitleType.MOVIE)
 

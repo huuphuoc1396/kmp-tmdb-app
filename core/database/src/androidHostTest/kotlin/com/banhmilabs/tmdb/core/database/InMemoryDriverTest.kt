@@ -4,7 +4,6 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-/** The setup host tests of `data` modules use: a real in-memory SQLite database. */
 class InMemoryDriverTest {
     @Test
     fun inMemoryDriverCreatesSchemaAndStoresRows() {

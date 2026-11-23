@@ -17,7 +17,6 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-    // Konsist reads source files directly; declare them so Gradle re-runs the tests when they change.
     inputs.files(
         listOf("core", "service", "cmp").map { dir ->
             rootProject.fileTree(dir) {

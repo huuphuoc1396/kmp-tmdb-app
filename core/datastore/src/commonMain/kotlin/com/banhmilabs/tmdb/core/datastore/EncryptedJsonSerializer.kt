@@ -10,10 +10,8 @@ import kotlinx.serialization.json.Json
 import okio.BufferedSink
 import okio.BufferedSource
 
-/** Unknown keys are ignored so a file written by a newer build still loads. */
 private val json = Json { ignoreUnknownKeys = true }
 
-/** Stores [T] as JSON encrypted with [cipher]; unreadable data is reported as a [CorruptionException]. */
 internal class EncryptedJsonSerializer<T>(
     private val serializer: KSerializer<T>,
     override val defaultValue: T,

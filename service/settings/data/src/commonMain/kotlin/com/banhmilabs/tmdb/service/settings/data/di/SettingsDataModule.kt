@@ -13,7 +13,6 @@ import org.koin.dsl.module
 private const val MASTER_KEY_ALIAS = "settings"
 internal const val SETTINGS_FILE_NAME = "settings.json"
 
-/** Koin bindings of the settings context. */
 val settingsDataModule = module {
     single {
         encryptedDataStore(

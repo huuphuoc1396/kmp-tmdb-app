@@ -5,7 +5,6 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 import platform.Foundation.NSURLIsExcludedFromBackupKey
 
-/** Creates [directory] if missing and excludes it, with everything in it, from iCloud and Finder backups. */
 @OptIn(ExperimentalForeignApi::class)
 fun excludeFromBackup(directory: String) {
     NSFileManager.defaultManager.createDirectoryAtPath(

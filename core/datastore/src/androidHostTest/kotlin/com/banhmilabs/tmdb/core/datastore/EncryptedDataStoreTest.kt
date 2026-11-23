@@ -65,7 +65,6 @@ class EncryptedDataStoreTest {
         }
     }
 
-    /** Creates a store, runs [block], then cancels the store's scope so the next store may open the same file. */
     private suspend fun TestScope.withStore(
         storeCipher: MasterKeyCipher = cipher,
         block: suspend (DataStore<Stored>) -> Unit,

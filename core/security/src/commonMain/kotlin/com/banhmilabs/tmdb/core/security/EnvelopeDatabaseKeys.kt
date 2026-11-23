@@ -3,10 +3,6 @@ package com.banhmilabs.tmdb.core.security
 import okio.FileSystem
 import okio.Path
 
-/**
- * Keeps one random key per database in [directory], encrypted with [cipher]. A key file that can't be decrypted
- * (master key lost, file corrupt) is replaced by a new key, so the existing database can no longer be opened.
- */
 internal class EnvelopeDatabaseKeys(
     private val directory: Path,
     private val fileSystem: FileSystem,
@@ -19,7 +15,6 @@ internal class EnvelopeDatabaseKeys(
             try {
                 return cipher.decrypt(fileSystem.read(file) { readByteArray() })
             } catch (_: CipherException) {
-                // Replaced by a new key below.
             }
         }
         val key = generateKey()

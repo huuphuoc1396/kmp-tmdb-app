@@ -15,7 +15,6 @@ import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-/** What a refresh stores: series, replaced rows, and nothing for an invalid response. */
 class TitleDetailsStorageTest {
     private val env = TitleDetailsTestEnvironment()
 

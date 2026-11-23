@@ -17,12 +17,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 
-/** Behavior every [TitleListsRepository] must have; extended by the real implementation's and the fake's tests. */
 abstract class TitleListsRepositoryContract {
-    /** A repository with nothing cached whose remote serves [CONTRACT_TITLES] for every list. */
     protected abstract fun TestScope.createRepository(): TitleListsRepository
 
-    /** The next refresh of the repository last created fails with [error]. */
     protected abstract fun failNextRefresh(error: AppError)
 
     @Test
@@ -81,7 +78,6 @@ abstract class TitleListsRepositoryContract {
     companion object {
         private val MOVIES = TitleCategory.MOVIES
 
-        /** Two films, the second without a poster. */
         val CONTRACT_TITLES = listOf(
             Title(TitleId(550, TitleType.MOVIE), "Fight Club", "https://image.tmdb.org/t/p/w500/fight-club.jpg"),
             Title(TitleId(13, TitleType.MOVIE), "Forrest Gump", null),

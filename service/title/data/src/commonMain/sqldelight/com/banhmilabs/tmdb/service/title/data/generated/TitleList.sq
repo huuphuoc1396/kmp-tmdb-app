@@ -1,4 +1,3 @@
--- Titles of each title list, per language, in TMDB order.
 CREATE TABLE titleListItem (
     list TEXT NOT NULL,
     language TEXT NOT NULL,
@@ -10,7 +9,6 @@ CREATE TABLE titleListItem (
     PRIMARY KEY (list, language, position)
 );
 
--- When each title list was last fetched, in epoch milliseconds.
 CREATE TABLE titleListFetch (
     list TEXT NOT NULL,
     language TEXT NOT NULL,

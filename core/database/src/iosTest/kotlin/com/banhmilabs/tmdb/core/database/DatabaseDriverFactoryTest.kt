@@ -16,7 +16,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-/** Runs on the iOS simulator: a real SQLite file, plain or encrypted with SQLCipher. */
 class DatabaseDriverFactoryTest {
     private val factory = DatabaseDriverFactory()
     private val name = "test-${Random.nextLong()}.db"
@@ -150,7 +149,6 @@ class DatabaseDriverFactoryTest {
         databaseDirectory().setResourceValue(excluded, forKey = NSURLIsExcludedFromBackupKey, error = null)
     }
 
-    /** Reads the flag through a new URL, so no cached resource value is returned. */
     @OptIn(ExperimentalForeignApi::class)
     private fun isDirectoryExcludedFromBackup(): Boolean {
         val values = databaseDirectory().resourceValuesForKeys(listOf(NSURLIsExcludedFromBackupKey), error = null)

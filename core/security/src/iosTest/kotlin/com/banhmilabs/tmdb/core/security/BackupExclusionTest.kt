@@ -48,7 +48,6 @@ class BackupExclusionTest {
     }
 }
 
-/** Reads the flag through a new URL, so no cached resource value is returned. */
 @OptIn(ExperimentalForeignApi::class)
 private fun isExcludedFromBackup(path: String): Boolean {
     val values = NSURL.fileURLWithPath(path, isDirectory = true)

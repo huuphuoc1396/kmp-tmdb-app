@@ -20,7 +20,6 @@ import org.koin.dsl.module
 
 internal const val TITLE_DATABASE_NAME = "title.db"
 
-/** Koin bindings of the title context. */
 val titleDataModule = module {
     single {
         val driver = get<DatabaseDriverFactory>().create(
@@ -52,5 +51,4 @@ val titleDataModule = module {
     }
 }
 
-/** Where a repository's refreshes run: off the main thread, outliving their callers. */
 private fun Scope.refreshScope() = CoroutineScope(SupervisorJob() + get<DispatcherProvider>().io)

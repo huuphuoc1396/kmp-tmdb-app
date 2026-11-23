@@ -7,7 +7,6 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
 
-/** Detekt with the default rules plus the ktlint rule set, over every source set in `src/`. */
 class DetektConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("dev.detekt")

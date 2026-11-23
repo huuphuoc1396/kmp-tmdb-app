@@ -4,7 +4,6 @@ import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.verify.assertFalse
 import org.junit.jupiter.api.Test
 
-/** Import rules from sections 5.3 and 9 of docs/architecture.md, checked on production sources. */
 class DependencyRulesTest {
     private val production = Konsist.scopeFromProduction()
     private val forbiddenInUi =

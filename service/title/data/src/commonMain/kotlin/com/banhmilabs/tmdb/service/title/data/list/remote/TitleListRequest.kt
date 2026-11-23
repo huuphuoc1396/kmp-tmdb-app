@@ -13,10 +13,8 @@ private const val GENRE_SOAP = "10766"
 private const val GENRE_DOCUMENTARY = "99"
 private const val NOVELA_COUNTRIES = "BR|MX|CO|AR|VE|CL|PE"
 
-/** A TMDB request for a title list; [path] is relative to `TMDB_BASE_URL`, [type] is the type of its results. */
 internal data class TitleListRequest(val path: String, val parameters: Map<String, String>, val type: TitleType)
 
-/** The TMDB endpoint and filters of each title list; date filters are counted back from [now]. */
 internal fun titleListRequest(category: TitleCategory, listType: TitleListType, now: Instant): TitleListRequest {
     val featured = listType == TitleListType.FEATURED
     return when (category) {
@@ -54,5 +52,4 @@ private fun discoverTv(filters: Map<String, String>, airedSince: Instant?) = Tit
     TitleType.TV,
 )
 
-/** The UTC date [days] before this instant, as `yyyy-MM-dd`. */
 internal fun Instant.minusDaysAsDate(days: Int): String = (this - days.days).toString().substringBefore('T')
