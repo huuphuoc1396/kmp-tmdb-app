@@ -14,7 +14,6 @@ core-splashscreen = "1.2.0"
 koin = "4.2.2"
 kotlinx-serialization = "1.12.0"
 kotlinx-coroutines = "1.11.0"
-mockk = "1.14.12"
 shared-core = "0.1.0-SNAPSHOT"
 coil = "3.6.3"
 
@@ -23,6 +22,9 @@ shared-core-di = { module = "com.banhmilabs.tmdb:core-di", version.ref = "shared
 shared-core-settings-domain = { module = "com.banhmilabs.tmdb:service-settings-domain", version.ref = "shared-core" }
 shared-core-title-domain = { module = "com.banhmilabs.tmdb:service-title-domain", version.ref = "shared-core" }
 shared-core-favorites-domain = { module = "com.banhmilabs.tmdb:service-favorites-domain", version.ref = "shared-core" }
+shared-core-settings-fake = { module = "com.banhmilabs.tmdb:service-settings-fake", version.ref = "shared-core" }
+shared-core-title-fake = { module = "com.banhmilabs.tmdb:service-title-fake", version.ref = "shared-core" }
+shared-core-favorites-fake = { module = "com.banhmilabs.tmdb:service-favorites-fake", version.ref = "shared-core" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
@@ -39,7 +41,6 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 detekt-rules-ktlint-wrapper = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 
 [plugins]

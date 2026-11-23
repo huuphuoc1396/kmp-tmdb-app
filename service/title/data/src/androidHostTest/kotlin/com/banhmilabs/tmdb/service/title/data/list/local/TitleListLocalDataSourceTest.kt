@@ -1,13 +1,11 @@
 package com.banhmilabs.tmdb.service.title.data.list.local
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import com.banhmilabs.tmdb.core.common.DispatcherProvider
+import com.banhmilabs.tmdb.core.testing.TestDispatcherProvider
 import com.banhmilabs.tmdb.service.title.data.generated.TitleDatabase
 import com.banhmilabs.tmdb.service.title.data.list.TitleListKey
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 import com.banhmilabs.tmdb.service.title.domain.TitleListType
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -21,7 +19,7 @@ import kotlin.test.assertNull
 @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 class TitleListLocalDataSourceTest {
     private val io = newSingleThreadContext(IO_THREAD)
-    private val dispatchers = mockk<DispatcherProvider> { every { io } returns this@TitleListLocalDataSourceTest.io }
+    private val dispatchers = TestDispatcherProvider(io)
     private var openedOn: String? = null
     private val database = lazy {
         openedOn = Thread.currentThread().name.substringBefore(" @")

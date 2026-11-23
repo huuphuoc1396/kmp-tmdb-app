@@ -53,7 +53,9 @@ dependencies {
     implementation(libs.coil.network.okhttp)
 
     testImplementation(libs.kotlin.test.junit)
-    testImplementation(libs.mockk)
+    testImplementation(libs.shared.core.settings.fake)
+    testImplementation(libs.shared.core.title.fake)
+    testImplementation(libs.shared.core.favorites.fake)
     testImplementation(libs.kotlinx.coroutines.test)
 
     detektPlugins(libs.detekt.rules.ktlint.wrapper)

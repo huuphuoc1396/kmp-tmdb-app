@@ -1,7 +1,5 @@
 package com.banhmilabs.tmdb.core.security
 
-import io.mockk.every
-import io.mockk.mockk
 import okio.FileSystem
 import okio.Path
 import kotlin.random.Random
@@ -14,10 +12,7 @@ import kotlin.test.assertFalse
 class EnvelopeDatabaseKeysTest {
     private val fileSystem = FileSystem.SYSTEM
     private val directory: Path = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "database-keys-${Random.nextLong()}"
-    private val cipher = mockk<MasterKeyCipher> {
-        every { encrypt(any()) } answers { firstArg<ByteArray>().reversedArray() }
-        every { decrypt(any()) } answers { firstArg<ByteArray>().reversedArray() }
-    }
+    private val cipher = ReversingCipher()
     private var generatedKeys = 0
 
     @AfterTest
@@ -53,7 +48,7 @@ class EnvelopeDatabaseKeysTest {
     @Test
     fun replacesKeyThatCannotBeDecrypted() {
         val first = keys().passphrase(NAME)
-        every { cipher.decrypt(any()) } throws CipherException("Master key lost")
+        cipher.decryptFailure = CipherException("Master key lost")
 
         val second = keys().passphrase(NAME)
 
@@ -76,6 +71,17 @@ class EnvelopeDatabaseKeysTest {
     private fun keys() = EnvelopeDatabaseKeys(directory, fileSystem, cipher) { key(++generatedKeys) }
 
     private fun key(seed: Int) = Random(seed).nextBytes(DATABASE_KEY_SIZE_BYTES)
+
+    private class ReversingCipher : MasterKeyCipher {
+        var decryptFailure: CipherException? = null
+
+        override fun encrypt(plaintext: ByteArray): ByteArray = plaintext.reversedArray()
+
+        override fun decrypt(ciphertext: ByteArray): ByteArray {
+            decryptFailure?.let { throw it }
+            return ciphertext.reversedArray()
+        }
+    }
 
     private companion object {
         const val NAME = "title.db"

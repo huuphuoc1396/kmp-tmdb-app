@@ -8,11 +8,10 @@ import com.banhmilabs.tmdb.core.security.CipherException
 import com.banhmilabs.tmdb.core.security.MasterKeyCipher
 import com.banhmilabs.tmdb.service.settings.domain.SettingsRepository
 import com.banhmilabs.tmdb.service.settings.fake.SettingsRepositoryContract
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestScope
@@ -31,7 +30,7 @@ class SettingsRepositoryImplTest : SettingsRepositoryContract() {
     private val fileSystem = FileSystem.SYSTEM
     private val directory: Path = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "settings-repository-${Random.nextLong()}"
     private val path = directory / "settings.json"
-    private val cipher = passThroughCipher()
+    private val cipher = PassThroughCipher()
 
     @AfterTest
     fun deleteFiles() {
@@ -49,9 +48,7 @@ class SettingsRepositoryImplTest : SettingsRepositoryContract() {
 
     @Test
     fun writeFailureReturnsUnknownAndStaysNotCompleted() = runTest {
-        val failingCipher = mockk<MasterKeyCipher> {
-            every { encrypt(any()) } throws CipherException("Keystore unavailable")
-        }
+        val failingCipher = PassThroughCipher(encryptFailure = CipherException("Keystore unavailable"))
 
         withRepository(failingCipher) { repository ->
             assertEquals(AppResult.Failure(AppError.Unknown), repository.completeOnboarding())
@@ -61,11 +58,7 @@ class SettingsRepositoryImplTest : SettingsRepositoryContract() {
 
     @Test
     fun readIoErrorEmitsNotCompleted() = runTest {
-        val dataStore = mockk<DataStore<AppSettings>> {
-            every { data } returns flow { throw IOException("Disk unavailable") }
-        }
-
-        assertFalse(SettingsRepositoryImpl(dataStore).observeOnboardingCompleted().first())
+        assertFalse(SettingsRepositoryImpl(UnreadableDataStore()).observeOnboardingCompleted().first())
     }
 
     @Test
@@ -97,8 +90,25 @@ class SettingsRepositoryImplTest : SettingsRepositoryContract() {
         }
     }
 
-    private fun passThroughCipher(): MasterKeyCipher = mockk {
-        every { encrypt(any()) } answers { firstArg() }
-        every { decrypt(any()) } answers { firstArg() }
+    private class PassThroughCipher(
+        private val encryptFailure: CipherException? = null,
+        private val decryptFailure: CipherException? = null,
+    ) : MasterKeyCipher {
+        override fun encrypt(plaintext: ByteArray): ByteArray {
+            encryptFailure?.let { throw it }
+            return plaintext
+        }
+
+        override fun decrypt(ciphertext: ByteArray): ByteArray {
+            decryptFailure?.let { throw it }
+            return ciphertext
+        }
+    }
+
+    private class UnreadableDataStore : DataStore<AppSettings> {
+        override val data: Flow<AppSettings> = flow { throw IOException("Disk unavailable") }
+
+        override suspend fun updateData(transform: suspend (t: AppSettings) -> AppSettings): AppSettings =
+            throw IOException("Disk unavailable")
     }
 }

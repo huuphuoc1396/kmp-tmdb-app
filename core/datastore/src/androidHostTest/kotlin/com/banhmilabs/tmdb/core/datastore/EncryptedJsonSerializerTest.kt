@@ -3,8 +3,6 @@ package com.banhmilabs.tmdb.core.datastore
 import androidx.datastore.core.CorruptionException
 import com.banhmilabs.tmdb.core.security.CipherException
 import com.banhmilabs.tmdb.core.security.MasterKeyCipher
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.Serializable
 import okio.Buffer
@@ -13,7 +11,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class EncryptedJsonSerializerTest {
-    private val cipher = passThroughCipher()
+    private val cipher = PassThroughCipher()
     private val serializer = EncryptedJsonSerializer(Stored.serializer(), Stored(), cipher)
 
     @Test
@@ -26,9 +24,7 @@ class EncryptedJsonSerializerTest {
 
     @Test
     fun undecryptableBytesThrowCorruptionException() = runTest {
-        val failingCipher = mockk<MasterKeyCipher> {
-            every { decrypt(any()) } throws CipherException("Tag mismatch")
-        }
+        val failingCipher = PassThroughCipher(decryptFailure = CipherException("Tag mismatch"))
         val failingSerializer = EncryptedJsonSerializer(Stored.serializer(), Stored(), failingCipher)
 
         assertFailsWith<CorruptionException> {
@@ -50,9 +46,19 @@ class EncryptedJsonSerializerTest {
         assertEquals(Stored(flag = true), serializer.readFrom(buffer))
     }
 
-    private fun passThroughCipher(): MasterKeyCipher = mockk {
-        every { encrypt(any()) } answers { firstArg() }
-        every { decrypt(any()) } answers { firstArg() }
+    private class PassThroughCipher(
+        private val encryptFailure: CipherException? = null,
+        private val decryptFailure: CipherException? = null,
+    ) : MasterKeyCipher {
+        override fun encrypt(plaintext: ByteArray): ByteArray {
+            encryptFailure?.let { throw it }
+            return plaintext
+        }
+
+        override fun decrypt(ciphertext: ByteArray): ByteArray {
+            decryptFailure?.let { throw it }
+            return ciphertext
+        }
     }
 
     @Serializable

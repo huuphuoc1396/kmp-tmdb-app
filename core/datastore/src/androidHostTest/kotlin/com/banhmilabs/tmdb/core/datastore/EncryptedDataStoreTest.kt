@@ -3,8 +3,6 @@ package com.banhmilabs.tmdb.core.datastore
 import androidx.datastore.core.DataStore
 import com.banhmilabs.tmdb.core.security.CipherException
 import com.banhmilabs.tmdb.core.security.MasterKeyCipher
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
@@ -24,7 +22,7 @@ class EncryptedDataStoreTest {
     private val fileSystem = FileSystem.SYSTEM
     private val directory: Path = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "encrypted-datastore-${Random.nextLong()}"
     private val path = directory / "stored.json.enc"
-    private val cipher = passThroughCipher()
+    private val cipher = PassThroughCipher()
 
     @AfterTest
     fun deleteFiles() {
@@ -54,10 +52,7 @@ class EncryptedDataStoreTest {
     @Test
     fun writeFailurePropagatesAndKeepsPreviousValue() = runTest {
         withStore { store -> store.updateData { it.copy(flag = true) } }
-        val failingCipher = mockk<MasterKeyCipher> {
-            every { decrypt(any()) } answers { cipher.decrypt(firstArg()) }
-            every { encrypt(any()) } throws CipherException("Keystore unavailable")
-        }
+        val failingCipher = PassThroughCipher(encryptFailure = CipherException("Keystore unavailable"))
 
         withStore(failingCipher) { store ->
             assertFailsWith<CipherException> { store.updateData { it.copy(name = "lost") } }
@@ -85,9 +80,19 @@ class EncryptedDataStoreTest {
         }
     }
 
-    private fun passThroughCipher(): MasterKeyCipher = mockk {
-        every { encrypt(any()) } answers { firstArg() }
-        every { decrypt(any()) } answers { firstArg() }
+    private class PassThroughCipher(
+        private val encryptFailure: CipherException? = null,
+        private val decryptFailure: CipherException? = null,
+    ) : MasterKeyCipher {
+        override fun encrypt(plaintext: ByteArray): ByteArray {
+            encryptFailure?.let { throw it }
+            return plaintext
+        }
+
+        override fun decrypt(ciphertext: ByteArray): ByteArray {
+            decryptFailure?.let { throw it }
+            return ciphertext
+        }
     }
 
     @Serializable
