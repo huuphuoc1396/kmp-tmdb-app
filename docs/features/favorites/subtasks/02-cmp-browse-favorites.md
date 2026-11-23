@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Home – Favorites section](../design/home-favorites.md), [My favorites](../design/my-favorites.md)
 Depends on: 01-favorites-list-data
-Status: Todo
+Status: Done
 
 ## Goal
 In the cmp app, Home shows the "Favoritos" section between the featured row and "Mais populares", and "Ver todos"
@@ -91,3 +91,5 @@ The heart buttons are not drawn in this subtask, so nothing visible lacks an act
 
 ## Change log
 - 2026-11-23: Initial version.
+- 2026-11-23: Plan approved.
+- 2026-11-23: Implemented (plan 02 done).

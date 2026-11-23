@@ -17,6 +17,7 @@ kotlin {
         }
         androidHostTest.dependencies {
             implementation(projects.service.title.fake)
+            implementation(projects.service.favorites.fake)
             implementation(projects.core.testing)
             implementation(libs.turbine)
         }

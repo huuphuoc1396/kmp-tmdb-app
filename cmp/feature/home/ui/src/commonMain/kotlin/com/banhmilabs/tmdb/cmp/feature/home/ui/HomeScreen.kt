@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterRow
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.CategoryTabs
+import com.banhmilabs.tmdb.cmp.feature.home.ui.component.FavoritesSection
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.HomeHeader
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.RowMessage
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.RowMinHeight
@@ -56,6 +57,7 @@ import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_row_empt
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_row_error
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
+import com.banhmilabs.tmdb.core.model.TitleId
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 import com.banhmilabs.tmdb.service.title.domain.TitleListType
 import org.jetbrains.compose.resources.painterResource
@@ -71,6 +73,9 @@ private val HeaderToSearch = 17.dp
 private val SearchToTabs = 24.dp
 private val TabsToFeatured = 30.dp
 private val FeaturedToHeading = 23.dp
+private val FeaturedToFavorites = 28.dp
+private val FavoritesToHeading = 32.dp
+private val FavoritesCardInset = 12.dp
 private val HeadingToPopular = 16.dp
 private val HeaderGlowHeight = 522.dp
 private val RowSpinnerSize = 24.dp
@@ -78,9 +83,16 @@ private val RowSpinnerSize = 24.dp
 private val HeadingStyle = TextStyle(color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
 @Composable
-internal fun HomeScreen(onTitleClick: (Title) -> Unit, viewModel: HomeViewModel = koinViewModel()) {
+internal fun HomeScreen(
+    onTitleClick: (Title) -> Unit,
+    onFavoriteClick: (TitleId) -> Unit,
+    onSeeAllFavorites: () -> Unit,
+    viewModel: HomeViewModel = koinViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val currentOnTitleClick by rememberUpdatedState(onTitleClick)
+    val currentOnFavoriteClick by rememberUpdatedState(onFavoriteClick)
+    val currentOnSeeAllFavorites by rememberUpdatedState(onSeeAllFavorites)
     val language = Language.fromLocaleTag(Locale.current.toLanguageTag())
     LaunchedEffect(language) {
         viewModel.onIntent(HomeIntent.LanguageChanged(language))
@@ -89,6 +101,8 @@ internal fun HomeScreen(onTitleClick: (Title) -> Unit, viewModel: HomeViewModel 
         viewModel.effects.collect { effect ->
             when (effect) {
                 is HomeEffect.OpenTitle -> currentOnTitleClick(effect.title)
+                is HomeEffect.OpenFavorite -> currentOnFavoriteClick(effect.id)
+                HomeEffect.OpenFavorites -> currentOnSeeAllFavorites()
             }
         }
     }
@@ -159,10 +173,16 @@ private fun HomeRows(state: HomeUiState, onIntent: (HomeIntent) -> Unit) {
         ) {
             CircularProgressIndicator(color = MaterialTheme.colorScheme.secondary)
         }
+        Favorites(state = state, onIntent = onIntent)
         return
     }
     TitleRow(row = state.featured, category = state.selectedCategory, listType = TitleListType.FEATURED, onIntent)
-    Spacer(modifier = Modifier.height(FeaturedToHeading))
+    if (state.favoritesCount > 0) {
+        Favorites(state = state, onIntent = onIntent)
+        Spacer(modifier = Modifier.height(FavoritesToHeading))
+    } else {
+        Spacer(modifier = Modifier.height(FeaturedToHeading))
+    }
     Text(
         text = stringResource(Res.string.home_popular_heading),
         modifier = Modifier.padding(horizontal = ScreenPadding).semantics { heading() },
@@ -170,6 +190,19 @@ private fun HomeRows(state: HomeUiState, onIntent: (HomeIntent) -> Unit) {
     )
     Spacer(modifier = Modifier.height(HeadingToPopular))
     TitleRow(row = state.popular, category = state.selectedCategory, listType = TitleListType.POPULAR, onIntent)
+}
+
+@Composable
+private fun Favorites(state: HomeUiState, onIntent: (HomeIntent) -> Unit) {
+    if (state.favoritesCount == 0) return
+    Spacer(modifier = Modifier.height(FeaturedToFavorites))
+    FavoritesSection(
+        favorites = state.favorites,
+        count = state.favoritesCount,
+        onFavoriteClick = { onIntent(HomeIntent.FavoriteClicked(it)) },
+        onSeeAll = { onIntent(HomeIntent.SeeAllFavoritesClicked) },
+        modifier = Modifier.padding(horizontal = ScreenPadding - FavoritesCardInset),
+    )
 }
 
 @Composable

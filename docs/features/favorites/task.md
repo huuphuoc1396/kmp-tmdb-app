@@ -197,7 +197,8 @@ title in at most two taps, even offline, and never remove a favorite without con
 - [x] English copy for the section title and subtitle, "Ver todos", My favorites title, subtitle and badge, the
   popup title, message and buttons, and the pt-BR and en empty message for My favorites (owner: user, before the UI
   subtask). From the en screenshots and the user (2026-11-23); see the Copy table of each design file.
-- [ ] pt-BR title of My favorites: the design keeps "My Favorites" in English (owner: user, before the UI subtask).
+- [x] pt-BR title of My favorites: the design keeps "My Favorites" in English (owner: user, before the UI subtask).
+  "Meus favoritos" (user, plan 02, 2026-11-23).
 
 ## Change log
 - 2026-11-23: Initial version.
@@ -205,6 +206,7 @@ title in at most two taps, even offline, and never remove a favorite without con
   decided.
 - 2026-11-23: Confirmed by the user.
 - 2026-11-23: Split into subtasks 01–05.
+- 2026-11-23: Open question answered: pt-BR title of My favorites is "Meus favoritos".
 
 ## Subtasks
 1. [01 - Favorites list data (shared core)](subtasks/01-favorites-list-data.md)

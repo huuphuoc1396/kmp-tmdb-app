@@ -15,7 +15,7 @@ class HomeViewModelTest : MainDispatcherTest() {
     private val repository = homeTestRepository()
     private val savedState = SavedStateHandle()
 
-    private val viewModel by lazy { HomeViewModel(repository, savedState) }
+    private val viewModel by lazy { homeViewModel(repository, savedState) }
 
     @Test
     fun startsLoadingWithMoviesSelected() {

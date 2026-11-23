@@ -1,0 +1,10 @@
+<resources>
+    <string name="favorites_back">Back</string>
+    <string name="favorites_title">My Favorites</string>
+    <string name="favorites_subtitle">All your saved titles, in one place.</string>
+    <string name="favorites_loading">Loading title</string>
+    <plurals name="favorites_count">
+        <item quantity="one">%d title</item>
+        <item quantity="other">%d titles</item>
+    </plurals>
+</resources>

@@ -13,13 +13,14 @@ Current state: early. Production code exists in `core:common` (`AppResult`, `App
 (`service/title/{domain,data,fake}`, featured and popular lists and title details cached in SQLDelight), the `favorites` context
 (`service/favorites/{domain,data,fake}`, local favorites in SQLDelight; the favorites list with title data is the
 `ObserveFavoriteTitles` use case in `service:title:domain`), `core:testing` (`MainDispatcherTest`),
-the `cmp/` features onboarding (`cmp/feature/onboarding/ui`) and Home (`cmp/feature/home/ui`), and the `native-ios`
+the `cmp/` features onboarding (`cmp/feature/onboarding/ui`), Home with its favorites section (`cmp/feature/home/ui`)
+and My favorites (`cmp/feature/favorites/ui`), and the `native-ios`
 onboarding and Home (`native-ios/TmdbNative/{Onboarding,Home}`). The other `core/*` modules are still
 skeletons with a `*SmokeTest` placeholder. New code follows `docs/architecture.md` (sections 5–8), not the
 skeleton or existing examples.
 
 ## Repository layout
-- One branch (`main`); apps are directories, not branches. The KMP build holds the shared core and `cmp/` (Compose Multiplatform: shared ViewModel + UI), which has its shell (`designsystem`, `composeApp`, `androidApp`, Xcode `iosApp`), the onboarding and Home screens and a placeholder title details screen.
+- One branch (`main`); apps are directories, not branches. The KMP build holds the shared core and `cmp/` (Compose Multiplatform: shared ViewModel + UI), which has its shell (`designsystem`, `composeApp`, `androidApp`, Xcode `iosApp`), the onboarding, Home, My favorites and title details screens.
 - `native-android/` is a standalone Gradle project (own settings, wrapper, catalog, Detekt; one `:app` module, Jetpack Compose) that is not part of the KMP build. It uses the shared core only through the libraries published to `build/maven-repo` (`com.banhmilabs.tmdb:core-di`, `service-<ctx>-domain`; its unit tests use `service-<ctx>-fake`), like an outside SDK consumer. Screens: onboarding and Home (`home/`, posters with Coil 3 + `coil-network-okhttp`) plus a placeholder title details screen. See `native-android/README.md`.
 - `native-ios/` is a standalone Xcode project (SwiftUI, iOS 16, one app target plus a test target hosted by the app) that is not part of the KMP build. It uses the shared core only through the local Swift Package `build/swift-package/TmdbCore` (`SharedCore` entry point, SKIE interop). Swift ViewModels are `ObservableObject`s (no `@Observable`, which needs iOS 17). See `native-ios/README.md`.
 - `native-*` never depends on `cmp/`, and the KMP build never includes or references `native-*`.
@@ -163,6 +164,8 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | Test Main dispatcher (ViewModel tests) | extend `MainDispatcherTest` | `core:testing` |
 | Test `DispatcherProvider` | `TestDispatcherProvider(dispatcher)` | `core:testing` |
 | Remote images (posters) | Coil 3 `AsyncImage`; the loader (Ktor network fetcher) is set in `App()` | `cmp/*` |
+| Poster image or name placeholder at any size (cmp) | `PosterTile` (`PosterRow` for a row of 124×188 posters) | `cmp/designsystem` |
+| "year · genre" line, unknown parts left out (cmp) | `metaLine(year, genre)` | `cmp/designsystem` |
 | Remote images in `native-ios` | Nuke `LazyImage` (`NukeUI`, Swift package, disk cache) | `native-ios` |
 | Compose resources (strings, drawables) | `composeResources/` in the module; `Res` is in `<namespace>.generated.resources` | `cmp/*` (set by `tmdb.module`) |
 | Repository test double | `Fake<Repository>` (e.g. `FakeSettingsRepository`, `FakeTitleListsRepository` with `setRemoteTitles` per list, `FakeFavoritesRepository`) | `service/<ctx>/fake` |

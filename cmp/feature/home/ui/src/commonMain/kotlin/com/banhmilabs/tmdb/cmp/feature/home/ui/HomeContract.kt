@@ -2,6 +2,8 @@ package com.banhmilabs.tmdb.cmp.feature.home.ui
 
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
+import com.banhmilabs.tmdb.core.model.TitleId
+import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 import com.banhmilabs.tmdb.service.title.domain.TitleListType
 
@@ -18,6 +20,8 @@ internal data class HomeUiState(
     val featured: RowState = RowState.Loading,
     val popular: RowState = RowState.Loading,
     val isRefreshing: Boolean = false,
+    val favorites: List<FavoriteTitle> = emptyList(),
+    val favoritesCount: Int = 0,
 )
 
 internal sealed interface HomeIntent {
@@ -30,8 +34,16 @@ internal sealed interface HomeIntent {
     data object Refresh : HomeIntent
 
     data class Retry(val listType: TitleListType) : HomeIntent
+
+    data class FavoriteClicked(val id: TitleId) : HomeIntent
+
+    data object SeeAllFavoritesClicked : HomeIntent
 }
 
 internal sealed interface HomeEffect {
     data class OpenTitle(val title: Title) : HomeEffect
+
+    data class OpenFavorite(val id: TitleId) : HomeEffect
+
+    data object OpenFavorites : HomeEffect
 }
