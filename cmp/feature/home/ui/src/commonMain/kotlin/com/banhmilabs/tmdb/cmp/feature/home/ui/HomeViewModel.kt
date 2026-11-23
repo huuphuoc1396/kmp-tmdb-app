@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.banhmilabs.tmdb.core.common.AppResult
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
+import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
+import com.banhmilabs.tmdb.service.title.domain.ObserveFavoriteTitles
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 import com.banhmilabs.tmdb.service.title.domain.TitleListType
 import com.banhmilabs.tmdb.service.title.domain.TitleListsRepository
@@ -23,17 +25,20 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private const val STOP_TIMEOUT_MILLIS = 5_000L
+internal const val HOME_FAVORITES_LIMIT = 10
 internal const val SELECTED_CATEGORY_KEY = "selectedCategory"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class HomeViewModel(
     private val repository: TitleListsRepository,
+    observeFavoriteTitles: ObserveFavoriteTitles,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val category = MutableStateFlow(
@@ -45,6 +50,11 @@ internal class HomeViewModel(
 
     private val failed = MutableStateFlow(emptySet<ListKey>())
     private val manualRefresh = MutableStateFlow(false)
+
+    private val favorites: Flow<List<FavoriteTitle>> = language
+        .filterNotNull()
+        .flatMapLatest { observeFavoriteTitles(it) }
+        .onStart { emit(emptyList()) }
 
     val state: StateFlow<HomeUiState> = selection
         .flatMapLatest { current ->
@@ -61,6 +71,9 @@ internal class HomeViewModel(
                     isRefreshing = refreshing,
                 )
             }
+        }
+        .combine(favorites) { lists, all ->
+            lists.copy(favorites = all.take(HOME_FAVORITES_LIMIT), favoritesCount = all.size)
         }
         .stateIn(
             viewModelScope,
@@ -88,6 +101,8 @@ internal class HomeViewModel(
             is HomeIntent.TitleClicked -> openTitle(intent.title)
             HomeIntent.Refresh -> refreshAll()
             is HomeIntent.Retry -> retry(intent.listType)
+            is HomeIntent.FavoriteClicked -> send(HomeEffect.OpenFavorite(intent.id))
+            HomeIntent.SeeAllFavoritesClicked -> send(HomeEffect.OpenFavorites)
         }
     }
 
@@ -96,8 +111,10 @@ internal class HomeViewModel(
         savedStateHandle[SELECTED_CATEGORY_KEY] = selected.name
     }
 
-    private fun openTitle(title: Title) {
-        viewModelScope.launch { _effects.send(HomeEffect.OpenTitle(title)) }
+    private fun openTitle(title: Title) = send(HomeEffect.OpenTitle(title))
+
+    private fun send(effect: HomeEffect) {
+        viewModelScope.launch { _effects.send(effect) }
     }
 
     private fun refreshAll() {

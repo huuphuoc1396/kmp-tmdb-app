@@ -8,6 +8,7 @@ kotlin {
             implementation(projects.cmp.designsystem)
             implementation(projects.cmp.feature.onboarding.ui)
             implementation(projects.cmp.feature.home.ui)
+            implementation(projects.cmp.feature.favorites.ui)
             implementation(projects.cmp.feature.titleDetails.ui)
             implementation(projects.core.di)
             implementation(projects.service.settings.domain)

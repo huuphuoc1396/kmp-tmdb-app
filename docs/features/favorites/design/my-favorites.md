@@ -48,7 +48,7 @@ The list scrolls vertically; whether the header scrolls with it is not shown (se
 |---|---|---|
 | Back | Voltar | Back |
 | Badge | `<n> títulos`; "1 título" for one; "0 títulos" when empty | `<n> titles`; "1 title"; "0 titles" |
-| Title | My Favorites (as in the pt-BR design) | My Favorites |
+| Title | Meus favoritos (from user; the pt-BR design shows "My Favorites") | My Favorites |
 | Subtitle | Todos os seus títulos salvos, em um só lugar. | All your saved titles, in one place. |
 | Meta line | e.g. "2021 · Ficção" | e.g. "2021 · Sci-Fi" |
 | Empty message (from user) | Nenhum favorito ainda. Toque no coração de um título para salvá-lo aqui. | No favorites yet. Tap the heart on a title to save it here. |
@@ -91,8 +91,9 @@ Posters are TMDB images loaded at runtime, not assets.
 - [ ] Whether the header (Back, badge, title, subtitle) scrolls with the list or stays fixed.
 - [ ] Long names in a card: wrap to two lines or truncate on one (task.md EC-5 says truncated; line count not
   designed).
-- [ ] Title copy in pt-BR: the pt-BR design keeps "My Favorites" in English; confirm or give "Meus favoritos".
+- [x] Title copy in pt-BR: "Meus favoritos" (from user, 2026-11-23).
 
 ## Change log
 - 2026-11-23: Initial version, from screenshots (Figma MCP rate-limited).
 - 2026-11-23: Confirmed by the user.
+- 2026-11-23: pt-BR title "Meus favoritos" (from user).

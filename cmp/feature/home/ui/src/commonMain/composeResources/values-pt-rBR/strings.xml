@@ -10,4 +10,8 @@
     <string name="home_row_empty">Nada para mostrar aqui ainda.</string>
     <string name="home_row_error">Não foi possível carregar estes títulos.</string>
     <string name="home_retry">Tentar novamente</string>
+    <string name="home_favorites_title">Favoritos</string>
+    <string name="home_favorites_subtitle">Salvos para assistir quando quiser.</string>
+    <string name="home_favorites_view_all">Ver todos</string>
+    <string name="home_favorites_loading">Carregando título</string>
 </resources>

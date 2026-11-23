@@ -1,6 +1,5 @@
 package com.banhmilabs.tmdb.cmp.feature.home.ui
 
-import androidx.lifecycle.SavedStateHandle
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.testing.MainDispatcherTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,7 +16,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelRefreshTest : MainDispatcherTest(StandardTestDispatcher()) {
     private val repository = homeTestRepository()
-    private val viewModel by lazy { HomeViewModel(repository, SavedStateHandle()) }
+    private val viewModel by lazy { homeViewModel(repository) }
     private val states = mutableListOf<HomeUiState>()
 
     @Test
