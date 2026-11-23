@@ -35,10 +35,6 @@ internal val MOVIE_DETAILS = TitleDetails(
 
 internal data class DetailsRefresh(val language: Language, val force: Boolean)
 
-/**
- * A MockK [TitleDetailsRepository] for [MOVIE_ID]. Each refresh stores [remoteDetails] for its language, or fails
- * with NotFound when there are none, unless [failNextRefresh] was called; every call is recorded.
- */
 internal class TitleDetailsTestRepository(var remoteDetails: TitleDetails? = MOVIE_DETAILS) {
     private val cached = mutableMapOf<Language, MutableStateFlow<TitleDetails?>>()
     private var nextRefreshError: AppError? = null
@@ -60,7 +56,6 @@ internal class TitleDetailsTestRepository(var remoteDetails: TitleDetails? = MOV
         }
     }
 
-    /** The next refresh fails with [error] and leaves the cache unchanged. */
     fun failNextRefresh(error: AppError) {
         nextRefreshError = error
     }
@@ -68,7 +63,6 @@ internal class TitleDetailsTestRepository(var remoteDetails: TitleDetails? = MOV
     private fun details(language: Language) = cached.getOrPut(language) { MutableStateFlow(null) }
 }
 
-/** A MockK [FavoritesRepository] holding the favorite state of [MOVIE_ID] and recording every write. */
 internal class FavoritesTestRepository(isFavorite: Boolean = false) {
     private val favorite = MutableStateFlow(isFavorite)
     val writes = mutableListOf<Boolean>()

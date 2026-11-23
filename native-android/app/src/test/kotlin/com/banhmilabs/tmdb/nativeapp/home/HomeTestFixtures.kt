@@ -30,10 +30,6 @@ internal data class RefreshRequest(
     val force: Boolean,
 )
 
-/**
- * A MockK [TitleListsRepository] whose Movies and Anime lists have distinct titles (other lists are empty). Each
- * refresh stores its list's titles for that language, unless [failNextRefresh] was called; every call is recorded.
- */
 internal class HomeTestRepository {
     private val lists = mutableMapOf<RefreshRequest, MutableStateFlow<List<Title>?>>()
     private val remote = mapOf(
@@ -62,7 +58,6 @@ internal class HomeTestRepository {
         }
     }
 
-    /** The next refresh fails with [error] and leaves the cache unchanged. */
     fun failNextRefresh(error: AppError) {
         nextRefreshError = error
     }
@@ -71,7 +66,6 @@ internal class HomeTestRepository {
         lists.getOrPut(RefreshRequest(category, listType, language, force = false)) { MutableStateFlow(null) }
 }
 
-/** Keeps [viewModel]'s state subscribed for the whole test and reports the device [language]. */
 internal fun TestScope.start(viewModel: HomeViewModel, language: Language = Language.EN_US) {
     backgroundScope.launch { viewModel.state.collect {} }
     viewModel.onIntent(HomeIntent.LanguageChanged(language))

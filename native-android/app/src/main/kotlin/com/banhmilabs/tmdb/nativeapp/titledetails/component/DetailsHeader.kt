@@ -41,7 +41,6 @@ private val ClockToRuntime = 6.dp
 private val NameStyle = TextStyle(color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
 private val DateLineStyle = TextStyle(color = DetailsColors.DateLine, fontSize = 16.sp)
 
-/** The rating ring next to "Name (year)" and the release date • runtime line. */
 @Composable
 internal fun DetailsHeader(details: TitleDetails, language: Language, modifier: Modifier = Modifier) {
     Row(modifier = modifier, verticalAlignment = Alignment.Top) {
@@ -63,7 +62,6 @@ internal fun DetailsHeader(details: TitleDetails, language: Language, modifier: 
     }
 }
 
-/** Date and runtime; a missing part is left out together with its separator. */
 @Composable
 private fun DateLine(date: String?, runtime: String?) {
     Row(verticalAlignment = Alignment.CenterVertically) {

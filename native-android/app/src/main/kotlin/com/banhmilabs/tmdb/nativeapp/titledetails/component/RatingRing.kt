@@ -31,10 +31,8 @@ private val RingWidth = 6.dp
 private const val START_ANGLE = -90f
 private const val DEGREES_PER_PERCENT = 3.6f
 
-/** In dp, so the value never outgrows the fixed ring at large font sizes; the screen reader still reads it. */
 private val ValueSize = 15.dp
 
-/** The TMDB score as a ring filled to [percent], or an empty ring with "NR" when nobody has voted. */
 @Composable
 internal fun RatingRing(percent: Int?, modifier: Modifier = Modifier) {
     val description = if (percent == null) {

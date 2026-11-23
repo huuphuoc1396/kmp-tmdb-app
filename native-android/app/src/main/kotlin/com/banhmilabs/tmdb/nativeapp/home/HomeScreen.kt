@@ -59,12 +59,10 @@ import org.koin.androidx.compose.koinViewModel
 
 internal val ScreenPadding = 30.dp
 
-/** The design's 64dp title offset, less a 44dp status bar that the safe-drawing inset already covers. */
 private val ContentTopPadding = 20.dp
 private val ContentBottomPadding = 79.dp
 private val HeaderToSearch = 17.dp
 
-/** The design's 31dp and 37dp, less 7dp each: the tab row grows from 34dp to its 48dp touch target. */
 private val SearchToTabs = 24.dp
 private val TabsToFeatured = 30.dp
 private val FeaturedToHeading = 23.dp
@@ -96,7 +94,6 @@ internal fun HomeScreen(onTitleClick: (Title) -> Unit, viewModel: HomeViewModel 
 internal fun HomeContent(state: HomeUiState, onIntent: (HomeIntent) -> Unit, modifier: Modifier = Modifier) {
     val pullState = rememberPullToRefreshState()
     Box(modifier = modifier.fillMaxSize()) {
-        // Fixed to the screen; the header glow below scrolls with the content.
         Image(
             painter = painterResource(R.drawable.home_background),
             contentDescription = null,
@@ -172,7 +169,6 @@ private fun HomeRows(state: HomeUiState, onIntent: (HomeIntent) -> Unit) {
 
 @Composable
 private fun TitleRow(row: RowState, category: TitleCategory, listType: TitleListType, onIntent: (HomeIntent) -> Unit) {
-    // Saved per category, so it survives details, rotation and process death; a new tab starts at the beginning.
     val listState = rememberSaveable(category, saver = LazyListState.Saver) { LazyListState() }
     when (row) {
         RowState.Loading -> Box(

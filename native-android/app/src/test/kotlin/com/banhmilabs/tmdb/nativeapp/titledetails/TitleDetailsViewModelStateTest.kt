@@ -12,7 +12,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/** Loading, error, retry and cached details. */
 class TitleDetailsViewModelStateTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(UnconfinedTestDispatcher())

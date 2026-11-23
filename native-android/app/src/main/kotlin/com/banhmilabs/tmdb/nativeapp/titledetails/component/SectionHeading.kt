@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.sp
 
 private val HeadingStyle = TextStyle(color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
-/** "Elenco principal", "Categoria(s)", "Recomendações". */
 @Composable
 internal fun SectionHeading(text: String, modifier: Modifier = Modifier) {
     Text(text = text, modifier = modifier.semantics { heading() }, style = HeadingStyle, maxLines = 1)

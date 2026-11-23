@@ -11,7 +11,6 @@ import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.RetryMessage
 import com.banhmilabs.tmdb.nativeapp.home.ScreenPadding
 
-/** Same height as a poster row, so the layout doesn't jump when a row has no posters. */
 internal val RowMinHeight = 188.dp
 
 @Composable

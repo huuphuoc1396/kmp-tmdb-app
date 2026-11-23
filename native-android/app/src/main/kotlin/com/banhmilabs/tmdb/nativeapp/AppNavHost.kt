@@ -14,7 +14,6 @@ import com.banhmilabs.tmdb.nativeapp.titledetails.navigation.toDetailsRoute
 
 @Composable
 internal fun AppNavHost(startRoute: Any, navController: NavHostController = rememberNavController()) {
-    // From Home and from recommendations; the same title may be stacked more than once.
     val openTitle: (Title) -> Unit = { navController.navigate(it.id.toDetailsRoute()) }
     NavHost(navController = navController, startDestination = startRoute) {
         onboardingScreen(

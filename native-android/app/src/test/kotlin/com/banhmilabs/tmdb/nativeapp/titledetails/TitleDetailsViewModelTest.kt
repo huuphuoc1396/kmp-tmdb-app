@@ -17,7 +17,6 @@ class TitleDetailsViewModelTest {
 
     private val repository = TitleDetailsTestRepository()
 
-    // Created after MainDispatcherRule sets the Main dispatcher: the ViewModel starts collecting in its init.
     private val viewModel by lazy {
         TitleDetailsViewModel(MOVIE_ID, repository.mock, FavoritesTestRepository().mock)
     }
@@ -103,7 +102,6 @@ class TitleDetailsViewModelTest {
         assertEquals(listOf<TitleDetailsEffect>(TitleDetailsEffect.NavigateBack), effects)
     }
 
-    /** Keeps the state and effects collected for the whole test and reports the device [language]. */
     private fun TestScope.start(language: Language = Language.EN_US) {
         backgroundScope.launch { viewModel.state.collect {} }
         backgroundScope.launch { viewModel.effects.collect { effects += it } }

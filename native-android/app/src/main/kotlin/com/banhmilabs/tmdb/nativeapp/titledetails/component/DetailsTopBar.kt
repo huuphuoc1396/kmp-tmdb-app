@@ -39,7 +39,6 @@ import com.banhmilabs.tmdb.nativeapp.titledetails.DetailsColors
 
 private val BarHeight = 48.dp
 
-/** The pill starts 8dp in, so its 10dp padding keeps the arrow at the design's 18dp. */
 private val BackStart = 8.dp
 private val PillHeight = 32.dp
 private val PillPadding = 10.dp
@@ -47,16 +46,11 @@ private val ArrowSize = 24.dp
 private val ArrowToLabel = 6.dp
 private const val PILL_ALPHA = 0.65f
 
-/** The 48dp touch target adds 8dp around the 32dp heart, so the heart's edge stays 30dp from the screen edge. */
 private val FavoriteEnd = 22.dp
 private val FavoriteSize = 32.dp
 
 private val LabelStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
-/**
- * The row fixed below the status bar: the "Voltar" pill and, when [isFavorite] is known, the heart, both readable
- * over any content scrolled under them.
- */
 @Composable
 internal fun DetailsTopBar(
     onBack: () -> Unit,
@@ -100,7 +94,6 @@ internal fun DetailsTopBar(
     }
 }
 
-/** The heart over its translucent circle, announced as the "Favorite" toggle with its on/off state. */
 @Composable
 private fun FavoriteButton(isFavorite: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val label = stringResource(R.string.details_favorite)

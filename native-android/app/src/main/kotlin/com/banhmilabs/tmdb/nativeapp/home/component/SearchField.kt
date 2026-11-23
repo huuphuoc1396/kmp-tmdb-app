@@ -35,7 +35,6 @@ private val HintStyle = TextStyle(
     fontWeight = FontWeight.Medium,
 )
 
-/** The "Search" field, shown as designed with no action: not focusable, not clickable, skipped by screen readers. */
 @Composable
 internal fun SearchField(modifier: Modifier = Modifier) {
     Row(
@@ -53,7 +52,6 @@ internal fun SearchField(modifier: Modifier = Modifier) {
             style = HintStyle,
             maxLines = 1,
         )
-        // The design mirrors the exported icon so the handle points down-left.
         Image(
             painter = painterResource(R.drawable.ic_search),
             contentDescription = null,
