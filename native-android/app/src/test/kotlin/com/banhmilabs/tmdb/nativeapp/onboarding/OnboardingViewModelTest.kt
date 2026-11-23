@@ -1,12 +1,8 @@
 package com.banhmilabs.tmdb.nativeapp.onboarding
 
 import com.banhmilabs.tmdb.core.common.AppError
-import com.banhmilabs.tmdb.core.common.AppResult
 import com.banhmilabs.tmdb.nativeapp.MainDispatcherRule
-import com.banhmilabs.tmdb.service.settings.domain.SettingsRepository
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
+import com.banhmilabs.tmdb.service.settings.fake.FakeSettingsRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -15,15 +11,14 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class OnboardingViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val repository = mockk<SettingsRepository> {
-        coEvery { completeOnboarding() } returns AppResult.Success(Unit)
-    }
+    private val repository = FakeSettingsRepository()
     private val viewModel = OnboardingViewModel(repository)
 
     @Test
@@ -37,16 +32,17 @@ class OnboardingViewModelTest {
 
         assertTrue(viewModel.state.value.isNavigating)
         assertEquals(OnboardingEffect.NavigateToHome, viewModel.effects.first())
-        coVerify(exactly = 1) { repository.completeOnboarding() }
+        assertTrue(repository.observeOnboardingCompleted().first())
     }
 
     @Test
     fun getStartedNavigatesHomeWhenSaveFails() = runTest(mainDispatcherRule.dispatcher) {
-        coEvery { repository.completeOnboarding() } returns AppResult.Failure(AppError.Unknown)
+        repository.failNextComplete(AppError.Unknown)
 
         viewModel.onIntent(OnboardingIntent.GetStartedClicked)
 
         assertEquals(OnboardingEffect.NavigateToHome, viewModel.effects.first())
+        assertFalse(repository.observeOnboardingCompleted().first())
     }
 
     @Test
@@ -61,6 +57,6 @@ class OnboardingViewModelTest {
         testScheduler.advanceUntilIdle()
 
         assertEquals(listOf<OnboardingEffect>(OnboardingEffect.NavigateToHome), effects)
-        coVerify(exactly = 1) { repository.completeOnboarding() }
+        assertTrue(repository.observeOnboardingCompleted().first())
     }
 }

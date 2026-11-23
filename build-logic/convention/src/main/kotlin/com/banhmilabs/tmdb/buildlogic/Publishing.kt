@@ -10,7 +10,7 @@ private const val PUBLISH_GROUP = "com.banhmilabs.tmdb"
 private const val LOCAL_REPOSITORY = "local"
 private const val MAVEN_REPO_DIR = "build/maven-repo"
 
-private val UNPUBLISHED_KINDS = setOf(ModuleKind.FAKE, ModuleKind.TESTING, ModuleKind.IOS_SDK)
+private val UNPUBLISHED_KINDS = setOf(ModuleKind.TESTING, ModuleKind.IOS_SDK)
 
 internal fun isPublished(type: ModuleType): Boolean = type.app == null && type.kind !in UNPUBLISHED_KINDS
 

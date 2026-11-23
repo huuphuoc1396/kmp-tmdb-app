@@ -2,8 +2,8 @@ package com.banhmilabs.tmdb.service.title.data.list
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.banhmilabs.tmdb.core.common.AppError
-import com.banhmilabs.tmdb.core.common.DispatcherProvider
 import com.banhmilabs.tmdb.core.network.createTmdbHttpClient
+import com.banhmilabs.tmdb.core.testing.TestDispatcherProvider
 import com.banhmilabs.tmdb.service.title.data.KeyedRefreshes
 import com.banhmilabs.tmdb.service.title.data.generated.TitleDatabase
 import com.banhmilabs.tmdb.service.title.data.list.local.TitleListLocalDataSource
@@ -17,8 +17,6 @@ import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
@@ -36,7 +34,9 @@ internal class TitleListTestEnvironment {
     val requestStarted = CompletableDeferred<Unit>()
     var now: Instant = Instant.parse("2026-11-18T12:00:00Z")
 
-    private val clock = mockk<Clock> { every { now() } answers { now } }
+    private val clock = object : Clock {
+        override fun now(): Instant = now
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun TestScope.createRepository(): TitleListsRepository {
@@ -53,7 +53,7 @@ internal class TitleListTestEnvironment {
                 AppError.Unknown -> respondError(HttpStatusCode.InternalServerError)
             }
         }
-        val dispatchers = mockk<DispatcherProvider> { every { io } returns UnconfinedTestDispatcher(testScheduler) }
+        val dispatchers = TestDispatcherProvider(UnconfinedTestDispatcher(testScheduler))
         return TitleListsRepositoryImpl(
             remote = TitleListRemoteDataSource(createTmdbHttpClient(engine, accessToken = "token")),
             local = TitleListLocalDataSource(lazyOf(TitleDatabase(driver)), dispatchers),

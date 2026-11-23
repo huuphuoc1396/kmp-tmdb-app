@@ -2,6 +2,7 @@ package com.banhmilabs.tmdb.nativeapp.titledetails
 
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.nativeapp.MainDispatcherRule
+import com.banhmilabs.tmdb.service.favorites.fake.FakeFavoritesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -18,14 +19,14 @@ class TitleDetailsViewModelFavoriteTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private var favorites = FavoritesTestRepository()
+    private var favorites = FakeFavoritesRepository()
     private val viewModel by lazy {
-        TitleDetailsViewModel(MOVIE_ID, TitleDetailsTestRepository().mock, favorites.mock)
+        TitleDetailsViewModel(MOVIE_ID, titleDetailsTestRepository(), favorites)
     }
 
     @Test
     fun favoriteIsShownFromStorage() = runTest(mainDispatcherRule.dispatcher) {
-        favorites = FavoritesTestRepository(isFavorite = true)
+        favorites = FakeFavoritesRepository(setOf(MOVIE_ID))
 
         start()
 
@@ -40,7 +41,7 @@ class TitleDetailsViewModelFavoriteTest {
         tapFavorite()
 
         assertEquals(true, viewModel.state.value.isFavorite)
-        assertEquals(listOf(true), favorites.writes)
+        assertEquals(listOf(true), favorites.writes.map { it.second })
     }
 
     @Test
@@ -51,7 +52,7 @@ class TitleDetailsViewModelFavoriteTest {
         tapFavorite()
 
         assertEquals(false, viewModel.state.value.isFavorite)
-        assertEquals(listOf(true, false), favorites.writes)
+        assertEquals(listOf(true, false), favorites.writes.map { it.second })
     }
 
     @Test
@@ -66,12 +67,12 @@ class TitleDetailsViewModelFavoriteTest {
         advanceUntilIdle()
 
         assertEquals(true, viewModel.state.value.isFavorite)
-        assertEquals(listOf(true, false, true), favorites.writes)
+        assertEquals(listOf(true, false, true), favorites.writes.map { it.second })
     }
 
     @Test
     fun favoriteUnchangedByLanguage() = runTest(mainDispatcherRule.dispatcher) {
-        favorites = FavoritesTestRepository(isFavorite = true)
+        favorites = FakeFavoritesRepository(setOf(MOVIE_ID))
         start()
 
         viewModel.onIntent(TitleDetailsIntent.LanguageChanged(Language.PT_BR))

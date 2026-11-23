@@ -20,8 +20,8 @@ class HomeViewModelRefreshTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
-    private val repository = HomeTestRepository()
-    private val viewModel by lazy { HomeViewModel(repository.mock, SavedStateHandle()) }
+    private val repository = homeTestRepository()
+    private val viewModel by lazy { HomeViewModel(repository, SavedStateHandle()) }
     private val states = mutableListOf<HomeUiState>()
 
     @Test

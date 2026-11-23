@@ -12,6 +12,7 @@ kotlin {
             implementation(libs.koin.core)
         }
         androidHostTest.dependencies {
+            implementation(projects.core.testing)
             implementation(projects.service.favorites.fake)
             implementation(libs.sqldelight.sqlite.driver)
             implementation(libs.kotlinx.coroutines.test)

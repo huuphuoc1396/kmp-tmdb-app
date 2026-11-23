@@ -2,16 +2,14 @@ package com.banhmilabs.tmdb.service.title.data.details.local
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import app.cash.turbine.test
-import com.banhmilabs.tmdb.core.common.DispatcherProvider
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.TitleId
 import com.banhmilabs.tmdb.core.model.TitleType
+import com.banhmilabs.tmdb.core.testing.TestDispatcherProvider
 import com.banhmilabs.tmdb.service.title.data.details.TitleDetailsEntry
 import com.banhmilabs.tmdb.service.title.data.details.TitleDetailsKey
 import com.banhmilabs.tmdb.service.title.data.generated.TitleDatabase
 import com.banhmilabs.tmdb.service.title.domain.TitleSummary
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -27,7 +25,7 @@ import kotlin.time.Instant
 @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 class TitleDetailsLocalDataSourceTest {
     private val io = newSingleThreadContext(IO_THREAD)
-    private val dispatchers = mockk<DispatcherProvider> { every { io } returns this@TitleDetailsLocalDataSourceTest.io }
+    private val dispatchers = TestDispatcherProvider(io)
     private var openedOn: String? = null
     private val database = lazy {
         openedOn = Thread.currentThread().name.substringBefore(" @")

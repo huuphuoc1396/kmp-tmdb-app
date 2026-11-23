@@ -2,8 +2,8 @@ package com.banhmilabs.tmdb.service.title.data.details
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.banhmilabs.tmdb.core.common.AppError
-import com.banhmilabs.tmdb.core.common.DispatcherProvider
 import com.banhmilabs.tmdb.core.network.createTmdbHttpClient
+import com.banhmilabs.tmdb.core.testing.TestDispatcherProvider
 import com.banhmilabs.tmdb.service.title.data.KeyedRefreshes
 import com.banhmilabs.tmdb.service.title.data.details.local.TitleDetailsLocalDataSource
 import com.banhmilabs.tmdb.service.title.data.details.remote.TitleDetailsRemoteDataSource
@@ -16,8 +16,6 @@ import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
@@ -35,7 +33,9 @@ internal class TitleDetailsTestEnvironment {
     val requestStarted = CompletableDeferred<Unit>()
     var now: Instant = Instant.parse("2026-11-20T12:00:00Z")
 
-    private val clock = mockk<Clock> { every { now() } answers { now } }
+    private val clock = object : Clock {
+        override fun now(): Instant = now
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun TestScope.createRepository(): TitleDetailsRepository {
@@ -52,7 +52,7 @@ internal class TitleDetailsTestEnvironment {
                 AppError.Unknown -> respondError(HttpStatusCode.InternalServerError)
             }
         }
-        val dispatchers = mockk<DispatcherProvider> { every { io } returns UnconfinedTestDispatcher(testScheduler) }
+        val dispatchers = TestDispatcherProvider(UnconfinedTestDispatcher(testScheduler))
         return TitleDetailsRepositoryImpl(
             remote = TitleDetailsRemoteDataSource(createTmdbHttpClient(engine, accessToken = "token")),
             local = TitleDetailsLocalDataSource(lazyOf(TitleDatabase(driver)), dispatchers),
