@@ -16,7 +16,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.core.model.Title
 
@@ -29,7 +28,7 @@ fun PosterRow(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     LazyRow(
-        modifier = modifier.height(TmdbSize.posterHeight),
+        modifier = modifier.height(PosterRowDefaults.PosterHeight),
         state = listState,
         contentPadding = contentPadding,
         horizontalArrangement = Arrangement.spacedBy(TmdbSpacing.sm),
@@ -46,7 +45,7 @@ private fun Poster(title: Title, onClick: () -> Unit) {
         name = title.name,
         posterUrl = title.posterUrl,
         modifier = Modifier
-            .size(width = TmdbSize.posterWidth, height = TmdbSize.posterHeight)
+            .size(width = PosterRowDefaults.PosterWidth, height = PosterRowDefaults.PosterHeight)
             .clip(MaterialTheme.shapes.small)
             .semantics(mergeDescendants = true) { contentDescription = title.name }
             .clickable(role = Role.Button, onClick = onClick),

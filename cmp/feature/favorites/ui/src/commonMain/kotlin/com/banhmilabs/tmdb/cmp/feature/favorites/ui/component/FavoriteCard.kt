@@ -29,6 +29,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterTile
@@ -40,6 +41,10 @@ import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.ic_heart
 import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+
+private val CardMinHeight = 120.dp
+private val PosterWidth = 64.dp
+private val PosterHeight = 96.dp
 
 private const val NAME_MAX_LINES = 2
 
@@ -55,7 +60,7 @@ internal fun FavoriteCard(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = TmdbSize.favoriteCardMinHeight)
+            .heightIn(min = CardMinHeight)
             .height(IntrinsicSize.Min)
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceContainer)
@@ -78,7 +83,7 @@ internal fun FavoriteCard(
                 name = summary?.name,
                 posterUrl = summary?.posterUrl,
                 modifier = Modifier
-                    .size(width = TmdbSize.posterSmallWidth, height = TmdbSize.posterSmallHeight)
+                    .size(width = PosterWidth, height = PosterHeight)
                     .clip(MaterialTheme.shapes.small),
             )
             Spacer(modifier = Modifier.width(TmdbSpacing.md))

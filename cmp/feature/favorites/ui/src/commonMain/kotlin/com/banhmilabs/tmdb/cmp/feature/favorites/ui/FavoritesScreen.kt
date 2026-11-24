@@ -37,6 +37,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
@@ -55,6 +56,8 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+
+private val BadgeMinHeight = 28.dp
 
 @Composable
 internal fun FavoritesScreen(
@@ -155,7 +158,7 @@ private fun FavoritesHeader(count: Int, onBack: () -> Unit) {
             Spacer(modifier = Modifier.weight(1f))
             Box(
                 modifier = Modifier
-                    .heightIn(min = TmdbSize.badgeMinHeight)
+                    .heightIn(min = BadgeMinHeight)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surfaceContainer)
                     .padding(horizontal = TmdbSpacing.sm),

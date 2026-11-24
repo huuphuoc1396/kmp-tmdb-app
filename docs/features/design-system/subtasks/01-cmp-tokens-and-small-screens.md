@@ -6,13 +6,13 @@ Depends on: none
 Status: Done
 
 ## Goal
-The `cmp` app has a full Material Design 3 design system: spacing, type, shape, dark color scheme and named
-component sizes. Its shared components, Onboarding and My favorites use only those tokens and scale with the
+The `cmp` app has a full Material Design 3 design system: spacing, type, shape, dark color scheme and shared
+size tokens. Its shared components, Onboarding and My favorites use only those tokens and scale with the
 system font size, while looking and behaving as before.
 
 ## Scope
 ### In scope
-- Define the token set for `cmp`: spacing scale on the 4dp grid, Material Design 3 type scale in the system font, shape scale, full dark color scheme with the brand colors, named component sizes (poster, rating ring, touch target and similar). These names and values are the reference the other two apps copy.
+- Define the token set for `cmp`: spacing scale on the 4dp grid, Material Design 3 type scale in the system font, shape scale, full dark color scheme with the brand colors, shared size tokens (touch target, icon sizes, border width). These names and values are the reference the other two apps copy.
 - Settle the rounding rule for values not on the scale and apply it.
 - Move the shared components (remove-favorite dialog, poster tile and row, meta line, retry message, person icon) to tokens.
 - Move Onboarding and My favorites to tokens.
@@ -35,8 +35,9 @@ system font size, while looking and behaving as before.
 - **AC-3** No raw values in screens and components (partial: `cmp` shared components, Onboarding, My favorites)
   - Given the screen and shared component code of each app
   - When it is searched for numeric dp/sp/pt values, font sizes, corner radii and color literals
-  - Then none remain; every value comes from a design-system token (color literals and token values live only in
-    the design-system definition)
+  - Then spacing, text styles, corner shapes and colors all come from design-system tokens (color literals and token
+    values live only in the design-system definition), and no numeric size is written inline in a function: every
+    other size is a named constant at the top of its component's file or in its `<Component>Defaults` object
 - **AC-4** Old values rounded to the nearest token (partial: same screens)
   - Given a value used today that is not on the scale (for example 31dp or 15sp)
   - When the screen is redone
@@ -71,3 +72,4 @@ system font size, while looking and behaving as before.
 
 ## Change log
 - 2026-11-24: Initial version.
+- 2026-11-24: AC-3 updated: component- and feature-specific sizes are named constants next to their component.

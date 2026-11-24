@@ -258,3 +258,8 @@ text can grow with the system font size. `native-android` (03) and `native-ios` 
 - The dialog's inner padding is written on one line so `RemoveFavoriteDialog` stays within Detekt's 60-line
   `LongMethod` limit.
 - Detekt `MagicNumber` did not flag the `dp` literals inside the token objects, so the Risks mitigation was not needed.
+- After review (task.md change of 2026-11-24), `TmdbSize` keeps only shared sizes: `touchTarget`, `iconSmall`,
+  `iconMedium`, `borderWidth`. Component- and feature-specific sizes moved next to their component: poster 124×188 to
+  `PosterRowDefaults` (own file `PosterRowDefaults.kt`, as Detekt `MatchingDeclarationName` requires), card min height
+  and small poster to private constants in `FavoriteCard.kt`, badge min height to `FavoritesScreen.kt`, content max
+  width to `OnboardingScreen.kt`. The value-mapping table keeps the old `TmdbSize.*` names for these rows.

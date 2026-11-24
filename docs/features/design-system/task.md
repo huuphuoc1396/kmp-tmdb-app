@@ -20,8 +20,10 @@ color; the same screen looks the same in all three apps; and text follows the sy
 - A dark color scheme with every Material Design 3 color role, keeping the brand colors: purple `#8000FF` as
   primary and pink `#FF1F8A` as secondary. Screen-specific colors (iOS track, page, date line, synopsis, home
   gradient, ring center) map to a color role.
-- Fixed component sizes (poster 124×188, rating ring, 48 touch target, and similar) as named component tokens
-  in the design system.
+- Sizes shared across features or set by the platform (48 touch target, icon sizes, border width) as named size
+  tokens in the design system. A size that belongs to one component or one feature (poster 124×188, rating ring,
+  favorite card) is a named constant next to that component; when another module needs it, the component exposes
+  it through a public `<Component>Defaults` object.
 - The same token values in all three apps. iOS keeps its own controls and gestures (navigation bar, alerts,
   sheets) while it uses the same spacing, type, shape and color values.
 - Text that scales with the system setting: Android font scale, iOS Dynamic Type.
@@ -63,8 +65,9 @@ color; the same screen looks the same in all three apps; and text follows the sy
 - **AC-3** No raw values in screens and components
   - Given the screen and shared component code of each app
   - When it is searched for numeric dp/sp/pt values, font sizes, corner radii and color literals
-  - Then none remain; every value comes from a design-system token (color literals and token values live only in
-    the design-system definition)
+  - Then spacing, text styles, corner shapes and colors all come from design-system tokens (color literals and token
+    values live only in the design-system definition), and no numeric size is written inline in a function: every
+    other size is a named constant at the top of its component's file or in its `<Component>Defaults` object
 - **AC-4** Old values rounded to the nearest token
   - Given a value used today that is not on the scale (for example 31dp or 15sp)
   - When the screen is redone
@@ -106,7 +109,8 @@ color; the same screen looks the same in all three apps; and text follows the sy
 - Features, copy, navigation, localization (en, pt-BR) and offline behavior must not change.
 - `native-android` and `native-ios` stay standalone and do not depend on `cmp`; each defines its own copy of the
   tokens with the same values.
-- Text contrast meets Material Design 3 / WCAG AA guidance for the roles used.
+- Text contrast meets Material Design 3 / WCAG AA guidance for the roles used, with one accepted exception: white
+  labels on the brand pink `#FF1F8A` (about 3.6:1, AA for large or bold text only).
 
 ## Open questions
 - [ ] Exact token values and names (spacing steps, type roles in use, shape sizes, component sizes) (owner: dev,
@@ -116,6 +120,8 @@ color; the same screen looks the same in all three apps; and text follows the sy
 
 ## Change log
 - 2026-11-24: Initial version.
+- 2026-11-24: Component- and feature-specific sizes stay next to their component (`<Component>Defaults` when shared),
+  not in the design system; AC-3 and the size scope updated. Added the white-on-pink contrast exception.
 
 ## Subtasks
 1. [01 - cmp: tokens and smaller screens](subtasks/01-cmp-tokens-and-small-screens.md)

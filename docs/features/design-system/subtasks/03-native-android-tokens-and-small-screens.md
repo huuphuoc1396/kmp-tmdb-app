@@ -26,8 +26,9 @@ shared components, Onboarding and My favorites use only those tokens and scale w
 - **AC-3** No raw values in screens and components (partial: `native-android` shared components, Onboarding, My favorites)
   - Given the screen and shared component code of each app
   - When it is searched for numeric dp/sp/pt values, font sizes, corner radii and color literals
-  - Then none remain; every value comes from a design-system token (color literals and token values live only in
-    the design-system definition)
+  - Then spacing, text styles, corner shapes and colors all come from design-system tokens (color literals and token
+    values live only in the design-system definition), and no numeric size is written inline in a function: every
+    other size is a named constant at the top of its component's file or in its `<Component>Defaults` object
 - **AC-4** Old values rounded to the nearest token (partial: same screens)
   - Given a value used today that is not on the scale (for example 31dp or 15sp)
   - When the screen is redone
@@ -59,3 +60,4 @@ shared components, Onboarding and My favorites use only those tokens and scale w
 
 ## Change log
 - 2026-11-24: Initial version.
+- 2026-11-24: AC-3 updated: component- and feature-specific sizes are named constants next to their component.
