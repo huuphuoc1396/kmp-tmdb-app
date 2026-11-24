@@ -5,54 +5,42 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_search_hint
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.ic_search
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-private val FieldHeight = 46.dp
-private val FieldShape = RoundedCornerShape(32.dp)
-private val HintStart = 21.dp
-private val IconEnd = 16.dp
-private const val HINT_ALPHA = 0.5f
-
-private val HintStyle = TextStyle(
-    color = Color.White.copy(alpha = HINT_ALPHA),
-    fontSize = 15.sp,
-    fontWeight = FontWeight.Medium,
-)
-
 @Composable
 internal fun SearchField(modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
-            .heightIn(min = FieldHeight)
-            .clip(FieldShape)
+            .heightIn(min = 48.dp)
+            .clip(CircleShape)
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .clearAndSetSemantics {}
-            .padding(start = HintStart, end = IconEnd),
+            .padding(start = TmdbSpacing.lg, end = TmdbSpacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = stringResource(Res.string.home_search_hint),
             modifier = Modifier.weight(1f),
-            style = HintStyle,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyLarge,
             maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
         Image(
             painter = painterResource(Res.drawable.ic_search),

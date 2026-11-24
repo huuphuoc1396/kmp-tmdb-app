@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -30,7 +29,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -38,11 +36,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.designsystem.component.FavoriteHeart
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterTile
 import com.banhmilabs.tmdb.cmp.designsystem.component.removeFavoriteLabel
@@ -58,40 +55,6 @@ import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-private val CardColor = Color(0xFF211A30)
-private val CardBorderColor = Color(0xFF312A3F)
-private val BadgeColor = Color(0xFF381A39)
-private val SecondaryText = Color(0xFFA6A1B5)
-
-private val CardShape = RoundedCornerShape(16.dp)
-private val CardPadding = 12.dp
-private val HeaderTop = 18.dp
-private val HeaderEnd = 4.dp
-private val TitleToBadge = 8.dp
-private val BadgeSize = 22.dp
-private val BadgePadding = 6.dp
-private val ViewAllPadding = 8.dp
-private val ViewAllToChevron = 6.dp
-private val ChevronSize = 12.dp
-private val TitleToSubtitle = 12.dp
-private val SubtitleToRow = 16.dp
-private val ItemSpacing = 12.dp
-private val ItemWidth = 97.dp
-private val PosterHeight = 147.dp
-private val PosterShape = RoundedCornerShape(8.dp)
-private val PosterToName = 12.dp
-private val NameToMeta = 8.dp
-private val BottomPadding = 14.dp
-private val HeartTouchOffset = 4.dp
-private const val NAME_MAX_LINES = 2
-
-private val TitleStyle = TextStyle(color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-private val BadgeStyle = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold)
-private val ViewAllStyle = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-private val SubtitleStyle = TextStyle(color = SecondaryText, fontSize = 13.sp)
-private val NameStyle = TextStyle(color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-private val MetaStyle = TextStyle(color = SecondaryText, fontSize = 12.sp)
-
 @Composable
 internal fun FavoritesSection(
     favorites: List<FavoriteTitle>,
@@ -102,39 +65,43 @@ internal fun FavoritesSection(
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+    val colors = MaterialTheme.colorScheme
+    val shape = MaterialTheme.shapes.large
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(CardShape)
-            .background(CardColor)
-            .border(width = 1.dp, color = CardBorderColor, shape = CardShape)
-            .padding(top = HeaderTop, bottom = BottomPadding),
+            .clip(shape)
+            .background(colors.surfaceContainer)
+            .border(width = TmdbSize.borderWidth, color = colors.surfaceContainerHigh, shape = shape)
+            .padding(top = TmdbSpacing.lg, bottom = TmdbSpacing.md),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(start = CardPadding, end = HeaderEnd),
+            modifier = Modifier.fillMaxWidth().padding(start = TmdbSpacing.sm, end = TmdbSpacing.xxs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = stringResource(Res.string.home_favorites_title),
                 modifier = Modifier.semantics { heading() },
-                style = TitleStyle,
+                color = colors.onSurface,
+                style = MaterialTheme.typography.titleLarge,
             )
-            Spacer(modifier = Modifier.width(TitleToBadge))
+            Spacer(modifier = Modifier.width(TmdbSpacing.xs))
             CountBadge(count = count)
             Spacer(modifier = Modifier.weight(1f))
             ViewAll(onClick = onSeeAll)
         }
-        Spacer(modifier = Modifier.height(TitleToSubtitle))
+        Spacer(modifier = Modifier.height(TmdbSpacing.sm))
         Text(
             text = stringResource(Res.string.home_favorites_subtitle),
-            modifier = Modifier.padding(horizontal = CardPadding),
-            style = SubtitleStyle,
+            modifier = Modifier.padding(horizontal = TmdbSpacing.sm),
+            color = colors.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyMedium,
         )
-        Spacer(modifier = Modifier.height(SubtitleToRow))
+        Spacer(modifier = Modifier.height(TmdbSpacing.md))
         LazyRow(
             state = listState,
-            contentPadding = PaddingValues(horizontal = CardPadding),
-            horizontalArrangement = Arrangement.spacedBy(ItemSpacing),
+            contentPadding = PaddingValues(horizontal = TmdbSpacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(TmdbSpacing.sm),
         ) {
             items(favorites, key = { "${it.id.type}-${it.id.tmdbId}" }) { favorite ->
                 FavoriteItem(
@@ -151,35 +118,41 @@ internal fun FavoritesSection(
 private fun CountBadge(count: Int) {
     Box(
         modifier = Modifier
-            .defaultMinSize(minWidth = BadgeSize, minHeight = BadgeSize)
+            .defaultMinSize(minWidth = 24.dp, minHeight = 24.dp)
             .clip(CircleShape)
-            .background(BadgeColor)
-            .padding(horizontal = BadgePadding),
+            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .padding(horizontal = TmdbSpacing.xs),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text = count.toString(), style = BadgeStyle.copy(color = MaterialTheme.colorScheme.secondary))
+        Text(
+            text = count.toString(),
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            style = MaterialTheme.typography.labelMedium,
+        )
     }
 }
 
 @Composable
 private fun ViewAll(onClick: () -> Unit) {
+    val accent = MaterialTheme.colorScheme.secondary
     Row(
         modifier = Modifier
             .minimumInteractiveComponentSize()
             .clickable(role = Role.Button, onClick = onClick)
-            .padding(horizontal = ViewAllPadding),
+            .padding(horizontal = TmdbSpacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = stringResource(Res.string.home_favorites_view_all),
-            style = ViewAllStyle.copy(color = MaterialTheme.colorScheme.secondary),
+            color = accent,
+            style = MaterialTheme.typography.labelLarge,
         )
-        Spacer(modifier = Modifier.width(ViewAllToChevron))
+        Spacer(modifier = Modifier.width(TmdbSpacing.xs))
         Image(
             painter = painterResource(Res.drawable.ic_chevron_right),
             contentDescription = null,
-            modifier = Modifier.size(ChevronSize),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
+            modifier = Modifier.size(12.dp),
+            colorFilter = ColorFilter.tint(accent),
         )
     }
 }
@@ -188,7 +161,7 @@ private fun ViewAll(onClick: () -> Unit) {
 private fun FavoriteItem(favorite: FavoriteTitle, onClick: () -> Unit, onRemoveClick: () -> Unit) {
     val summary = favorite.summary
     val label = summary?.name ?: stringResource(Res.string.home_favorites_loading)
-    Box(modifier = Modifier.width(ItemWidth)) {
+    Box(modifier = Modifier.width(96.dp)) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -201,26 +174,33 @@ private fun FavoriteItem(favorite: FavoriteTitle, onClick: () -> Unit, onRemoveC
             PosterTile(
                 name = summary?.name,
                 posterUrl = summary?.posterUrl,
-                modifier = Modifier.fillMaxWidth().height(PosterHeight).clip(PosterShape),
+                modifier = Modifier.fillMaxWidth().height(148.dp).clip(MaterialTheme.shapes.small),
             )
             if (summary != null) {
-                Spacer(modifier = Modifier.height(PosterToName))
+                Spacer(modifier = Modifier.height(TmdbSpacing.sm))
                 Text(
                     text = summary.name,
-                    style = NameStyle,
-                    maxLines = NAME_MAX_LINES,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
                 val meta = metaLine(summary.releaseYear, summary.firstGenre)
                 if (meta.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(NameToMeta))
-                    Text(text = meta, style = MetaStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Spacer(modifier = Modifier.height(TmdbSpacing.xs))
+                    Text(
+                        text = meta,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
             }
         }
         RemoveButton(
             onClick = onRemoveClick,
-            modifier = Modifier.align(Alignment.TopEnd).offset(x = HeartTouchOffset, y = -HeartTouchOffset),
+            modifier = Modifier.align(Alignment.TopEnd).offset(x = TmdbSpacing.xxs, y = -TmdbSpacing.xxs),
         )
     }
 }
