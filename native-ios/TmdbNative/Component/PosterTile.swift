@@ -5,11 +5,9 @@ struct PosterTile: View {
     let name: String?
     let posterURL: URL?
 
-    @ScaledMetric(relativeTo: .subheadline) private var nameSize: CGFloat = 14
-
     var body: some View {
         ZStack {
-            Theme.surfaceVariant
+            TmdbColor.surfaceVariant
             if let posterURL {
                 LazyImage(url: posterURL) { state in
                     if let image = state.image {
@@ -18,12 +16,12 @@ struct PosterTile: View {
                 }
             } else if let name {
                 Text(name)
-                    .font(.system(size: nameSize, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .tmdbFont(.titleSmall)
+                    .foregroundStyle(TmdbColor.onSurface)
                     .multilineTextAlignment(.center)
                     .lineLimit(4)
                     .truncationMode(.tail)
-                    .padding(8)
+                    .padding(TmdbSpacing.xs)
             }
         }
     }

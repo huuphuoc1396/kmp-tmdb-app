@@ -30,7 +30,7 @@ struct RestoringRow<Item: Identifiable, Cell: View>: View where Item.ID == Strin
                         }
                     }
                     .padding(.leading, leadingPadding)
-                    .padding(.trailing, 16)
+                    .padding(.trailing, TmdbSpacing.md)
                 }
                 .onAppear { restorePosition(with: proxy, rowWidth: geometry.size.width) }
             }

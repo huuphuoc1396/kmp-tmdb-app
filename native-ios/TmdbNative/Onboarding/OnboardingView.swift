@@ -24,19 +24,17 @@ struct OnboardingView: View {
 
 private let artwork = LinearGradient(
     stops: [
-        .init(color: Color(red: 0x30 / 255, green: 0x32 / 255, blue: 0x43 / 255), location: 0),
-        .init(color: Color(red: 0x3D / 255, green: 0x45 / 255, blue: 0x8F / 255), location: 0.56527),
+        .init(color: Color("OnboardingArtworkTop"), location: 0),
+        .init(color: Color("OnboardingArtworkBottom"), location: 0.56527),
     ],
     startPoint: .top,
     endPoint: .bottom
 )
 
-private let scrimColor = Color(red: 21 / 255, green: 21 / 255, blue: 29 / 255)
-
 private let scrim = LinearGradient(
     stops: [
-        .init(color: scrimColor.opacity(0), location: 0.3089),
-        .init(color: scrimColor.opacity(0.85), location: 0.62685),
+        .init(color: TmdbColor.surface.opacity(0), location: 0.3089),
+        .init(color: TmdbColor.surface.opacity(0.85), location: 0.62685),
     ],
     startPoint: .top,
     endPoint: .bottom
@@ -45,11 +43,6 @@ private let scrim = LinearGradient(
 struct OnboardingContent: View {
     let state: OnboardingUiState
     let onIntent: (OnboardingIntent) -> Void
-
-    @ScaledMetric(relativeTo: .largeTitle) private var headlineSize: CGFloat = 32
-    @ScaledMetric(relativeTo: .largeTitle) private var headlineLineSpacing: CGFloat = 5.3
-    @ScaledMetric(relativeTo: .subheadline) private var bodySize: CGFloat = 15
-    @ScaledMetric(relativeTo: .subheadline) private var bodyLineSpacing: CGFloat = 3.75
 
     var body: some View {
         ZStack {
@@ -61,29 +54,26 @@ struct OnboardingContent: View {
                 .accessibilityHidden(true)
             GeometryReader { geometry in
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 19) {
+                    VStack(alignment: .leading, spacing: TmdbSpacing.lg) {
                         Image(decorative: "TmdbLogo")
                             .resizable()
                             .scaledToFit()
                             .frame(height: 15)
                         Text("onboarding.headline")
-                            .font(.system(size: headlineSize, weight: .light))
-                            .lineSpacing(headlineLineSpacing)
+                            .tmdbFont(.headlineLarge, weight: .light)
                             .fixedSize(horizontal: false, vertical: true)
                             .accessibilityAddTraits(.isHeader)
                         Text("onboarding.body")
-                            .font(.system(size: bodySize))
-                            .lineSpacing(bodyLineSpacing)
+                            .tmdbFont(.bodyLarge)
                             .fixedSize(horizontal: false, vertical: true)
                         GetStartedButton(enabled: !state.isNavigating) {
                             onIntent(.getStartedTapped)
                         }
                     }
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: 315, alignment: .leading)
-                    .padding(.leading, 29)
-                    .padding(.trailing, 31)
-                    .padding(.bottom, 31)
+                    .foregroundStyle(TmdbColor.onSurface)
+                    .frame(maxWidth: 320, alignment: .leading)
+                    .padding(.horizontal, TmdbSpacing.xxl)
+                    .padding(.bottom, TmdbSpacing.xxl)
                     .frame(maxWidth: .infinity, minHeight: geometry.size.height, alignment: .bottom)
                 }
             }

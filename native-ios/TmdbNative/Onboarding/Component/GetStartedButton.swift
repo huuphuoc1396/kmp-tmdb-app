@@ -4,16 +4,14 @@ struct GetStartedButton: View {
     let enabled: Bool
     let action: () -> Void
 
-    @ScaledMetric(relativeTo: .body) private var labelSize: CGFloat = 16
-
     var body: some View {
         Button(action: action) {
             Text("onboarding.getStarted")
-                .font(.system(size: labelSize, weight: .semibold))
-                .foregroundStyle(.white)
+                .tmdbFont(.titleMedium)
+                .foregroundStyle(TmdbColor.onPrimary)
                 .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity, minHeight: 48)
-                .padding(.horizontal, 12)
+                .frame(maxWidth: .infinity, minHeight: TmdbSize.touchTarget)
+                .padding(.horizontal, TmdbSpacing.sm)
         }
         .buttonStyle(GradientPillButtonStyle())
         .disabled(!enabled)
@@ -25,7 +23,7 @@ private struct GradientPillButtonStyle: ButtonStyle {
         configuration.label
             .background(
                 LinearGradient(
-                    colors: [Theme.primary, Theme.primaryContainer],
+                    colors: [TmdbColor.primary, TmdbColor.primaryContainer],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 ),

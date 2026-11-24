@@ -1,17 +1,6 @@
 import SwiftUI
 import TmdbCore
 
-private let pageColor = Color(red: 0x13 / 255, green: 0x0E / 255, blue: 0x1F / 255)
-private let screenPadding: CGFloat = 20
-private let topPadding: CGFloat = 16
-private let titleToSubtitle: CGFloat = 8
-private let subtitleToList: CGFloat = 26
-private let cardSpacing: CGFloat = 12
-private let emptyTop: CGFloat = 48
-private let bottomPadding: CGFloat = 24
-private let badgeHeight: CGFloat = 28
-private let badgePadding: CGFloat = 12
-
 struct FavoritesView: View {
     @StateObject private var viewModel: FavoritesViewModel
     private let onTitleTap: (TitleItem) -> Void
@@ -29,7 +18,7 @@ struct FavoritesView: View {
         FavoritesContent(state: viewModel.state, onIntent: viewModel.onIntent, savedPosition: $savedPosition)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.visible, for: .navigationBar)
-            .toolbarBackground(Theme.track, for: .navigationBar)
+            .toolbarBackground(TmdbColor.surface, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -56,16 +45,13 @@ struct FavoritesContent: View {
 
     @State private var visible: [String: Int] = [:]
     @State private var restored = false
-    @ScaledMetric(relativeTo: .largeTitle) private var titleSize: CGFloat = 26
-    @ScaledMetric(relativeTo: .footnote) private var subtitleSize: CGFloat = 13
-    @ScaledMetric(relativeTo: .subheadline) private var emptySize: CGFloat = 14
 
     var body: some View {
         ZStack {
-            pageColor.ignoresSafeArea()
+            TmdbColor.surface.ignoresSafeArea()
             ScrollViewReader { proxy in
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: cardSpacing) {
+                    LazyVStack(alignment: .leading, spacing: TmdbSpacing.sm) {
                         header
                         ForEach(Array(state.favorites.enumerated()), id: \.element.id) { index, favorite in
                             FavoriteCard(
@@ -79,16 +65,16 @@ struct FavoritesContent: View {
                         }
                         if state.favorites.isEmpty {
                             Text("favorites.empty")
-                                .font(.system(size: emptySize))
-                                .foregroundStyle(favoritesSecondaryText)
+                                .tmdbFont(.bodyMedium)
+                                .foregroundStyle(TmdbColor.onSurfaceVariant)
                                 .multilineTextAlignment(.center)
                                 .frame(maxWidth: .infinity)
-                                .padding(.top, emptyTop)
+                                .padding(.top, TmdbSpacing.xxxl)
                         }
                     }
-                    .padding(.horizontal, screenPadding)
-                    .padding(.top, topPadding)
-                    .padding(.bottom, bottomPadding)
+                    .padding(.horizontal, TmdbSpacing.lg)
+                    .padding(.top, TmdbSpacing.md)
+                    .padding(.bottom, TmdbSpacing.xl)
                 }
                 .onChange(of: state.favorites.isEmpty) { _ in restore(proxy) }
                 .onAppear { restore(proxy) }
@@ -103,17 +89,17 @@ struct FavoritesContent: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: titleToSubtitle) {
+        VStack(alignment: .leading, spacing: TmdbSpacing.xs) {
             Text("favorites.title")
-                .font(.system(size: titleSize, weight: .bold))
-                .foregroundStyle(.white)
+                .tmdbFont(.headlineMedium)
+                .foregroundStyle(TmdbColor.onSurface)
                 .accessibilityAddTraits(.isHeader)
             Text("favorites.subtitle")
-                .font(.system(size: subtitleSize))
-                .foregroundStyle(favoritesSecondaryText)
+                .tmdbFont(.bodyMedium)
+                .foregroundStyle(TmdbColor.onSurfaceVariant)
         }
         .fixedSize(horizontal: false, vertical: true)
-        .padding(.bottom, subtitleToList - cardSpacing)
+        .padding(.bottom, TmdbSpacing.sm)
     }
 
     private func track(_ id: String, at index: Int) {
@@ -143,14 +129,12 @@ struct FavoritesContent: View {
 private struct CountBadge: View {
     let count: Int
 
-    @ScaledMetric(relativeTo: .caption) private var size: CGFloat = 12
-
     var body: some View {
         Text("favorites.count \(count)")
-            .font(.system(size: size, weight: .bold))
-            .foregroundStyle(Theme.accent)
-            .padding(.horizontal, badgePadding)
-            .frame(minHeight: badgeHeight)
-            .background(favoritesCardColor, in: Capsule())
+            .tmdbFont(.labelMedium)
+            .foregroundStyle(TmdbColor.secondary)
+            .padding(.horizontal, TmdbSpacing.sm)
+            .frame(minHeight: 28)
+            .background(TmdbColor.surfaceContainer, in: Capsule())
     }
 }

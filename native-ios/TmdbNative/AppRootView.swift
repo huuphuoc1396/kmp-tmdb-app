@@ -40,7 +40,7 @@ struct AppRootView: View {
         Group {
             switch viewModel.startDestination {
             case .loading:
-                Theme.night.ignoresSafeArea()
+                TmdbColor.background.ignoresSafeArea()
             case .onboarding:
                 OnboardingView(settings: settings, onFinished: viewModel.onboardingFinished)
             case .home:
