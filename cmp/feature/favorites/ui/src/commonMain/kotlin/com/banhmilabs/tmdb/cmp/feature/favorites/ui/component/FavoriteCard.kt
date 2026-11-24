@@ -32,6 +32,7 @@ import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.designsystem.component.FavoriteHeart
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterTile
 import com.banhmilabs.tmdb.cmp.designsystem.component.removeFavoriteLabel
+import com.banhmilabs.tmdb.cmp.designsystem.text.NameText
 import com.banhmilabs.tmdb.cmp.designsystem.text.metaLine
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.favorites_loading
@@ -79,12 +80,11 @@ internal fun FavoriteCard(
             Spacer(modifier = Modifier.width(TmdbSpacing.md))
             if (summary != null) {
                 Column {
-                    Text(
+                    NameText(
                         text = summary.name,
-                        color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
                     )
                     val meta = metaLine(summary.releaseYear, summary.firstGenre)
                     if (meta.isNotEmpty()) {

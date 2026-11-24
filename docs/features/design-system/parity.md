@@ -84,7 +84,10 @@ The dialog was checked on screen in `cmp` (iOS) during 01. On `native-android` i
 ## Result
 No token-level mismatch was found. Every difference is an accepted platform difference listed above.
 
-Large-text issues found while checking, for a separate task:
-- "View all" wraps and loses its chevron.
-- Names and long words break mid-word.
-- The floating Details top bar overlaps content while scrolling.
+Large-text issues found while checking were fixed by `docs/features/large-text-layout/task.md`, with the same
+behavior in all three apps (`cmp` is the reference):
+- Home favorites header: "View all ›" moves to its own trailing line only when it doesn't fit next to the title
+  and badge; it is always one line with its chevron.
+- Names break only between words; a name cut by its line limit, or a word wider than its line, ends with "…".
+- Title details top bar gets a `surface` background once the screen scrolls (`cmp`, `native-android`);
+  `native-ios` keeps its opaque system navigation bar (accepted difference above).

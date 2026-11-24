@@ -99,6 +99,10 @@ stays.
 Per row with no cache (AC-8, EC-4): as Empty, with the error message and below it a "Tentar novamente" pill in
 the selected-tab style (fill `#FF1F8A`, radius 70dp, padding 14dp / 6dp, Inter SemiBold 16sp `#FFFFFF`).
 
+## Large text
+Poster placeholder names (and every title name on Home) never break inside a word. When a name reaches its line limit, or one word is wider than its line, the
+text stops at the end of that line with "…" (`docs/features/large-text-layout/task.md` AC-3, AC-4).
+
 ## Dark mode
 The design is dark only; there is no light variant. The app uses a dark theme throughout.
 
@@ -150,3 +154,4 @@ stay as the Figma record.
 - 2026-11-19: Gaps closed by plans 04 and 05: English tab labels, empty and error copy, 48dp tab touch targets,
   Material Icons person icon. Press feedback stays the platform default.
 - 2026-11-24: Added Tokens (design system).
+- 2026-11-24: Large text: names break only between words (large-text-layout).
