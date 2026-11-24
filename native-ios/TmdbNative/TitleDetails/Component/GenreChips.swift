@@ -3,18 +3,16 @@ import SwiftUI
 struct GenreChips: View {
     let genres: [String]
 
-    @ScaledMetric(relativeTo: .subheadline) private var labelSize: CGFloat = 15
-
     var body: some View {
-        FlowLayout(spacing: 14, lineSpacing: 10) {
+        FlowLayout(spacing: TmdbSpacing.md, lineSpacing: TmdbSpacing.sm) {
             ForEach(Array(genres.enumerated()), id: \.offset) { _, genre in
                 Text(verbatim: genre)
-                    .font(.system(size: labelSize, weight: .medium))
-                    .foregroundStyle(.white)
+                    .tmdbFont(.titleMedium)
+                    .foregroundStyle(TmdbColor.onSurface)
                     .lineLimit(1)
-                    .padding(.horizontal, 17.5)
-                    .frame(minHeight: 31)
-                    .background(Theme.track, in: Capsule())
+                    .padding(.horizontal, TmdbSpacing.md)
+                    .frame(minHeight: 32)
+                    .background(TmdbColor.surfaceContainerHigh, in: Capsule())
             }
         }
     }
@@ -66,5 +64,5 @@ private struct FlowLayout: Layout {
     GenreChips(genres: ["Drama", "Crime", "Thriller", "Science Fiction", "Action & Adventure", "War"])
         .frame(width: 315)
         .padding()
-        .background(Theme.page)
+        .background(TmdbColor.surface)
 }

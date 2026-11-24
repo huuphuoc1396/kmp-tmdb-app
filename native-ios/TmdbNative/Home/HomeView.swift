@@ -1,31 +1,17 @@
 import SwiftUI
 import TmdbCore
 
-let homeScreenPadding: CGFloat = 30
-
-private let contentTopPadding: CGFloat = 20
-private let contentBottomPadding: CGFloat = 79
-private let headerToSearch: CGFloat = 17
-private let searchToTabs: CGFloat = 26
-private let tabsToFeatured: CGFloat = 32
-private let featuredToHeading: CGFloat = 23
-private let headingToPopular: CGFloat = 16
-private let featuredToFavorites: CGFloat = 28
-private let favoritesToHeading: CGFloat = 32
-private let favoritesCardInset: CGFloat = 12
-private let headerGlowHeight: CGFloat = 522
-
 private let screenBackground = LinearGradient(
     stops: [
-        .init(color: Theme.homeGradientTop, location: 0),
-        .init(color: Theme.night, location: 0.65394),
+        .init(color: Color("HomeBackgroundTop"), location: 0),
+        .init(color: Color("HomeBackgroundBottom"), location: 0.65394),
     ],
     startPoint: .top,
     endPoint: .bottom
 )
 
 private let headerGlow = LinearGradient(
-    colors: [Theme.primary, Theme.primary.opacity(0)],
+    colors: [TmdbColor.primary, TmdbColor.primary.opacity(0)],
     startPoint: .top,
     endPoint: .bottom
 )
@@ -92,8 +78,6 @@ struct HomeContent: View {
     @Binding var popularPosition: String
     @Binding var favoritesPosition: String
 
-    @ScaledMetric(relativeTo: .headline) private var headingSize: CGFloat = 18
-
     var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -102,20 +86,20 @@ struct HomeContent: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
                         HomeHeader()
-                            .padding(.horizontal, homeScreenPadding)
+                            .padding(.horizontal, TmdbSpacing.xxl)
                         SearchField()
-                            .padding(.horizontal, homeScreenPadding)
-                            .padding(.top, headerToSearch)
+                            .padding(.horizontal, TmdbSpacing.xxl)
+                            .padding(.top, TmdbSpacing.md)
                         CategoryTabs(selected: state.selectedCategory) { onIntent(.categorySelected($0)) }
-                            .padding(.top, searchToTabs)
+                            .padding(.top, TmdbSpacing.xl)
                         rows
-                            .padding(.top, tabsToFeatured)
+                            .padding(.top, TmdbSpacing.xxl)
                     }
-                    .padding(.top, contentTopPadding)
-                    .padding(.bottom, contentBottomPadding)
+                    .padding(.top, TmdbSpacing.lg)
+                    .padding(.bottom, TmdbSpacing.xxxl)
                     .background(alignment: .top) {
                         headerGlow
-                            .frame(height: headerGlowHeight)
+                            .frame(height: 520)
                             .offset(y: -geometry.safeAreaInsets.top)
                             .accessibilityHidden(true)
                     }
@@ -136,20 +120,20 @@ struct HomeContent: View {
         if state.featured == .loading, state.popular == .loading {
             ProgressView()
                 .controlSize(.large)
-                .tint(Theme.accent)
-                .frame(maxWidth: .infinity, minHeight: rowMinHeight)
+                .tint(TmdbColor.secondary)
+                .frame(maxWidth: .infinity, minHeight: PosterRowDefaults.posterHeight)
             favoritesSection
         } else {
             row(state.featured, listType: .featured, position: $featuredPosition)
             favoritesSection
             Text("home.popularHeading")
-                .font(.system(size: headingSize, weight: .bold))
-                .foregroundStyle(.white)
+                .tmdbFont(.titleLarge)
+                .foregroundStyle(TmdbColor.onSurface)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityAddTraits(.isHeader)
-                .padding(.horizontal, homeScreenPadding)
-                .padding(.top, state.favoritesCount > 0 ? favoritesToHeading : featuredToHeading)
-                .padding(.bottom, headingToPopular)
+                .padding(.horizontal, TmdbSpacing.xxl)
+                .padding(.top, state.favoritesCount > 0 ? TmdbSpacing.xxl : TmdbSpacing.xl)
+                .padding(.bottom, TmdbSpacing.md)
             row(state.popular, listType: .popular, position: $popularPosition)
         }
     }
@@ -163,8 +147,8 @@ struct HomeContent: View {
                 savedPosition: $favoritesPosition,
                 onIntent: onIntent
             )
-            .padding(.horizontal, homeScreenPadding - favoritesCardInset)
-            .padding(.top, featuredToFavorites)
+            .padding(.horizontal, TmdbSpacing.xxl - TmdbSpacing.sm)
+            .padding(.top, TmdbSpacing.xxl)
         }
     }
 
@@ -173,9 +157,9 @@ struct HomeContent: View {
         switch row {
         case .loading:
             ProgressView()
-                .tint(Theme.accent)
-                .frame(maxWidth: .infinity, minHeight: rowMinHeight, alignment: .leading)
-                .padding(.leading, homeScreenPadding)
+                .tint(TmdbColor.secondary)
+                .frame(maxWidth: .infinity, minHeight: PosterRowDefaults.posterHeight, alignment: .leading)
+                .padding(.leading, TmdbSpacing.xxl)
         case .error:
             RowMessage(message: "home.rowError") { onIntent(.retry(listType)) }
         case let .titles(titles) where titles.isEmpty:

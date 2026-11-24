@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Home](../../home/design/home.md), [Home favorites](../../favorites/design/home-favorites.md), [Title details](../../title-details/design/title-details.md)
 Depends on: 05-native-ios-tokens-and-small-screens
-Status: Todo
+Status: Done
 
 ## Goal
 Home (with its favorites section and background) and Title details in `native-ios` use only design-system

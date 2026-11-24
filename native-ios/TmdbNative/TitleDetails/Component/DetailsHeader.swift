@@ -1,22 +1,17 @@
 import SwiftUI
 import TmdbCore
 
-private let ringToName: CGFloat = 16
-private let nameToDateLine: CGFloat = 5
-
 struct DetailsHeader: View {
     let details: TitleDetailsItem
     let language: Language
 
-    @ScaledMetric(relativeTo: .title2) private var nameSize: CGFloat = 22
-
     var body: some View {
-        HStack(alignment: .top, spacing: ringToName) {
+        HStack(alignment: .top, spacing: TmdbSpacing.md) {
             RatingRing(percent: details.ratingPercent)
-            VStack(alignment: .leading, spacing: nameToDateLine) {
+            VStack(alignment: .leading, spacing: TmdbSpacing.xxs) {
                 Text(verbatim: TitleDetailsFormat.nameWithYear(details.name, year: details.releaseDate?.year))
-                    .font(.system(size: nameSize, weight: .bold))
-                    .foregroundStyle(.white)
+                    .tmdbFont(.titleLarge)
+                    .foregroundStyle(TmdbColor.onSurface)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityAddTraits(.isHeader)
                 let date = details.releaseDate.map { TitleDetailsFormat.releaseDate($0, language: language) }
@@ -34,29 +29,26 @@ private struct DateLine: View {
     let date: String?
     let runtime: String?
 
-    @ScaledMetric(relativeTo: .body) private var textSize: CGFloat = 16
-    @ScaledMetric(relativeTo: .body) private var clockSize: CGFloat = 19
-
     var body: some View {
         ViewThatFits(in: .horizontal) {
             HStack(spacing: 0) {
                 if let date { dateText(date) }
                 if date != nil, runtime != nil {
                     Circle()
-                        .fill(Theme.dateLine)
+                        .fill(TmdbColor.onSurfaceVariant)
                         .frame(width: 4, height: 4)
-                        .padding(.leading, 3)
-                        .padding(.trailing, 6)
+                        .padding(.leading, TmdbSpacing.xxs)
+                        .padding(.trailing, TmdbSpacing.xs)
                 }
                 if let runtime { runtimeLabel(runtime) }
             }
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: TmdbSpacing.xxs) {
                 if let date { dateText(date) }
                 if let runtime { runtimeLabel(runtime) }
             }
         }
-        .font(.system(size: textSize))
-        .foregroundStyle(Theme.dateLine)
+        .tmdbFont(.bodyLarge)
+        .foregroundStyle(TmdbColor.onSurfaceVariant)
     }
 
     private func dateText(_ date: String) -> some View {
@@ -64,10 +56,10 @@ private struct DateLine: View {
     }
 
     private func runtimeLabel(_ runtime: String) -> some View {
-        HStack(spacing: 6) {
+        HStack(spacing: TmdbSpacing.xs) {
             Image("Clock")
                 .resizable()
-                .frame(width: clockSize, height: clockSize)
+                .frame(width: TmdbSize.iconSmall, height: TmdbSize.iconSmall)
                 .accessibilityHidden(true)
             Text(verbatim: runtime).fixedSize()
         }

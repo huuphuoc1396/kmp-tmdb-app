@@ -1,7 +1,7 @@
 import SwiftUI
 
 private let gradient = LinearGradient(
-    colors: [Theme.primary, Theme.primaryContainer],
+    colors: [TmdbColor.primary, TmdbColor.primaryContainer],
     startPoint: .topLeading,
     endPoint: .bottomTrailing
 )
@@ -9,22 +9,19 @@ private let gradient = LinearGradient(
 struct TrailerButton: View {
     let action: () -> Void
 
-    @ScaledMetric(relativeTo: .body) private var labelSize: CGFloat = 16
-    @ScaledMetric(relativeTo: .body) private var iconSize: CGFloat = 20
-
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 10) {
+            HStack(spacing: TmdbSpacing.sm) {
                 Image("PlayCircle")
                     .resizable()
-                    .frame(width: iconSize, height: iconSize)
+                    .frame(width: TmdbSize.iconSmall, height: TmdbSize.iconSmall)
                     .accessibilityHidden(true)
                 Text("details.watchTrailer")
-                    .font(.system(size: labelSize, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .tmdbFont(.titleMedium)
+                    .foregroundStyle(TmdbColor.onPrimary)
                     .multilineTextAlignment(.center)
             }
-            .padding(12)
+            .padding(TmdbSpacing.sm)
             .frame(maxWidth: .infinity, minHeight: 44)
             .background(gradient, in: Capsule())
             .contentShape(Capsule())

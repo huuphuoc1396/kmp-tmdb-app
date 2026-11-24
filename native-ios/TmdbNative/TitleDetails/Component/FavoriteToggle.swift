@@ -17,10 +17,8 @@ private struct FavoriteToggleStyle: ToggleStyle {
         Button {
             configuration.isOn.toggle()
         } label: {
-            Image(configuration.isOn ? "FavoriteOn" : "FavoriteOff")
-                .resizable()
-                .frame(width: 32, height: 32)
-                .contentShape(Rectangle())
+            FavoriteHeart(isFavorite: configuration.isOn)
+                .contentShape(Circle())
         }
         .buttonStyle(.plain)
         .accessibilityRepresentation {

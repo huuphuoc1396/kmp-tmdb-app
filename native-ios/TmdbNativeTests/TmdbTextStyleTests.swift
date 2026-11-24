@@ -1,5 +1,6 @@
 @testable import TmdbNative
 import SwiftUI
+import UIKit
 import XCTest
 
 final class TmdbTextStyleTests: XCTestCase {
@@ -15,6 +16,13 @@ final class TmdbTextStyleTests: XCTestCase {
         for style in TmdbTextStyle.allCases {
             XCTAssertEqual(style.size, expected[style]?.size, "\(style)")
             XCTAssertEqual(style.lineHeight, expected[style]?.lineHeight, "\(style)")
+        }
+    }
+
+    func testLineSpacingFillsTheMaterialLineHeight() {
+        for style in TmdbTextStyle.allCases {
+            let natural = UIFont.systemFont(ofSize: style.size).lineHeight
+            XCTAssertEqual(natural + style.lineSpacing, max(natural, style.lineHeight), accuracy: 0.01, "\(style)")
         }
     }
 

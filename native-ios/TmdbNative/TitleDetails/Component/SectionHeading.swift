@@ -7,13 +7,12 @@ struct SectionHeading: View {
         self.text = text
     }
 
-    @ScaledMetric(relativeTo: .headline) private var size: CGFloat = 18
-
     var body: some View {
         Text(text)
-            .font(.system(size: size, weight: .bold))
-            .foregroundStyle(.white)
-            .fixedSize(horizontal: false, vertical: true)
+            .tmdbFont(.titleLarge)
+            .foregroundStyle(TmdbColor.onSurface)
+            .lineLimit(1)
+            .truncationMode(.tail)
             .accessibilityAddTraits(.isHeader)
     }
 }

@@ -120,10 +120,11 @@ color; the same screen looks the same in all three apps; and text follows the sy
   labels on the brand pink `#FF1F8A` (about 3.6:1, AA for large or bold text only).
 
 ## Open questions
-- [ ] Exact token values and names (spacing steps, type roles in use, shape sizes, component sizes) (owner: dev,
-  needed before blueprint)
-- [ ] Whether the Home background gradient on iOS stays a gradient between two color roles or becomes a flat
-  surface (owner: user, needed before blueprint)
+- [x] Exact token values and names (spacing steps, type roles in use, shape sizes, component sizes) — set in
+  plan 01.
+- [x] Whether the Home background gradient on iOS stays a gradient between two color roles or becomes a flat
+  surface — it stays a gradient, as artwork colors in the asset catalog, matching the `cmp`/Android drawable
+  (plan 06).
 
 ## Change log
 - 2026-11-24: Initial version.
@@ -142,3 +143,4 @@ color; the same screen looks the same in all three apps; and text follows the sy
   used in two or more places.
 - 2026-11-24: Added AC-9: a favorite shows the same filled heart on Home, My favorites and Title details in all three
   apps.
+- 2026-11-24: Closed the open questions (token values in plan 01, iOS Home gradient in plan 06).

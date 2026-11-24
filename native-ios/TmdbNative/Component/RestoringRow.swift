@@ -6,7 +6,7 @@ struct RestoringRow<Item: Identifiable, Cell: View>: View where Item.ID == Strin
     let spacing: CGFloat
     let rowKey: String
     @Binding var savedPosition: String
-    var leadingPadding: CGFloat = homeScreenPadding
+    var leadingPadding: CGFloat = TmdbSpacing.xxl
     @ViewBuilder let cell: (Item) -> Cell
 
     @State private var visible: Set<Int> = []
