@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Home – Favorites section](../design/home-favorites.md), [My favorites](../design/my-favorites.md), [Remove favorite dialog](../design/remove-favorite-dialog.md)
 Depends on: 01-favorites-list-data (published shared core); 03-cmp-remove-favorite as the reference behavior
-Status: Todo
+Status: Done
 
 ## Goal
 The native Android app has the same favorites as the cmp app: the Home "Favoritos" section, My favorites, opening
@@ -43,3 +43,5 @@ Publish the shared core, run `native-android`, then repeat the "How to test" ste
 
 ## Change log
 - 2026-11-23: Initial version.
+- 2026-11-23: Plan approved.
+- 2026-11-23: Implemented (plan 04 done).

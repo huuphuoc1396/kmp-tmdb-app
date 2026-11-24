@@ -45,6 +45,7 @@ import com.banhmilabs.tmdb.core.model.Title
 import com.banhmilabs.tmdb.core.model.TitleId
 import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.PosterRow
+import com.banhmilabs.tmdb.nativeapp.designsystem.component.RemoveFavoriteDialog
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.RetryMessage
 import com.banhmilabs.tmdb.nativeapp.titledetails.component.CastRow
 import com.banhmilabs.tmdb.nativeapp.titledetails.component.DetailsArtwork
@@ -138,6 +139,13 @@ internal fun TitleDetailsContent(
             onBack = { onIntent(TitleDetailsIntent.BackClicked) },
             isFavorite = state.isFavorite.takeIf { state.load is DetailsLoad.Loaded },
             onFavoriteClick = { onIntent(TitleDetailsIntent.FavoriteClicked) },
+        )
+    }
+    if (state.isRemoveConfirmationShown) {
+        RemoveFavoriteDialog(
+            titleName = state.details?.name,
+            onConfirm = { onIntent(TitleDetailsIntent.RemoveFavoriteConfirmed) },
+            onDismiss = { onIntent(TitleDetailsIntent.RemoveFavoriteDismissed) },
         )
     }
 }
