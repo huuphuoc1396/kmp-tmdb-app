@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.core.model.Title
 
@@ -50,4 +51,9 @@ private fun Poster(title: Title, onClick: () -> Unit) {
             .semantics(mergeDescendants = true) { contentDescription = title.name }
             .clickable(role = Role.Button, onClick = onClick),
     )
+}
+
+object PosterRowDefaults {
+    val PosterWidth = 124.dp
+    val PosterHeight = 188.dp
 }

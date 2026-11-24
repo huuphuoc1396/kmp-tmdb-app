@@ -263,3 +263,10 @@ text can grow with the system font size. `native-android` (03) and `native-ios` 
   `PosterRowDefaults` (own file `PosterRowDefaults.kt`, as Detekt `MatchingDeclarationName` requires), card min height
   and small poster to private constants in `FavoriteCard.kt`, badge min height to `FavoritesScreen.kt`, content max
   width to `OnboardingScreen.kt`. The value-mapping table keeps the old `TmdbSize.*` names for these rows.
+- After review (task.md change of 2026-11-24, second), values used in one place are written inline: the favorite card
+  min height, thumbnail size and name max lines in `FavoriteCard`, the badge min height in `FavoritesScreen`, the
+  content max width in `OnboardingScreen`, the placeholder max lines in `PosterTile`, and the alpha in `PersonIcon`.
+  Detekt `MagicNumber` does not flag them. `PosterRowDefaults` stays, as Home also reads the poster height. Test tags
+  and the ViewModel stop timeout are left as they are: they are not design values.
+- `PosterRowDefaults` moved back into `PosterRow.kt`, after the composables (user request). Detekt
+  `MatchingDeclarationName` only checks files that start with a class or object, so the separate file is not needed.

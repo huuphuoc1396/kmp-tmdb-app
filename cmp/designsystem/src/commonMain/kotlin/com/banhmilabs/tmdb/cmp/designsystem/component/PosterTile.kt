@@ -16,8 +16,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import coil3.compose.AsyncImage
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 
-private const val PLACEHOLDER_MAX_LINES = 4
-
 @Composable
 fun PosterTile(name: String?, posterUrl: String?, modifier: Modifier = Modifier) {
     Box(
@@ -38,7 +36,7 @@ fun PosterTile(name: String?, posterUrl: String?, modifier: Modifier = Modifier)
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleSmall,
-                maxLines = PLACEHOLDER_MAX_LINES,
+                maxLines = 4,
                 overflow = TextOverflow.Ellipsis,
             )
         }

@@ -42,12 +42,6 @@ import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-private val CardMinHeight = 120.dp
-private val PosterWidth = 64.dp
-private val PosterHeight = 96.dp
-
-private const val NAME_MAX_LINES = 2
-
 @Composable
 internal fun FavoriteCard(
     favorite: FavoriteTitle,
@@ -60,7 +54,7 @@ internal fun FavoriteCard(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = CardMinHeight)
+            .heightIn(min = 120.dp)
             .height(IntrinsicSize.Min)
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceContainer)
@@ -83,7 +77,7 @@ internal fun FavoriteCard(
                 name = summary?.name,
                 posterUrl = summary?.posterUrl,
                 modifier = Modifier
-                    .size(width = PosterWidth, height = PosterHeight)
+                    .size(width = 64.dp, height = 96.dp)
                     .clip(MaterialTheme.shapes.small),
             )
             Spacer(modifier = Modifier.width(TmdbSpacing.md))
@@ -93,7 +87,7 @@ internal fun FavoriteCard(
                         text = summary.name,
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleMedium,
-                        maxLines = NAME_MAX_LINES,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
                     val meta = metaLine(summary.releaseYear, summary.firstGenre)

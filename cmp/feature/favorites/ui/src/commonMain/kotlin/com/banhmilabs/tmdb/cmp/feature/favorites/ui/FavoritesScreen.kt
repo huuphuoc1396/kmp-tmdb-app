@@ -57,8 +57,6 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-private val BadgeMinHeight = 28.dp
-
 @Composable
 internal fun FavoritesScreen(
     onBack: () -> Unit,
@@ -158,7 +156,7 @@ private fun FavoritesHeader(count: Int, onBack: () -> Unit) {
             Spacer(modifier = Modifier.weight(1f))
             Box(
                 modifier = Modifier
-                    .heightIn(min = BadgeMinHeight)
+                    .heightIn(min = 28.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surfaceContainer)
                     .padding(horizontal = TmdbSpacing.sm),

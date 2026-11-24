@@ -22,8 +22,8 @@ color; the same screen looks the same in all three apps; and text follows the sy
   gradient, ring center) map to a color role.
 - Sizes shared across features or set by the platform (48 touch target, icon sizes, border width) as named size
   tokens in the design system. A size that belongs to one component or one feature (poster 124×188, rating ring,
-  favorite card) is a named constant next to that component; when another module needs it, the component exposes
-  it through a public `<Component>Defaults` object.
+  favorite card) stays in that component's file: inline when used once, a named constant when used in two or more
+  places, and in a public `<Component>Defaults` object when another module needs it.
 - The same token values in all three apps. iOS keeps its own controls and gestures (navigation bar, alerts,
   sheets) while it uses the same spacing, type, shape and color values.
 - Text that scales with the system setting: Android font scale, iOS Dynamic Type.
@@ -66,8 +66,9 @@ color; the same screen looks the same in all three apps; and text follows the sy
   - Given the screen and shared component code of each app
   - When it is searched for numeric dp/sp/pt values, font sizes, corner radii and color literals
   - Then spacing, text styles, corner shapes and colors all come from design-system tokens (color literals and token
-    values live only in the design-system definition), and no numeric size is written inline in a function: every
-    other size is a named constant at the top of its component's file or in its `<Component>Defaults` object
+    values live only in the design-system definition); any other size used in one place is written inline where it
+    is used, and a size used in two or more places is a named constant in its file, or in its `<Component>Defaults`
+    object when another module needs it
 - **AC-4** Old values rounded to the nearest token
   - Given a value used today that is not on the scale (for example 31dp or 15sp)
   - When the screen is redone
@@ -131,3 +132,5 @@ color; the same screen looks the same in all three apps; and text follows the sy
 5. [05 - native-ios: tokens and smaller screens](subtasks/05-native-ios-tokens-and-small-screens.md)
 6. [06 - native-ios: Home and Title details](subtasks/06-native-ios-home-and-title-details.md)
 7. [07 - Cross-app comparison and docs](subtasks/07-parity-and-docs.md)
+- 2026-11-24: Sizes and other values used in one place are written inline; named constants only for values
+  used in two or more places.

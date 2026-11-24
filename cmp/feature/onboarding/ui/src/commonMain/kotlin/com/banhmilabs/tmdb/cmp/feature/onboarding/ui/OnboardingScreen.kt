@@ -44,8 +44,6 @@ import org.koin.compose.viewmodel.koinViewModel
 internal const val LOGO_TAG = "onboarding_logo"
 internal const val CONTENT_TAG = "onboarding_content"
 
-private val ContentMaxWidth = 320.dp
-
 @Composable
 internal fun OnboardingScreen(onFinished: () -> Unit, viewModel: OnboardingViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -91,7 +89,7 @@ internal fun OnboardingContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Column(
-                    modifier = Modifier.widthIn(max = ContentMaxWidth).fillMaxWidth().testTag(CONTENT_TAG),
+                    modifier = Modifier.widthIn(max = 320.dp).fillMaxWidth().testTag(CONTENT_TAG),
                     verticalArrangement = Arrangement.spacedBy(TmdbSpacing.lg),
                 ) {
                     Image(

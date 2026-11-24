@@ -27,8 +27,9 @@ favorites use only those tokens and keep iOS controls (alerts, navigation bar).
   - Given the screen and shared component code of each app
   - When it is searched for numeric dp/sp/pt values, font sizes, corner radii and color literals
   - Then spacing, text styles, corner shapes and colors all come from design-system tokens (color literals and token
-    values live only in the design-system definition), and no numeric size is written inline in a function: every
-    other size is a named constant at the top of its component's file or in its `<Component>Defaults` object
+    values live only in the design-system definition); any other size used in one place is written inline where it
+    is used, and a size used in two or more places is a named constant in its file, or in its `<Component>Defaults`
+    object when another module needs it
 - **AC-4** Old values rounded to the nearest token (partial: same screens)
   - Given a value used today that is not on the scale (for example 31dp or 15sp)
   - When the screen is redone
@@ -61,3 +62,4 @@ favorites use only those tokens and keep iOS controls (alerts, navigation bar).
 ## Change log
 - 2026-11-24: Initial version.
 - 2026-11-24: AC-3 updated: component- and feature-specific sizes are named constants next to their component.
+- 2026-11-24: AC-3 updated: single-use sizes are written inline.
