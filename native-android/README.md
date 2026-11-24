@@ -24,6 +24,10 @@ always asks for confirmation.
 3. After changing the shared core, publish again (step 1), then rebuild the app. The version stays
    `0.1.0-SNAPSHOT`; the new libraries replace the old ones.
 
+## Design system
+Screens use the tokens in `app/src/main/kotlin/com/banhmilabs/tmdb/nativeapp/designsystem` (`TmdbSpacing`,
+`TmdbSize`, `MaterialTheme`), with the same names and values as `cmp` (see `CLAUDE.md`, Design system).
+
 ## Checks
 ```bash
 ./gradlew :app:detekt :app:testDebugUnitTest

@@ -80,6 +80,18 @@ The design is dark only; there is no light variant. The app uses a dark theme th
 | `assets/group_11.svg` | SVG | 176.441×15 | Logo above headline | reference only, not shipped: replaced by TMDB's official logo (from user) |
 | `assets/tmdb_logo_long.svg` | SVG | 423.04×35.4 (shown 179×15dp) | Logo above headline | shipped as `apps/cmp/feature/onboarding/ui` `drawable/tmdb_logo.xml`; TMDB's `blue_long_1` from the logos & attribution page, gradient colours kept (not the design's white) (from user) |
 
+## Tokens
+Design-system tokens the screen uses in all three apps (`docs/features/design-system/`). Measurements above
+stay as the Figma record.
+
+| Element | Spacing | Text | Shape | Color |
+|---|---|---|---|---|
+| Content block | `xxl` start, end and bottom; `lg` between items; max width 320 | — | — | — | |
+| Headline | — | `headlineLarge`, Light | — | `onSurface` | |
+| Body | — | `bodyLarge` | — | `onSurface` | |
+| Primary button | min height `touchTarget`; `sm` padding | `titleMedium` label | full (pill) | `primary` → `primaryContainer` gradient, `onPrimary` label | |
+| Artwork and scrim | — | — | — | artwork asset; scrim fades to `surface` | |
+
 ## Gaps
 - [x] English copy — resolved (from user), see Copy.
 - [x] Artwork license — resolved (from user): gradient placeholder; licensed artwork later.
@@ -94,3 +106,4 @@ The design is dark only; there is no light variant. The app uses a dark theme th
 - 2026-11-12: Headline ships in a single Light weight; the bold keywords are dropped (user decision).
 - 2026-11-12: The placeholder artwork and the scrim ship as vector drawables (`drawable/onboarding_artwork_placeholder.xml`, `drawable/onboarding_scrim.xml`) instead of code gradients.
 - 2026-11-12: Headline gap closed; button min height 48dp for the touch target (AC-7).
+- 2026-11-24: Added Tokens (design system).

@@ -62,6 +62,17 @@ The design is dark only. No light variant.
 ## Assets
 None.
 
+## Tokens
+Design-system tokens the screen uses in all three apps (`docs/features/design-system/`). Measurements above
+stay as the Figma record.
+
+| Element | Spacing | Text | Shape | Color |
+|---|---|---|---|---|
+| Dialog | `lg` from the screen edge; `xl` top and sides, `lg` bottom | — | `extraLarge` | `surfaceContainer`; scrim `scrim` | |
+| Title | `lg` below | `titleLarge` | — | `onSurface` | |
+| Message | `xl` below | `bodyMedium` | — | `onSurfaceVariant` | |
+| Buttons | `sm` between; min height `touchTarget` | `titleMedium` | `medium` | cancel `outline` border (`borderWidth`) and `onSurface`; confirm `secondary` / `onSecondary` | |
+
 ## Gaps
 - [ ] Exact sizes, font names and radii: re-read Figma frame 398:50 once the MCP limit resets.
 - [ ] Open/close animation: not designed.
@@ -69,3 +80,4 @@ None.
 ## Change log
 - 2026-11-23: Initial version, from screenshots (Figma MCP rate-limited).
 - 2026-11-23: Confirmed by the user.
+- 2026-11-24: Added Tokens (design system).

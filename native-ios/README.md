@@ -33,6 +33,10 @@ Posters load with [Nuke](https://github.com/kean/Nuke) (`NukeUI`), a remote Swif
 `TmdbNative.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`. Xcode fetches it on the first build,
 which needs network once.
 
+## Design system
+Screens use the tokens in `TmdbNative/DesignSystem` (`TmdbColor`, `.tmdbFont(_:)`, `TmdbShape`, `TmdbSpacing`,
+`TmdbSize`), with the same values as `cmp` and `native-android` (see `CLAUDE.md`, Design system).
+
 ## Tests
 From `native-ios/`, on an installed iPhone simulator:
 ```bash

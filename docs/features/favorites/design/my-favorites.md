@@ -86,6 +86,20 @@ The design is dark only. No light variant.
 
 Posters are TMDB images loaded at runtime, not assets.
 
+## Tokens
+Design-system tokens the screen uses in all three apps (`docs/features/design-system/`). Measurements above
+stay as the Figma record.
+
+| Element | Spacing | Text | Shape | Color |
+|---|---|---|---|---|
+| Screen | `lg` sides; `xs` top (iOS `md` under the system bar); `xl` bottom; `sm` between cards | — | — | `surface` | |
+| Back control | min height `touchTarget`; arrow `iconMedium`; `xs` gap | `titleMedium` | — | `onSurface` | |
+| Count badge | `sm` padding; min height 28 | `labelMedium` | full (pill) | `surfaceContainer`, text `secondary` | |
+| Title and subtitle | `md` above the title; `xs` between; `sm` before the list | `headlineMedium`, `bodyMedium` | — | `onSurface`, `onSurfaceVariant` | |
+| Favorite card | `sm` padding; `md` poster → text; `xs` name → meta; min height 120; poster 64×96 | name `titleMedium` (2 lines), meta `bodyMedium` | card `medium`, poster `small` | `surfaceContainer`, `onSurface`, `onSurfaceVariant` | |
+| Card heart | `sm` end padding; touch target `touchTarget` | — | full (circle) | `FavoriteHeart` (filled) | |
+| Empty message | `xxxl` above | `bodyMedium` | — | `onSurfaceVariant` | |
+
 ## Gaps
 - [ ] Exact sizes, font names, radii and the assets: re-read Figma frame 396:2 once the MCP limit resets.
 - [ ] Whether the header (Back, badge, title, subtitle) scrolls with the list or stays fixed.
@@ -97,3 +111,4 @@ Posters are TMDB images loaded at runtime, not assets.
 - 2026-11-23: Initial version, from screenshots (Figma MCP rate-limited).
 - 2026-11-23: Confirmed by the user.
 - 2026-11-23: pt-BR title "Meus favoritos" (from user).
+- 2026-11-24: Added Tokens (design system).

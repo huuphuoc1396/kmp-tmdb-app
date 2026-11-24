@@ -141,6 +141,13 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 - Inject dispatchers via `DispatcherProvider` (`core:common`) and time via `kotlin.time.Clock`.
 - Code has no comments (no KDoc, no `//` or `/* */`, no XML or `#` comments); names and tests explain it. Exceptions: shebangs, comments a tool reads (lint directives, `swift-tools-version`), tool-managed files (Xcode project, Gradle wrapper) and `*.example` templates.
 - Max line length 120 (`config/detekt/detekt.yml`).
+- Design system: screens and components take spacing, text styles, corner shapes and colors only from the tokens
+  (Material 3; `docs/features/design-system/`). `cmp`: `TmdbSpacing`, `TmdbSize` and `MaterialTheme`
+  (`colorScheme`, `typography`, `shapes`) in `cmp/designsystem`. `native-android`: the same names in its
+  `designsystem` package. `native-ios`: `TmdbColor`, `.tmdbFont(_:)`, `TmdbShape`, `TmdbSpacing`, `TmdbSize` in
+  `TmdbNative/DesignSystem`. A size used in one place is written inline (on the 4dp grid); used in two or more
+  places it is a named constant in its file; needed by another module it goes in a `<Component>Defaults`. A token
+  value changes in all three apps together.
 - Commits: short imperative subject, no prefix (`Split CI checks into separate steps`).
 - Feature work is specced in `docs/features/<feature>/task.md` with an `implement-plan.md` alongside.
 
@@ -167,6 +174,10 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | Confirm removing a favorite (cmp; `removeFavoriteLabel()` for the heart button) | `RemoveFavoriteDialog` | `cmp/designsystem` |
 | Poster image or name placeholder at any size (cmp) | `PosterTile` (`PosterRow` for a row of 124×188 posters) | `cmp/designsystem` |
 | "year · genre" line, unknown parts left out (cmp) | `metaLine(year, genre)` | `cmp/designsystem` |
+| Spacing scale and shared sizes (touch target, icons, border) | `TmdbSpacing` (`xxs` 4 … `xxxl` 48), `TmdbSize` | `cmp/designsystem` (same names in `native-android`, `native-ios`) |
+| Text styles on iOS (Material 3 sizes, Dynamic Type) | `.tmdbFont(.titleMedium)` (`TmdbTextStyle`) | `native-ios/TmdbNative/DesignSystem` |
+| Favorite heart (filled = favorite, outline = not) | `FavoriteHeart(isFavorite)` | `cmp/designsystem` (same in `native-android`, `native-ios`) |
+| Poster size of a poster row (124×188) | `PosterRowDefaults` | `cmp/designsystem` (same in both native apps) |
 | Remote images in `native-ios` | Nuke `LazyImage` (`NukeUI`, Swift package, disk cache) | `native-ios` |
 | Compose resources (strings, drawables) | `composeResources/` in the module; `Res` is in `<namespace>.generated.resources` | `cmp/*` (set by `tmdb.module`) |
 | Repository test double | `Fake<Repository>` (e.g. `FakeSettingsRepository`, `FakeTitleListsRepository` with `setRemoteTitles` per list, `FakeFavoritesRepository`) | `service/<ctx>/fake` |
@@ -189,5 +200,6 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 - Don't log request/response bodies in release builds.
 - Don't make `native-android/` depend on `cmp/` or reference the KMP build (no `includeBuild`, `project(...)` or source paths); it uses only the published shared core.
 - Don't put UI in `core/` or `service/`.
+- Don't write raw colors, text sizes or corner radii in screens or components; use the design-system tokens.
 - Don't hardcode versions or SDK levels in module build files; read them from `libs.versions.toml`.
 - Don't add `GlobalScope` or hardcoded `Dispatchers.*`; inject `DispatcherProvider`.
