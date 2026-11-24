@@ -45,7 +45,7 @@ Full design: [`docs/architecture.md`](docs/architecture.md).
 |---|---|---|
 | Libraries | `core/` | **Kernel**: `common`, `model` (result/error types, shared models; used by every module)<br>**Infrastructure**: `network`, `database`, `datastore`, `security` (used by `data` only)<br>**Wiring**: `di`, `ios`<br>**Tests**: `testing` |
 | Services | `service/<context>/` | One business capability: `title`, `favorites`, `settings` |
-| Features | `cmp/feature/<feature>/` | Screens: `onboarding`, `home`, `title-details` |
+| Features | `cmp/feature/<feature>/` | Screens: `onboarding`, `home`, `title-details`, `favorites` |
 
 Each service has three modules:
 
@@ -122,14 +122,27 @@ sequenceDiagram
 ## Project structure
 
 ```
-build-logic/        Convention plugin tmdb.module
-core/               Libraries
-service/            title, favorites, settings (domain / data / fake)
-cmp/                Compose Multiplatform app: designsystem, feature/, composeApp, androidApp, iosApp
-native-android/     Standalone Android app, own Gradle build
-native-ios/         Standalone iOS app, own Xcode project
-architecture-test/  Konsist rules
-docs/               architecture.md, feature specs
+.
+├── build-logic/            # Convention plugin tmdb.module
+├── core/                   # Libraries
+│   ├── common/ model/      #   Kernel
+│   ├── network/ database/ datastore/ security/
+│   ├── di/ ios/            #   Wiring
+│   └── testing/
+├── service/                # Services
+│   ├── title/              #   domain / data / fake
+│   ├── favorites/
+│   └── settings/
+├── cmp/                    # Compose Multiplatform app
+│   ├── designsystem/
+│   ├── feature/            #   onboarding, home, title-details, favorites
+│   ├── composeApp/         #   App(), navigation
+│   ├── androidApp/
+│   └── iosApp/
+├── native-android/         # Standalone Android app
+├── native-ios/             # Standalone iOS app
+├── architecture-test/      # Konsist rules
+└── docs/                   # architecture.md, feature specs, screenshots
 ```
 
 ## Tech stack and decisions
