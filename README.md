@@ -45,7 +45,7 @@ Full design: [`docs/architecture.md`](docs/architecture.md).
 
 | Tier | Directory | Contains |
 |---|---|---|
-| Libraries | `core/` | Infrastructure: `common`, `model`, `security`, `network`, `database`, `datastore`, `di`, `ios`, `testing` |
+| Libraries | `core/` | **Kernel**: `common`, `model` (result/error types, shared models; used by every module)<br>**Infrastructure**: `network`, `database`, `datastore`, `security` (used by `data` only)<br>**Wiring**: `di`, `ios`<br>**Tests**: `testing` |
 | Services | `service/<context>/` | One business capability: `title`, `favorites`, `settings` |
 | Features | `cmp/feature/<feature>/` | Screens: `onboarding`, `home`, `title-details` |
 
@@ -70,7 +70,7 @@ flowchart LR
     FAKE["fake (tests)"] --> DOMAIN
   end
   DATA --> INFRA["core: network / database / datastore"] --> SEC["core:security"]
-  DOMAIN --> KERNEL["core: common + model"]
+  DOMAIN --> KERNEL["kernel: core:common + core:model"]
 ```
 
 ### Module dependencies
@@ -87,7 +87,7 @@ graph TD
   DATA --> DOMAIN
   DATA --> INFRA["network / database / datastore"]
   INFRA --> SEC["security"]
-  DOMAIN --> KERNEL["common + model"]
+  DOMAIN --> KERNEL["kernel (common + model)"]
   DOMAIN -.->|"one level, allowlisted (title → favorites)"| DOMAIN2["other domain"]
 ```
 

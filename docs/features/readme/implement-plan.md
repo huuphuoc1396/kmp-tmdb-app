@@ -181,13 +181,10 @@ verification is a manual review of the rendered page and of the commands against
 ## Out of scope
 - Real screenshots (owner adds them to `docs/images/screenshots/`).
 - Fixing stale lines in `docs/architecture.md` (SQLCipher "planned") and `CLAUDE.md` (Title details "placeholder").
-- Building the My favorites list screen (favorites subtasks 02–05).
+- Building the My favorites list screen (favorites subtasks 02–05, merged on main before this PR).
 - Roadmap, translated README, TMDB logo.
 
 ## Risks
-- The README presents the My favorites list as a feature, but favorites subtasks 02–05 (the list screen in `cmp/`,
-  `native-android/`, `native-ios/`) are still Todo — readers may look for it. Mitigation: the user chose this; the
-  favorites screenshots stay empty until those subtasks land.
 - Facts drift from `docs/architecture.md` because the README is self-contained. Mitigation: README links
   `docs/architecture.md` as the source of truth for details; versions are not repeated.
 - Mermaid syntax errors only show after push. Mitigation: check diagrams in the GitHub preview (or mermaid.live)
