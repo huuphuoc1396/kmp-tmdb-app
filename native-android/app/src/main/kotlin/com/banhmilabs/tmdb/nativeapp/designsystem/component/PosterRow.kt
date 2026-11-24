@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,11 +18,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.core.model.Title
-
-private val PosterWidth = 124.dp
-private val PosterHeight = 188.dp
-private val PosterShape = RoundedCornerShape(8.dp)
-private val PosterSpacing = 12.dp
+import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
 
 @Composable
 internal fun PosterRow(
@@ -33,10 +29,10 @@ internal fun PosterRow(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     LazyRow(
-        modifier = modifier.height(PosterHeight),
+        modifier = modifier.height(PosterRowDefaults.PosterHeight),
         state = listState,
         contentPadding = contentPadding,
-        horizontalArrangement = Arrangement.spacedBy(PosterSpacing),
+        horizontalArrangement = Arrangement.spacedBy(TmdbSpacing.sm),
     ) {
         items(titles, key = { "${it.id.type}-${it.id.tmdbId}" }) { title ->
             Poster(title = title, onClick = { onTitleClick(title) })
@@ -50,9 +46,14 @@ private fun Poster(title: Title, onClick: () -> Unit) {
         name = title.name,
         posterUrl = title.posterUrl,
         modifier = Modifier
-            .size(width = PosterWidth, height = PosterHeight)
-            .clip(PosterShape)
+            .size(width = PosterRowDefaults.PosterWidth, height = PosterRowDefaults.PosterHeight)
+            .clip(MaterialTheme.shapes.small)
             .semantics(mergeDescendants = true) { contentDescription = title.name }
             .clickable(role = Role.Button, onClick = onClick),
     )
+}
+
+internal object PosterRowDefaults {
+    val PosterWidth = 124.dp
+    val PosterHeight = 188.dp
 }

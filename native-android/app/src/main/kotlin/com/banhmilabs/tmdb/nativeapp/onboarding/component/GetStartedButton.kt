@@ -14,24 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.banhmilabs.tmdb.nativeapp.R
-
-private val ButtonMinHeight = 48.dp
-private val ButtonPadding = 12.dp
-private val ButtonLabelStyle = TextStyle(
-    color = Color.White,
-    fontSize = 16.sp,
-    fontWeight = FontWeight.SemiBold,
-    textAlign = TextAlign.Center,
-)
+import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSize
+import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
 
 @Composable
 internal fun GetStartedButton(enabled: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -39,13 +27,18 @@ internal fun GetStartedButton(enabled: Boolean, onClick: () -> Unit, modifier: M
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = ButtonMinHeight)
+            .heightIn(min = TmdbSize.touchTarget)
             .clip(CircleShape)
             .background(Brush.linearGradient(listOf(colors.primary, colors.primaryContainer)))
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
-            .padding(ButtonPadding),
+            .padding(TmdbSpacing.sm),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text = stringResource(R.string.onboarding_get_started), style = ButtonLabelStyle)
+        Text(
+            text = stringResource(R.string.onboarding_get_started),
+            color = colors.onPrimary,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleMedium,
+        )
     }
 }
