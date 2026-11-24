@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Onboarding](../../onboarding/design/onboarding.md), [My favorites](../../favorites/design/my-favorites.md), [Remove favorite dialog](../../favorites/design/remove-favorite-dialog.md), [Home](../../home/design/home.md), [Home favorites](../../favorites/design/home-favorites.md), [Title details](../../title-details/design/title-details.md)
 Depends on: 02-cmp-home-and-title-details, 04-native-android-home-and-title-details, 06-native-ios-home-and-title-details
-Status: Todo
+Status: Done
 
 ## Goal
 Every screen looks the same in the three apps, apart from platform controls, and the project docs state the

@@ -175,7 +175,7 @@ The **public API of the shared core** is the set of `service/*/domain` modules. 
 | `service/<ctx>/domain` | domain | Context models, repository interfaces, use cases |
 | `service/<ctx>/data` | data | Repository implementations, endpoints + DTOs, mappers, queries, Koin module |
 | `service/<ctx>/fake` | fake | In-memory repository fakes + the repository contract test |
-| `cmp/designsystem` | designsystem | Theme, stateless components used by two or more features, image loading, string resources |
+| `cmp/designsystem` | designsystem | Theme and design tokens (Material 3 color scheme, typography, shapes, `TmdbSpacing`, `TmdbSize`), stateless components used by two or more features, image loading, string resources |
 | `…/feature/<x>/nav` | nav | Route, Args, Result only |
 | `…/feature/<x>/api` | api | `nav` plus entry interfaces (for example a `@Composable` entry); replaces `nav` when needed |
 | `…/feature/<x>/ui` | ui | ViewModel, screen, implementations of the feature's entries |

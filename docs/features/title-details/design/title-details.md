@@ -158,6 +158,24 @@ The design is dark only; there is no light variant. The app uses a dark theme th
 | Cast photos (7 in the frame) | PNG | 136×136px (68dp @2x, border included) | Cast row | not downloaded: sample photos; the app loads them from TMDB at runtime |
 | Recommendation posters (8 in the frame) | PNG | 124×188 | Recommendations row | not downloaded: sample posters; the app loads them from TMDB at runtime |
 
+## Tokens
+Design-system tokens the screen uses in all three apps (`docs/features/design-system/`). Measurements above
+stay as the Figma record.
+
+| Element | Spacing | Text | Shape | Color |
+|---|---|---|---|---|
+| Screen | `xxl` sides; content 376 from the top; `xxxl` bottom | — | — | `surface`; artwork fades to `surface` (artwork 492 high) | |
+| Back control | `xs` start; `sm` pill padding; `xs` arrow gap; pill min height 32 | `titleMedium` | full (pill) | `surfaceContainerHigh` 65%, `onSurface` (iOS: system bar on `surfaceContainerHigh`) | |
+| Favorite button | `xl` end | — | full (circle) | `FavoriteHeart` (outline `onSurface` / filled `secondary`) | |
+| Rating ring | `md` to the name; ring 56, stroke 6 | `titleMedium` value, capped and auto-sized | full (circle) | track `surfaceContainerHigh`, center `surface`, arc `secondary`, value `onSurface` | |
+| Name and date line | `xxs` name → date; dot 4 with `xxs`/`xs`; clock `iconSmall`, `xs` gap | `titleLarge`, `bodyLarge` | — | `onSurface`, `onSurfaceVariant` | |
+| Divider and synopsis | `lg` above and below the divider; `xxl` to the trailer | `bodyMedium` | — | divider `outlineVariant` (`borderWidth`), synopsis `onSurface` | |
+| Trailer button | `sm` padding; icon `iconSmall`, `sm` gap; min height 44 | `titleMedium` | full (pill) | `primary` → `primaryContainer`, `onPrimary` | |
+| Section headings | `xxxl` above; `md` (cast) or `lg` (others) below | `titleLarge` | — | `onSurface` | |
+| Cast | `xxs` between items and photo → name; item 76, photo 60, border 4 | `labelMedium` (2 lines) | full (circle) | `surfaceContainerHigh`, `onSurface` | |
+| Genre chips | `md` between and padding; `sm` between lines; min height 32 | `titleMedium` | full (pill) | `surfaceContainerHigh`, `onSurface` | |
+| Recommendations | `PosterRowDefaults`; `sm` between | — | `small` | — | |
+
 ## Gaps
 - [ ] Artwork placeholder when the title has neither poster nor backdrop (needed for AC-12)
 - [ ] Cast photo placeholder (needed for AC-9); and the recommendation poster placeholder tile (AC-11), e.g.
@@ -173,3 +191,4 @@ The design is dark only; there is no light variant. The app uses a dark theme th
 ## Change log
 - 2026-11-20: Initial version.
 - 2026-11-20: Confirmed by the user.
+- 2026-11-24: Added Tokens (design system).

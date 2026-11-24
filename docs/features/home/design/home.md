@@ -122,6 +122,20 @@ The design is dark only; there is no light variant. The app uses a dark theme th
 | Person icon | — | — | Avatar | missing: not in the design; a generic person icon is needed (from user) |
 | Poster images (14 in the frame) | PNG | 124×188 | Featured and popular rows | not downloaded: TMDB film art, sample content only; the app loads posters from TMDB at runtime |
 
+## Tokens
+Design-system tokens the screen uses in all three apps (`docs/features/design-system/`). Measurements above
+stay as the Figma record.
+
+| Element | Spacing | Text | Shape | Color |
+|---|---|---|---|---|
+| Screen | `xxl` sides; `lg` top; `xxxl` bottom | — | — | artwork background, `primary` glow | |
+| Title + avatar | `xs` between; avatar 40 | `headlineMedium` | avatar full (circle) | `onSurface`; avatar `surfaceVariant` | |
+| Search field | `md` below the header; `lg` start, `md` end; min height 48 | `bodyLarge` hint | full (pill) | `surfaceVariant`, hint `onSurfaceVariant` | |
+| Category tabs | `xl` below search; `xxl` between tabs and at the start; pill `md`×`xs`; min height `touchTarget` | selected `titleMedium`, unselected `bodyLarge` | full (pill) | selected `secondary` / `onSecondary`; unselected `onSurfaceVariant` | |
+| Poster rows | `xxl` below tabs; `sm` between posters; `PosterRowDefaults` 124×188 | — | `small` | placeholder `surfaceVariant` | |
+| Section heading | `xl` (or `xxl` after favorites) above; `md` below | `titleLarge` | — | `onSurface` | |
+| Row message and retry | `sm` gap; retry `md`×`xs`, min height `touchTarget` | `bodyLarge` message, `titleMedium` retry | retry full (pill) | message `onSurfaceVariant`; retry `secondary` / `onSecondary` | |
+
 ## Gaps
 - [x] English tab labels (Movies? Series? Anime? Soaps? Documentaries?) (needed for AC-10)
 - [x] Error and empty message copy in en and pt-BR, and the English retry label (task.md open question; AC-8, EC-3)
@@ -135,3 +149,4 @@ The design is dark only; there is no light variant. The app uses a dark theme th
 - 2026-11-17: Search field tap: opens Search → no action, skipped by screen readers (task.md AC-4 change). Confirmed by the user.
 - 2026-11-19: Gaps closed by plans 04 and 05: English tab labels, empty and error copy, 48dp tab touch targets,
   Material Icons person icon. Press feedback stays the platform default.
+- 2026-11-24: Added Tokens (design system).

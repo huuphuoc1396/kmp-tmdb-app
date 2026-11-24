@@ -131,6 +131,9 @@ color; the same screen looks the same in all three apps; and text follows the sy
 - 2026-11-24: Component- and feature-specific sizes stay next to their component (`<Component>Defaults` when shared),
   not in the design system; AC-3 and the size scope updated. Added the white-on-pink contrast exception.
 
+## Parity
+- [Cross-app parity](parity.md): no token-level mismatch; accepted platform differences listed.
+
 ## Subtasks
 1. [01 - cmp: tokens and smaller screens](subtasks/01-cmp-tokens-and-small-screens.md)
 2. [02 - cmp: Home and Title details](subtasks/02-cmp-home-and-title-details.md)
@@ -144,3 +147,4 @@ color; the same screen looks the same in all three apps; and text follows the sy
 - 2026-11-24: Added AC-9: a favorite shows the same filled heart on Home, My favorites and Title details in all three
   apps.
 - 2026-11-24: Closed the open questions (token values in plan 01, iOS Home gradient in plan 06).
+- 2026-11-24: Linked the cross-app parity record (subtask 07).

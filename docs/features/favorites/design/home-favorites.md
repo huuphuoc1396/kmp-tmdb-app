@@ -79,6 +79,20 @@ The design is dark only. No light variant.
 
 Posters are TMDB images loaded at runtime, not assets.
 
+## Tokens
+Design-system tokens the screen uses in all three apps (`docs/features/design-system/`). Measurements above
+stay as the Figma record.
+
+| Element | Spacing | Text | Shape | Color |
+|---|---|---|---|---|
+| Card | `xxl` − `sm` from the screen edge; `xxl` above; `lg` top, `md` bottom, `sm` sides | — | `large` | `surfaceContainer`, `surfaceContainerHigh` border (`borderWidth`) | |
+| Title | — | `titleLarge` | — | `onSurface` | |
+| Count badge | `xs` after the title; `xs` padding; min size 24 | `labelMedium` | full (circle) | `secondaryContainer` / `onSecondaryContainer` | |
+| View all | `xs` padding and chevron gap; chevron 12 | `labelLarge` | — | `secondary` | |
+| Subtitle | `sm` below the header | `bodyMedium` | — | `onSurfaceVariant` | |
+| Items | `md` below the subtitle; `sm` between items; 96 wide, 148 poster | name `titleSmall` (2 lines), meta `bodySmall` | poster `small` | name `onSurface`, meta `onSurfaceVariant` | |
+| Heart | `xxs` from the poster's top and end | — | full (circle) | `FavoriteHeart` (filled `secondary` on `surfaceContainerHigh` 65%) | |
+
 ## Gaps
 - [ ] Exact sizes, font names, radii and the heart and chevron assets: re-read Figma frame 341:483 once the MCP
   limit resets.
@@ -87,3 +101,4 @@ Posters are TMDB images loaded at runtime, not assets.
 ## Change log
 - 2026-11-23: Initial version, from screenshots (Figma MCP rate-limited).
 - 2026-11-23: Confirmed by the user.
+- 2026-11-24: Added Tokens (design system).
