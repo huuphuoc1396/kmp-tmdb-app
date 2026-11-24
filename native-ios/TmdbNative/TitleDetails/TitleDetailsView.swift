@@ -1,15 +1,6 @@
 import SwiftUI
 import TmdbCore
 
-private let headerTop: CGFloat = 376
-private let headerToDivider: CGFloat = 21
-private let dividerToSynopsis: CGFloat = 20
-private let synopsisToTrailer: CGFloat = 30
-private let toCastHeading: CGFloat = 46
-private let castHeadingToRow: CGFloat = 16
-private let toSectionHeading: CGFloat = 41
-private let headingToContent: CGFloat = 20
-private let bottomPadding: CGFloat = 40
 private let markerStep: CGFloat = 100
 private let scrollSpace = "details.scroll"
 
@@ -63,7 +54,7 @@ struct TitleDetailsView: View {
         )
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.visible, for: .navigationBar)
-        .toolbarBackground(Theme.track, for: .navigationBar)
+        .toolbarBackground(TmdbColor.surfaceContainerHigh, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -102,12 +93,12 @@ struct TitleDetailsContent: View {
 
     var body: some View {
         ZStack {
-            Theme.page.ignoresSafeArea()
+            TmdbColor.surface.ignoresSafeArea()
             switch state.load {
             case .loading:
                 ProgressView()
                     .controlSize(.large)
-                    .tint(Theme.accent)
+                    .tint(TmdbColor.secondary)
             case .error:
                 RowMessage(message: "details.error", alignment: .center) { onIntent(.retry) }
             case let .loaded(details):
@@ -132,7 +123,6 @@ private struct LoadedContent: View {
 
     @State private var restored = false
     @State private var marker = 0
-    @ScaledMetric(relativeTo: .body) private var synopsisSize: CGFloat = 14
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -140,8 +130,8 @@ private struct LoadedContent: View {
                 ZStack(alignment: .top) {
                     DetailsArtwork(url: details.artworkURL)
                     sections(details)
-                        .padding(.top, headerTop)
-                        .padding(.bottom, bottomPadding)
+                        .padding(.top, 376)
+                        .padding(.bottom, TmdbSpacing.xxxl)
                 }
                 .background(alignment: .top) { markers }
                 .background(alignment: .top) {
@@ -200,46 +190,46 @@ private struct LoadedContent: View {
     private func sections(_ details: TitleDetailsItem) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             DetailsHeader(details: details, language: language)
-                .padding(.horizontal, homeScreenPadding)
+                .padding(.horizontal, TmdbSpacing.xxl)
             Rectangle()
-                .fill(Color.black.opacity(0.48))
-                .frame(height: 1)
-                .padding(.horizontal, homeScreenPadding)
-                .padding(.top, headerToDivider)
+                .fill(TmdbColor.outlineVariant)
+                .frame(height: TmdbSize.borderWidth)
+                .padding(.horizontal, TmdbSpacing.xxl)
+                .padding(.top, TmdbSpacing.lg)
                 .accessibilityHidden(true)
             synopsis(details.synopsis)
-                .padding(.horizontal, homeScreenPadding)
-                .padding(.top, dividerToSynopsis)
+                .padding(.horizontal, TmdbSpacing.xxl)
+                .padding(.top, TmdbSpacing.lg)
             if details.trailerURL != nil {
                 TrailerButton { onIntent(.trailerTapped) }
-                    .padding(.horizontal, homeScreenPadding)
-                    .padding(.top, synopsisToTrailer)
+                    .padding(.horizontal, TmdbSpacing.xxl)
+                    .padding(.top, TmdbSpacing.xxl)
             }
             if !details.cast.isEmpty {
                 SectionHeading("details.cast")
-                    .padding(.horizontal, homeScreenPadding)
-                    .padding(.top, toCastHeading)
+                    .padding(.horizontal, TmdbSpacing.xxl)
+                    .padding(.top, TmdbSpacing.xxxl)
                 CastRow(cast: details.cast, rowKey: "\(positions.key)|cast", savedPosition: positions.$cast)
-                    .padding(.top, castHeadingToRow)
+                    .padding(.top, TmdbSpacing.md)
             }
             if !details.genres.isEmpty {
                 SectionHeading("details.genres")
-                    .padding(.horizontal, homeScreenPadding)
-                    .padding(.top, toSectionHeading)
+                    .padding(.horizontal, TmdbSpacing.xxl)
+                    .padding(.top, TmdbSpacing.xxxl)
                 GenreChips(genres: details.genres)
-                    .padding(.horizontal, homeScreenPadding)
-                    .padding(.top, headingToContent)
+                    .padding(.horizontal, TmdbSpacing.xxl)
+                    .padding(.top, TmdbSpacing.lg)
             }
             if !details.recommendations.isEmpty {
                 SectionHeading("details.recommendations")
-                    .padding(.horizontal, homeScreenPadding)
-                    .padding(.top, toSectionHeading)
+                    .padding(.horizontal, TmdbSpacing.xxl)
+                    .padding(.top, TmdbSpacing.xxxl)
                 PosterRow(
                     titles: details.recommendations,
                     rowKey: "\(positions.key)|recommendations",
                     savedPosition: positions.$recommendations
                 ) { onIntent(.recommendationTapped($0)) }
-                    .padding(.top, headingToContent)
+                    .padding(.top, TmdbSpacing.lg)
             }
         }
     }
@@ -253,9 +243,8 @@ private struct LoadedContent: View {
                 Text("details.noSynopsis")
             }
         }
-        .font(.system(size: synopsisSize))
-        .lineSpacing(synopsisSize * 0.25)
-        .foregroundStyle(Theme.synopsis)
+        .tmdbFont(.bodyMedium)
+        .foregroundStyle(TmdbColor.onSurface)
         .frame(maxWidth: .infinity, alignment: .leading)
         .fixedSize(horizontal: false, vertical: true)
     }
@@ -318,7 +307,7 @@ private func detailsPreview(_ state: TitleDetailsUiState, language: Language = .
                 recommendations: .constant("")
             )
         )
-        .toolbarBackground(Theme.track, for: .navigationBar)
+        .toolbarBackground(TmdbColor.surfaceContainerHigh, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
     }
 }

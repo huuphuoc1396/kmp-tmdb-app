@@ -1,17 +1,17 @@
 import NukeUI
 import SwiftUI
 
-let artworkHeight: CGFloat = 493
+private let artworkHeight: CGFloat = 492
 
 private let fadeStart = 260 / artworkHeight
 private let fadeEnd = 412 / artworkHeight
 
 private let fade = LinearGradient(
     stops: [
-        .init(color: Theme.page.opacity(0), location: 0),
-        .init(color: Theme.page.opacity(0), location: fadeStart),
-        .init(color: Theme.page, location: fadeEnd),
-        .init(color: Theme.page, location: 1),
+        .init(color: TmdbColor.surface.opacity(0), location: 0),
+        .init(color: TmdbColor.surface.opacity(0), location: fadeStart),
+        .init(color: TmdbColor.surface, location: fadeEnd),
+        .init(color: TmdbColor.surface, location: 1),
     ],
     startPoint: .top,
     endPoint: .bottom
@@ -22,7 +22,7 @@ struct DetailsArtwork: View {
 
     var body: some View {
         ZStack {
-            Theme.track
+            TmdbColor.surfaceContainerHigh
             if let url {
                 LazyImage(url: url) { state in
                     if let image = state.image {

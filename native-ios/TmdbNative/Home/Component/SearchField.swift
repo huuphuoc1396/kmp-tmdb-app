@@ -1,22 +1,20 @@
 import SwiftUI
 
 struct SearchField: View {
-    @ScaledMetric(relativeTo: .subheadline) private var hintSize: CGFloat = 15
-
     var body: some View {
         HStack {
             Text("home.searchHint")
-                .font(.system(size: hintSize, weight: .medium))
-                .foregroundStyle(.white.opacity(0.5))
+                .tmdbFont(.bodyLarge)
+                .foregroundStyle(TmdbColor.onSurfaceVariant)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Image(decorative: "SearchIcon")
                 .scaleEffect(x: -1)
         }
-        .padding(.leading, 21)
-        .padding(.trailing, 16)
-        .frame(minHeight: 46)
-        .background(Theme.surfaceVariant, in: Capsule())
+        .padding(.leading, TmdbSpacing.lg)
+        .padding(.trailing, TmdbSpacing.md)
+        .frame(minHeight: 48)
+        .background(TmdbColor.surfaceVariant, in: Capsule())
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }

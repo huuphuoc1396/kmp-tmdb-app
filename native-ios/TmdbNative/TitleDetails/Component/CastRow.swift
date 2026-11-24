@@ -1,29 +1,29 @@
 import NukeUI
 import SwiftUI
 
-private let itemWidth: CGFloat = 75
+private let itemWidth: CGFloat = 76
 private let photoSize: CGFloat = 60
-private let borderWidth: CGFloat = 4
-private let photoToName: CGFloat = 3
+private let photoBorder: CGFloat = 4
 
 struct CastRow: View {
     let cast: [CastItem]
     let rowKey: String
     @Binding var savedPosition: String
 
-    @ScaledMetric(relativeTo: .caption) private var nameHeight: CGFloat = 31
+    @ScaledMetric(relativeTo: TmdbTextStyle.labelMedium.relativeTo)
+    private var nameHeight = TmdbTextStyle.labelMedium.lineHeight * 2
 
     var body: some View {
         RestoringRow(
             items: cast.enumerated().map { CastEntry(id: "\($0.offset)-\($0.element.name)", member: $0.element) },
             itemWidth: itemWidth,
-            spacing: 4,
+            spacing: TmdbSpacing.xxs,
             rowKey: rowKey,
             savedPosition: $savedPosition
         ) { entry in
             CastCell(member: entry.member, nameHeight: nameHeight)
         }
-        .frame(height: photoSize + borderWidth * 2 + photoToName + nameHeight)
+        .frame(height: photoSize + photoBorder * 2 + TmdbSpacing.xxs + nameHeight)
     }
 }
 
@@ -36,18 +36,16 @@ private struct CastCell: View {
     let member: CastItem
     let nameHeight: CGFloat
 
-    @ScaledMetric(relativeTo: .caption) private var nameSize: CGFloat = 12
-
     var body: some View {
-        VStack(spacing: photoToName) {
+        VStack(spacing: TmdbSpacing.xxs) {
             photo
                 .frame(width: photoSize, height: photoSize)
                 .clipShape(Circle())
-                .padding(borderWidth)
-                .background(Theme.track, in: Circle())
+                .padding(photoBorder)
+                .background(TmdbColor.surfaceContainerHigh, in: Circle())
             Text(verbatim: member.name)
-                .font(.system(size: nameSize, weight: .bold))
-                .foregroundStyle(.white)
+                .tmdbFont(.labelMedium)
+                .foregroundStyle(TmdbColor.onSurface)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
                 .truncationMode(.tail)
@@ -60,7 +58,7 @@ private struct CastCell: View {
     @ViewBuilder
     private var photo: some View {
         ZStack {
-            Theme.track
+            TmdbColor.surfaceContainerHigh
             if let url = member.photoURL {
                 LazyImage(url: url) { state in
                     if let image = state.image {
@@ -69,8 +67,8 @@ private struct CastCell: View {
                 }
             } else {
                 Image(systemName: "person.fill")
-                    .font(.system(size: 30))
-                    .foregroundStyle(.white.opacity(0.5))
+                    .font(.system(size: 32))
+                    .foregroundStyle(TmdbColor.onSurface.opacity(0.5))
             }
         }
         .accessibilityHidden(true)

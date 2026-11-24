@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 enum TmdbTextStyle: CaseIterable {
     case displayLarge, displayMedium, displaySmall
@@ -62,6 +63,10 @@ enum TmdbTextStyle: CaseIterable {
         }
     }
 
+    var lineSpacing: CGFloat {
+        max(0, lineHeight - UIFont.systemFont(ofSize: size).lineHeight)
+    }
+
     var relativeTo: Font.TextStyle {
         switch self {
         case .displayLarge, .displayMedium, .displaySmall, .headlineLarge: .largeTitle
@@ -85,7 +90,7 @@ struct TmdbFont: ViewModifier {
         self.style = style
         self.weight = weight ?? style.weight
         _size = ScaledMetric(wrappedValue: style.size, relativeTo: style.relativeTo)
-        _lineSpacing = ScaledMetric(wrappedValue: style.lineHeight - style.size, relativeTo: style.relativeTo)
+        _lineSpacing = ScaledMetric(wrappedValue: style.lineSpacing, relativeTo: style.relativeTo)
     }
 
     func body(content: Content) -> some View {

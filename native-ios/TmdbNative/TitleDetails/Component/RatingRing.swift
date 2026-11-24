@@ -1,29 +1,32 @@
 import SwiftUI
 
-let ratingRingSize: CGFloat = 57
 private let ringWidth: CGFloat = 6
-private let valueSize: CGFloat = 15
 
 struct RatingRing: View {
     let percent: Int?
 
     var body: some View {
         ZStack {
-            Circle().fill(Theme.track)
+            Circle().fill(TmdbColor.surfaceContainerHigh)
             Circle()
-                .fill(Theme.ringCenter)
+                .fill(TmdbColor.surface)
                 .padding(ringWidth)
             if let percent {
                 Circle()
                     .trim(from: 0, to: CGFloat(percent) / 100)
-                    .stroke(Theme.accent, style: StrokeStyle(lineWidth: ringWidth, lineCap: .round))
+                    .stroke(TmdbColor.secondary, style: StrokeStyle(lineWidth: ringWidth, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                     .padding(ringWidth / 2)
             }
             value
-                .foregroundStyle(.white)
+                .tmdbFont(.titleMedium, weight: .regular)
+                .foregroundStyle(TmdbColor.onSurface)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .padding(TmdbSpacing.xs)
+                .dynamicTypeSize(...DynamicTypeSize.xLarge)
         }
-        .frame(width: ratingRingSize, height: ratingRingSize)
+        .frame(width: 56, height: 56)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityText)
     }
@@ -31,11 +34,10 @@ struct RatingRing: View {
     @ViewBuilder
     private var value: some View {
         if let percent {
-            Text(verbatim: String(percent)).font(.system(size: valueSize, weight: .bold))
-                + Text(verbatim: "%").font(.system(size: valueSize))
+            Text(verbatim: String(percent)).bold() + Text(verbatim: "%")
         } else {
             Text("details.notRated")
-                .font(.system(size: valueSize, weight: .bold))
+                .bold()
         }
     }
 
@@ -54,5 +56,5 @@ struct RatingRing: View {
         RatingRing(percent: nil)
     }
     .padding()
-    .background(Theme.page)
+    .background(TmdbColor.surface)
 }
