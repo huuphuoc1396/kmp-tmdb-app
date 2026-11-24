@@ -172,7 +172,7 @@ verification is a manual review of the rendered page and of the commands against
 | AC-5 | 2, 5 | Manual: Figma link, TMDB link and disclaimer sentence present |
 | AC-6 | 5 | Manual: `diff` each command block against `CLAUDE.md` Commands; spot-run `./gradlew :architecture-test:test` |
 | AC-7 | 1, 5 | Manual: `LICENSE` is MIT, 2026, Phuoc Bui; README links it |
-| AC-8 | 2 | Manual: 3 images in `docs/images/screenshots/<screen>.webp` show in the README |
+| AC-8 | 2 | Manual: the banner `docs/images/screenshots.webp` shows under the badges, without a heading |
 | EC-1 | 2 | Manual: table readable with images missing; naming line present |
 | EC-2 | 3, 4 | Manual: text before each diagram explains it alone |
 | EC-3 | 5 | Manual: missing-token behaviour described |
@@ -208,3 +208,4 @@ verification is a manual review of the rendered page and of the commands against
   onboarding, home, home-scrolled / title-details, title-details-scrolled, my-favorites. The WebP files are removed.
 - Screenshots replaced by a single banner image `docs/images/screenshots.webp` (2000×1111) supplied by the user; the
   six JPEGs are removed.
+- The banner sits under the title and badges with no "Screenshots" heading (task.md AC-1, AC-8 updated).

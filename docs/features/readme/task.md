@@ -31,8 +31,8 @@ TMDB API.
    2. **Overview**: what the app is (TMDB discovery for films, series, anime and novelas; English and pt-BR), its
       features (onboarding, Home with featured and popular lists, title details, favorites), and the three apps
       that share one business core (`cmp/`, `native-android/`, `native-ios/`).
-   3. **Screenshots**: one image per screen (onboarding, Home, title details; favorites appear inside
-      Home and title details), not split by platform, pointing to fixed paths.
+   3. **Screenshots**: one banner image (onboarding, Home, title details, My favorites) right under the title and
+      badges, with no heading of its own.
    4. **Acknowledgements**: the reference design
       (https://www.figma.com/community/file/1059842558004825230/tmdb) and the TMDB API (https://www.themoviedb.org/).
    5. **Architecture**:
@@ -71,7 +71,8 @@ Not applicable (documentation only).
 - **AC-1** All sections present, in order
   - Given the root `README.md`
   - When a reader scans its headings
-  - Then it contains the 11 sections of the user flow in that order, in English, and no roadmap section
+  - Then it contains the sections of the user flow in that order (the screenshot banner has no heading), in English,
+    and no roadmap section
 - **AC-2** Architecture diagrams render
   - Given the Architecture section
   - When it is viewed on GitHub
@@ -99,10 +100,10 @@ Not applicable (documentation only).
   - Given the repository root
   - When a reader opens `LICENSE`
   - Then it is the MIT license with copyright holder "Phuoc Bui" and year 2026, and the README links to it
-- **AC-8** Screenshot placeholders
-  - Given the Screenshots section
-  - When the owner adds images later
-  - Then each image has a fixed, documented path per screen (not per platform), and the README shows how they are laid out
+- **AC-8** Screenshot banner
+  - Given the top of the README
+  - When a reader opens the repository on GitHub
+  - Then the screenshot banner shows right under the title and badges, before Overview, without a heading
 
 ## Edge cases
 - **EC-1** Image files not added yet -> the Screenshots table still reads correctly (broken images are acceptable
@@ -133,3 +134,5 @@ Not applicable (documentation only).
   scrolled), title details (top and scrolled), My favorites.
 - 2026-11-24: Screenshots replaced by one banner image (`docs/images/screenshots.webp`) showing onboarding, Home,
   title details and My favorites.
+- 2026-11-24: Screenshot banner moved under the title and badges, without a "Screenshots" heading; AC-1 and AC-8
+  updated.

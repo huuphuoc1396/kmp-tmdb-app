@@ -7,6 +7,8 @@ A Kotlin Multiplatform TMDB discovery app: one shared business core, three apps 
 ![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20iOS-3DDC84)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+![Onboarding, Home, Title details and My favorites on iOS](docs/images/screenshots.webp)
+
 ## Overview
 
 Find films, series, anime and novelas to watch, in English or Brazilian Portuguese.
@@ -23,10 +25,6 @@ One Kotlin core (network, storage, business logic) backs three apps:
 | [`cmp/`](cmp) | Compose Multiplatform, shared ViewModel + UI | Gradle modules |
 | [`native-android/`](native-android) | Jetpack Compose | Published Android libraries |
 | [`native-ios/`](native-ios) | SwiftUI | Swift Package with the `TmdbCore` XCFramework |
-
-## Screenshots
-
-![Onboarding, Home, Title details and My favorites on iOS](docs/images/screenshots.webp)
 
 ## Acknowledgements
 
