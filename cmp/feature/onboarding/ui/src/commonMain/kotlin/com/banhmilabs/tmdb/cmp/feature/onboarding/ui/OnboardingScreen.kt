@@ -15,22 +15,21 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.feature.onboarding.ui.component.GetStartedButton
 import com.banhmilabs.tmdb.cmp.feature.onboarding.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.onboarding.ui.generated.resources.onboarding_artwork_placeholder
@@ -44,25 +43,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 internal const val LOGO_TAG = "onboarding_logo"
 internal const val CONTENT_TAG = "onboarding_content"
-
-private val ContentStartPadding = 29.dp
-private val ContentEndPadding = 31.dp
-private val ContentBottomPadding = 31.dp
-private val ContentGap = 19.dp
-private val ContentMaxWidth = 315.dp
-
-private val HeadlineStyle = TextStyle(
-    color = Color.White,
-    fontSize = 32.sp,
-    lineHeight = 37.3.sp,
-    fontWeight = FontWeight.Light,
-)
-private val BodyStyle = TextStyle(
-    color = Color.White,
-    fontSize = 15.sp,
-    lineHeight = 18.75.sp,
-    fontWeight = FontWeight.Normal,
-)
 
 @Composable
 internal fun OnboardingScreen(onFinished: () -> Unit, viewModel: OnboardingViewModel = koinViewModel()) {
@@ -104,13 +84,13 @@ internal fun OnboardingContent(
                     .verticalScroll(rememberScrollState())
                     .heightIn(min = maxHeight)
                     .windowInsetsPadding(WindowInsets.safeDrawing)
-                    .padding(start = ContentStartPadding, end = ContentEndPadding, bottom = ContentBottomPadding),
+                    .padding(start = TmdbSpacing.xxl, end = TmdbSpacing.xxl, bottom = TmdbSpacing.xxl),
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Column(
-                    modifier = Modifier.widthIn(max = ContentMaxWidth).fillMaxWidth().testTag(CONTENT_TAG),
-                    verticalArrangement = Arrangement.spacedBy(ContentGap),
+                    modifier = Modifier.widthIn(max = 320.dp).fillMaxWidth().testTag(CONTENT_TAG),
+                    verticalArrangement = Arrangement.spacedBy(TmdbSpacing.lg),
                 ) {
                     Image(
                         painter = painterResource(Res.drawable.tmdb_logo),
@@ -120,9 +100,14 @@ internal fun OnboardingContent(
                     Text(
                         text = stringResource(Res.string.onboarding_headline),
                         modifier = Modifier.semantics { heading() },
-                        style = HeadlineStyle,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Light),
                     )
-                    Text(text = stringResource(Res.string.onboarding_body), style = BodyStyle)
+                    Text(
+                        text = stringResource(Res.string.onboarding_body),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
                     GetStartedButton(
                         enabled = !state.isNavigating,
                         onClick = { onIntent(OnboardingIntent.GetStartedClicked) },

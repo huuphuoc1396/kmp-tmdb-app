@@ -7,14 +7,12 @@ import com.banhmilabs.tmdb.cmp.designsystem.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.designsystem.generated.resources.ic_person
 import org.jetbrains.compose.resources.painterResource
 
-private const val PERSON_ICON_ALPHA = 0.5f
-
 @Composable
 fun PersonIcon(modifier: Modifier = Modifier) {
     Image(
         painter = painterResource(Res.drawable.ic_person),
         contentDescription = null,
         modifier = modifier,
-        alpha = PERSON_ICON_ALPHA,
+        alpha = 0.5f,
     )
 }

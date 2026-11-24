@@ -32,13 +32,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.banhmilabs.tmdb.cmp.designsystem.component.FavoriteHeart
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.DetailsColors
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_back
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_favorite
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.ic_back_arrow
-import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.ic_favorite_off
-import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.ic_favorite_on
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -52,7 +51,6 @@ private val ArrowToLabel = 6.dp
 private const val PILL_ALPHA = 0.65f
 
 private val FavoriteEnd = 22.dp
-private val FavoriteSize = 32.dp
 
 private val LabelStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
@@ -102,12 +100,10 @@ internal fun DetailsTopBar(
 @Composable
 private fun FavoriteButton(isFavorite: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val label = stringResource(Res.string.details_favorite)
-    Image(
-        painter = painterResource(if (isFavorite) Res.drawable.ic_favorite_on else Res.drawable.ic_favorite_off),
-        contentDescription = null,
+    FavoriteHeart(
+        isFavorite = isFavorite,
         modifier = modifier
             .minimumInteractiveComponentSize()
-            .size(FavoriteSize)
             .clip(CircleShape)
             .toggleable(value = isFavorite, role = Role.Switch, onValueChange = { onClick() })
             .semantics { contentDescription = label },

@@ -1,0 +1,43 @@
+package com.banhmilabs.tmdb.cmp.designsystem
+
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.ui.graphics.Color
+
+internal val TmdbDarkColorScheme = darkColorScheme(
+    primary = Color(0xFF8000FF),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFF540BA1),
+    onPrimaryContainer = Color(0xFFFFFFFF),
+    inversePrimary = Color(0xFF6A00D6),
+    secondary = Color(0xFFFF1F8A),
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFF381A39),
+    onSecondaryContainer = Color(0xFFFFB1C8),
+    tertiary = Color(0xFFC9A7FF),
+    onTertiary = Color(0xFF2A0059),
+    tertiaryContainer = Color(0xFF36076B),
+    onTertiaryContainer = Color(0xFFEBDDFF),
+    background = Color(0xFF130E1F),
+    onBackground = Color(0xFFFFFFFF),
+    surface = Color(0xFF130E1F),
+    onSurface = Color(0xFFFFFFFF),
+    surfaceVariant = Color(0xFF36076B),
+    onSurfaceVariant = Color(0xFFA6A1B5),
+    surfaceTint = Color(0xFF8000FF),
+    inverseSurface = Color(0xFFE8E0F0),
+    inverseOnSurface = Color(0xFF211A30),
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF690005),
+    errorContainer = Color(0xFF93000A),
+    onErrorContainer = Color(0xFFFFDAD6),
+    outline = Color(0xFF655F74),
+    outlineVariant = Color(0xFF3C3549),
+    scrim = Color(0xFF000000),
+    surfaceBright = Color(0xFF3A3347),
+    surfaceContainer = Color(0xFF211A30),
+    surfaceContainerHigh = Color(0xFF312A3F),
+    surfaceContainerHighest = Color(0xFF3C3549),
+    surfaceContainerLow = Color(0xFF1A1428),
+    surfaceContainerLowest = Color(0xFF0E0A17),
+    surfaceDim = Color(0xFF130E1F),
+)

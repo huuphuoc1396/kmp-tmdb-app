@@ -32,17 +32,15 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.designsystem.component.RemoveFavoriteDialog
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.component.FavoriteCard
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.Res
@@ -58,30 +56,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-
-private val ScreenPadding = 20.dp
-private val TopPadding = 8.dp
-private val BottomPadding = 24.dp
-private val HeaderMinHeight = 48.dp
-private val ArrowSize = 24.dp
-private val ArrowToLabel = 8.dp
-private val BadgeHeight = 28.dp
-private val BadgePadding = 12.dp
-private val HeaderToTitle = 16.dp
-private val TitleToSubtitle = 8.dp
-private val SubtitleToList = 26.dp
-private val CardSpacing = 12.dp
-private val EmptyTopPadding = 48.dp
-
-private val BackStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-private val TitleStyle = TextStyle(color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
-private val SubtitleStyle = TextStyle(color = FavoritesColors.SecondaryText, fontSize = 13.sp)
-private val EmptyStyle = TextStyle(
-    color = FavoritesColors.SecondaryText,
-    fontSize = 14.sp,
-    textAlign = TextAlign.Center,
-)
-private val BadgeStyle = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold)
 
 @Composable
 internal fun FavoritesScreen(
@@ -114,14 +88,14 @@ internal fun FavoritesContent(
 ) {
     val insets = WindowInsets.safeDrawing.asPaddingValues()
     LazyColumn(
-        modifier = modifier.fillMaxSize().background(FavoritesColors.Background),
+        modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface),
         contentPadding = PaddingValues(
-            start = ScreenPadding,
-            end = ScreenPadding,
-            top = insets.calculateTopPadding() + TopPadding,
-            bottom = insets.calculateBottomPadding() + BottomPadding,
+            start = TmdbSpacing.lg,
+            end = TmdbSpacing.lg,
+            top = insets.calculateTopPadding() + TmdbSpacing.xs,
+            bottom = insets.calculateBottomPadding() + TmdbSpacing.xl,
         ),
-        verticalArrangement = Arrangement.spacedBy(CardSpacing),
+        verticalArrangement = Arrangement.spacedBy(TmdbSpacing.sm),
     ) {
         item(key = "header") {
             FavoritesHeader(count = state.favorites.size, onBack = onBack)
@@ -137,8 +111,10 @@ internal fun FavoritesContent(
             item(key = "empty") {
                 Text(
                     text = stringResource(Res.string.favorites_empty),
-                    modifier = Modifier.fillMaxWidth().padding(top = EmptyTopPadding),
-                    style = EmptyStyle,
+                    modifier = Modifier.fillMaxWidth().padding(top = TmdbSpacing.xxxl),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
@@ -156,7 +132,7 @@ internal fun FavoritesContent(
 private fun FavoritesHeader(count: Int, onBack: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier.fillMaxWidth().heightIn(min = HeaderMinHeight),
+            modifier = Modifier.fillMaxWidth().heightIn(min = TmdbSize.touchTarget),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
@@ -168,34 +144,44 @@ private fun FavoritesHeader(count: Int, onBack: () -> Unit) {
                 Image(
                     painter = painterResource(Res.drawable.ic_back_arrow),
                     contentDescription = null,
-                    modifier = Modifier.size(ArrowSize),
+                    modifier = Modifier.size(TmdbSize.iconMedium),
                 )
-                Spacer(modifier = Modifier.width(ArrowToLabel))
-                Text(text = stringResource(Res.string.favorites_back), style = BackStyle)
+                Spacer(modifier = Modifier.width(TmdbSpacing.xs))
+                Text(
+                    text = stringResource(Res.string.favorites_back),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleMedium,
+                )
             }
             Spacer(modifier = Modifier.weight(1f))
             Box(
                 modifier = Modifier
-                    .height(BadgeHeight)
+                    .heightIn(min = 28.dp)
                     .clip(CircleShape)
-                    .background(FavoritesColors.Card)
-                    .padding(horizontal = BadgePadding),
+                    .background(MaterialTheme.colorScheme.surfaceContainer)
+                    .padding(horizontal = TmdbSpacing.sm),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = pluralStringResource(Res.plurals.favorites_count, count, count),
-                    style = BadgeStyle.copy(color = MaterialTheme.colorScheme.secondary),
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.labelMedium,
                 )
             }
         }
-        Spacer(modifier = Modifier.height(HeaderToTitle))
+        Spacer(modifier = Modifier.height(TmdbSpacing.md))
         Text(
             text = stringResource(Res.string.favorites_title),
             modifier = Modifier.semantics { heading() },
-            style = TitleStyle,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.headlineMedium,
         )
-        Spacer(modifier = Modifier.height(TitleToSubtitle))
-        Text(text = stringResource(Res.string.favorites_subtitle), style = SubtitleStyle)
-        Spacer(modifier = Modifier.height(SubtitleToList - CardSpacing))
+        Spacer(modifier = Modifier.height(TmdbSpacing.xs))
+        Text(
+            text = stringResource(Res.string.favorites_subtitle),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Spacer(modifier = Modifier.height(TmdbSpacing.sm))
     }
 }

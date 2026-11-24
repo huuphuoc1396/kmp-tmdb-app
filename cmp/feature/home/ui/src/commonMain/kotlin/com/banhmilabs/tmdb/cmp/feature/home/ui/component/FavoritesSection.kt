@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.banhmilabs.tmdb.cmp.designsystem.component.FavoriteHeart
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterTile
 import com.banhmilabs.tmdb.cmp.designsystem.component.removeFavoriteLabel
 import com.banhmilabs.tmdb.cmp.designsystem.text.metaLine
@@ -52,7 +53,6 @@ import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_favorite
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_favorites_title
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_favorites_view_all
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.ic_chevron_right
-import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.ic_favorite_remove
 import com.banhmilabs.tmdb.core.model.TitleId
 import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 import org.jetbrains.compose.resources.painterResource
@@ -82,7 +82,6 @@ private val PosterShape = RoundedCornerShape(8.dp)
 private val PosterToName = 12.dp
 private val NameToMeta = 8.dp
 private val BottomPadding = 14.dp
-private val HeartSize = 28.dp
 private val HeartTouchOffset = 4.dp
 private const val NAME_MAX_LINES = 2
 
@@ -229,12 +228,10 @@ private fun FavoriteItem(favorite: FavoriteTitle, onClick: () -> Unit, onRemoveC
 @Composable
 private fun RemoveButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val label = removeFavoriteLabel()
-    Image(
-        painter = painterResource(Res.drawable.ic_favorite_remove),
-        contentDescription = null,
+    FavoriteHeart(
+        isFavorite = true,
         modifier = modifier
             .minimumInteractiveComponentSize()
-            .size(HeartSize)
             .clip(CircleShape)
             .clickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = label },

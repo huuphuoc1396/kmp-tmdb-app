@@ -1,5 +1,6 @@
 package com.banhmilabs.tmdb.cmp.designsystem.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,9 +11,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,12 +25,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.designsystem.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.designsystem.generated.resources.remove_favorite_cancel
 import com.banhmilabs.tmdb.cmp.designsystem.generated.resources.remove_favorite_confirm
@@ -39,26 +38,10 @@ import com.banhmilabs.tmdb.cmp.designsystem.generated.resources.remove_favorite_
 import com.banhmilabs.tmdb.cmp.designsystem.generated.resources.remove_favorite_title
 import org.jetbrains.compose.resources.stringResource
 
-private val DialogColor = Color(0xFF211A30)
-private val MessageColor = Color(0xFFB0AABF)
-private val CancelBorderColor = Color(0xFF655F74)
-
-private val ScreenMargin = 20.dp
-private val DialogShape = RoundedCornerShape(20.dp)
-private val ContentPadding = 24.dp
-private val BottomPadding = 20.dp
-private val TitleToMessage = 20.dp
-private val MessageToButtons = 24.dp
-private val ButtonSpacing = 12.dp
-private val ButtonHeight = 48.dp
-private val ButtonShape = RoundedCornerShape(10.dp)
-
-private val TitleStyle = TextStyle(color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-private val MessageStyle = TextStyle(color = MessageColor, fontSize = 14.sp, lineHeight = 20.sp)
-private val ButtonStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-
 @Composable
 fun RemoveFavoriteDialog(titleName: String?, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -69,38 +52,44 @@ fun RemoveFavoriteDialog(titleName: String?, onConfirm: () -> Unit, onDismiss: (
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = ScreenMargin)
+                .padding(horizontal = TmdbSpacing.lg)
                 .fillMaxWidth()
-                .clip(DialogShape)
-                .background(DialogColor)
+                .clip(MaterialTheme.shapes.extraLarge)
+                .background(colors.surfaceContainer)
                 .verticalScroll(rememberScrollState())
-                .padding(start = ContentPadding, end = ContentPadding, top = ContentPadding, bottom = BottomPadding),
+                .padding(start = TmdbSpacing.xl, end = TmdbSpacing.xl, top = TmdbSpacing.xl, bottom = TmdbSpacing.lg),
         ) {
             Text(
                 text = stringResource(Res.string.remove_favorite_title),
                 modifier = Modifier.semantics { heading() },
-                style = TitleStyle,
+                color = colors.onSurface,
+                style = typography.titleLarge,
             )
-            Spacer(modifier = Modifier.height(TitleToMessage))
+            Spacer(modifier = Modifier.height(TmdbSpacing.lg))
             Text(
                 text = if (titleName != null) {
                     stringResource(Res.string.remove_favorite_message, titleName)
                 } else {
                     stringResource(Res.string.remove_favorite_message_unknown)
                 },
-                style = MessageStyle,
+                color = colors.onSurfaceVariant,
+                style = typography.bodyMedium,
             )
-            Spacer(modifier = Modifier.height(MessageToButtons))
-            Row(horizontalArrangement = Arrangement.spacedBy(ButtonSpacing)) {
+            Spacer(modifier = Modifier.height(TmdbSpacing.xl))
+            Row(horizontalArrangement = Arrangement.spacedBy(TmdbSpacing.sm)) {
                 DialogButton(
                     label = stringResource(Res.string.remove_favorite_cancel),
+                    labelColor = colors.onSurface,
                     onClick = onDismiss,
-                    modifier = Modifier.weight(1f).border(1.dp, CancelBorderColor, ButtonShape),
+                    modifier = Modifier
+                        .weight(1f)
+                        .border(BorderStroke(TmdbSize.borderWidth, colors.outline), MaterialTheme.shapes.medium),
                 )
                 DialogButton(
                     label = stringResource(Res.string.remove_favorite_confirm),
+                    labelColor = colors.onSecondary,
                     onClick = onConfirm,
-                    modifier = Modifier.weight(1f).background(MaterialTheme.colorScheme.secondary, ButtonShape),
+                    modifier = Modifier.weight(1f).background(colors.secondary, MaterialTheme.shapes.medium),
                 )
             }
         }
@@ -111,14 +100,14 @@ fun RemoveFavoriteDialog(titleName: String?, onConfirm: () -> Unit, onDismiss: (
 fun removeFavoriteLabel(): String = stringResource(Res.string.remove_favorite_heart)
 
 @Composable
-private fun DialogButton(label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun DialogButton(label: String, labelColor: Color, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .height(ButtonHeight)
-            .clip(ButtonShape)
+            .heightIn(min = TmdbSize.touchTarget)
+            .clip(MaterialTheme.shapes.medium)
             .clickable(role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text = label, style = ButtonStyle)
+        Text(text = label, color = labelColor, style = MaterialTheme.typography.titleMedium)
     }
 }
