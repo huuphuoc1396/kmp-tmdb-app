@@ -10,6 +10,9 @@ private let searchToTabs: CGFloat = 26
 private let tabsToFeatured: CGFloat = 32
 private let featuredToHeading: CGFloat = 23
 private let headingToPopular: CGFloat = 16
+private let featuredToFavorites: CGFloat = 28
+private let favoritesToHeading: CGFloat = 32
+private let favoritesCardInset: CGFloat = 12
 private let headerGlowHeight: CGFloat = 522
 
 private let screenBackground = LinearGradient(
@@ -30,14 +33,25 @@ private let headerGlow = LinearGradient(
 struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     private let onTitleTap: (TitleItem) -> Void
+    private let onSeeAllFavorites: () -> Void
 
     @SceneStorage("home.selectedCategory") private var savedCategory = ""
     @SceneStorage("home.featured.position") private var featuredPosition = ""
     @SceneStorage("home.popular.position") private var popularPosition = ""
+    @SceneStorage("home.favorites.position") private var favoritesPosition = ""
 
-    init(titleLists: any TitleLists, onTitleTap: @escaping (TitleItem) -> Void) {
-        _viewModel = StateObject(wrappedValue: HomeViewModel(titleLists: titleLists))
+    init(
+        titleLists: any TitleLists,
+        favoriteTitles: any FavoriteTitles,
+        favorites: any Favorites,
+        onTitleTap: @escaping (TitleItem) -> Void,
+        onSeeAllFavorites: @escaping () -> Void
+    ) {
+        _viewModel = StateObject(
+            wrappedValue: HomeViewModel(titleLists: titleLists, favoriteTitles: favoriteTitles, favorites: favorites)
+        )
         self.onTitleTap = onTitleTap
+        self.onSeeAllFavorites = onSeeAllFavorites
     }
 
     var body: some View {
@@ -46,7 +60,8 @@ struct HomeView: View {
             onIntent: viewModel.onIntent,
             onRefresh: viewModel.refresh,
             featuredPosition: $featuredPosition,
-            popularPosition: $popularPosition
+            popularPosition: $popularPosition,
+            favoritesPosition: $favoritesPosition
         )
         .task {
             if let saved = TitleCategory.allCases.first(where: { $0.name == savedCategory }) {
@@ -58,6 +73,8 @@ struct HomeView: View {
                 switch effect {
                 case let .openTitle(title):
                     onTitleTap(title)
+                case .openFavorites:
+                    onSeeAllFavorites()
                 }
             }
         }
@@ -73,6 +90,7 @@ struct HomeContent: View {
     let onRefresh: @MainActor @Sendable () async -> Void
     @Binding var featuredPosition: String
     @Binding var popularPosition: String
+    @Binding var favoritesPosition: String
 
     @ScaledMetric(relativeTo: .headline) private var headingSize: CGFloat = 18
 
@@ -105,6 +123,12 @@ struct HomeContent: View {
                 .refreshable { await onRefresh() }
             }
         }
+        .removeFavoriteDialog(
+            isPresented: state.pendingRemoval != nil,
+            titleName: state.pendingRemoval?.name,
+            onConfirm: { onIntent(.removeFavoriteConfirmed) },
+            onDismiss: { onIntent(.removeFavoriteDismissed) }
+        )
     }
 
     @ViewBuilder
@@ -114,17 +138,33 @@ struct HomeContent: View {
                 .controlSize(.large)
                 .tint(Theme.accent)
                 .frame(maxWidth: .infinity, minHeight: rowMinHeight)
+            favoritesSection
         } else {
             row(state.featured, listType: .featured, position: $featuredPosition)
+            favoritesSection
             Text("home.popularHeading")
                 .font(.system(size: headingSize, weight: .bold))
                 .foregroundStyle(.white)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityAddTraits(.isHeader)
                 .padding(.horizontal, homeScreenPadding)
-                .padding(.top, featuredToHeading)
+                .padding(.top, state.favoritesCount > 0 ? favoritesToHeading : featuredToHeading)
                 .padding(.bottom, headingToPopular)
             row(state.popular, listType: .popular, position: $popularPosition)
+        }
+    }
+
+    @ViewBuilder
+    private var favoritesSection: some View {
+        if state.favoritesCount > 0 {
+            FavoritesSection(
+                favorites: state.favorites,
+                count: state.favoritesCount,
+                savedPosition: $favoritesPosition,
+                onIntent: onIntent
+            )
+            .padding(.horizontal, homeScreenPadding - favoritesCardInset)
+            .padding(.top, featuredToFavorites)
         }
     }
 
@@ -161,7 +201,8 @@ private func homePreview(_ state: HomeUiState) -> some View {
         onIntent: { _ in },
         onRefresh: {},
         featuredPosition: .constant(""),
-        popularPosition: .constant("")
+        popularPosition: .constant(""),
+        favoritesPosition: .constant("")
     )
 }
 

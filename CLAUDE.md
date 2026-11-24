@@ -15,7 +15,7 @@ Current state: early. Production code exists in `core:common` (`AppResult`, `App
 `ObserveFavoriteTitles` use case in `service:title:domain`), `core:testing` (`MainDispatcherTest`),
 the `cmp/` features onboarding (`cmp/feature/onboarding/ui`), Home with its favorites section (`cmp/feature/home/ui`)
 and My favorites (`cmp/feature/favorites/ui`), and the `native-ios`
-onboarding and Home (`native-ios/TmdbNative/{Onboarding,Home}`). The other `core/*` modules are still
+onboarding, Home, My favorites and Title details (`native-ios/TmdbNative/{Onboarding,Home,Favorites,TitleDetails}`). The other `core/*` modules are still
 skeletons with a `*SmokeTest` placeholder. New code follows `docs/architecture.md` (sections 5–8), not the
 skeleton or existing examples.
 

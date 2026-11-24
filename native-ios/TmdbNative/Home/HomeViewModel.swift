@@ -1,6 +1,8 @@
 import Foundation
 import TmdbCore
 
+let homeFavoritesLimit = 10
+
 @MainActor
 final class HomeViewModel: ObservableObject {
     @Published private(set) var state = HomeUiState()
@@ -13,16 +15,21 @@ final class HomeViewModel: ObservableObject {
     }
 
     private let titleLists: any TitleLists
+    private let favoriteTitles: any FavoriteTitles
+    private let favorites: any Favorites
     private var effectsContinuation: AsyncStream<HomeEffect>.Continuation?
 
     private var language: Language?
     private var observed: [TitleListType: [TitleItem]] = [:]
     private var failed: Set<TitleListKey> = []
     private let observations = TaskBag()
+    private let favoritesObservation = TaskBag()
     private var pullRefresh: Task<Void, Never>?
 
-    init(titleLists: any TitleLists) {
+    init(titleLists: any TitleLists, favoriteTitles: any FavoriteTitles, favorites: any Favorites) {
         self.titleLists = titleLists
+        self.favoriteTitles = favoriteTitles
+        self.favorites = favorites
     }
 
     func onIntent(_ intent: HomeIntent) {
@@ -35,6 +42,18 @@ final class HomeViewModel: ObservableObject {
             effectsContinuation?.yield(.openTitle(title))
         case let .retry(listType):
             retry(listType)
+        case let .favoriteTapped(favorite):
+            effectsContinuation?.yield(.openTitle(favorite.titleItem))
+        case .seeAllFavoritesTapped:
+            effectsContinuation?.yield(.openFavorites)
+        case let .removeFavoriteTapped(favorite):
+            if state.pendingRemoval == nil {
+                state.pendingRemoval = favorite
+            }
+        case .removeFavoriteConfirmed:
+            confirmRemoval()
+        case .removeFavoriteDismissed:
+            state.pendingRemoval = nil
         }
     }
 
@@ -59,7 +78,26 @@ final class HomeViewModel: ObservableObject {
     private func changeLanguage(_ newLanguage: Language) {
         guard newLanguage != language else { return }
         language = newLanguage
+        observeFavorites(newLanguage)
         showSelection()
+    }
+
+    private func observeFavorites(_ language: Language) {
+        favoritesObservation.cancelAll()
+        let stream = favoriteTitles.observe(language)
+        favoritesObservation.add(Task { [weak self] in
+            for await favorites in stream {
+                guard let self, !Task.isCancelled else { return }
+                state.favorites = Array(favorites.prefix(homeFavoritesLimit))
+                state.favoritesCount = favorites.count
+            }
+        })
+    }
+
+    private func confirmRemoval() {
+        guard let favorite = state.pendingRemoval, let id = favorite.titleItem.titleId else { return }
+        state.pendingRemoval = nil
+        Task { await favorites.setFavorite(id, false) }
     }
 
     private func selectCategory(_ category: TitleCategory) {

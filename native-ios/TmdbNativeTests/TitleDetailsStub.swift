@@ -49,6 +49,7 @@ final class TitleDetailsStub: TitleDetailsSource {
 @MainActor
 final class FavoritesStub: Favorites {
     private(set) var writes: [Bool] = []
+    private(set) var writtenIds: [TitleId] = []
     private var value: Bool?
     private var observers: [AsyncStream<Bool>.Continuation] = []
 
@@ -68,8 +69,9 @@ final class FavoritesStub: Favorites {
         return stream
     }
 
-    func setFavorite(_: TitleId, _ isFavorite: Bool) async {
+    func setFavorite(_ id: TitleId, _ isFavorite: Bool) async {
         writes.append(isFavorite)
+        writtenIds.append(id)
         store(isFavorite)
     }
 }

@@ -140,7 +140,7 @@ final class TitleDetailsViewModelTests: XCTestCase {
         XCTAssertTrue(known)
     }
 
-    func testFavoriteTapStoresTheOppositeValue() async {
+    func testFavoriteTapAddsWhenOff() async {
         await showDetails()
 
         viewModel.onIntent(.favoriteTapped)
@@ -148,19 +148,62 @@ final class TitleDetailsViewModelTests: XCTestCase {
         let stored = await eventually { viewModel.state.isFavorite == true }
         XCTAssertTrue(stored)
         XCTAssertEqual(favorites.writes, [true])
+        XCTAssertFalse(viewModel.state.isRemoveConfirmationShown)
     }
 
-    func testFavoriteTapsFollowStoredValue() async {
+    func testFavoriteTapAsksToConfirmWhenOn() async {
+        favorites = FavoritesStub(stored: true)
+        viewModel = TitleDetailsViewModel(titleId: detailsTitleId, details: source, favorites: favorites)
         await showDetails()
 
         viewModel.onIntent(.favoriteTapped)
-        let on = await eventually { viewModel.state.isFavorite == true }
-        XCTAssertTrue(on)
         viewModel.onIntent(.favoriteTapped)
-        let off = await eventually { viewModel.state.isFavorite == false && favorites.writes.count == 2 }
+        await settle()
 
-        XCTAssertTrue(off)
-        XCTAssertEqual(favorites.writes, [true, false])
+        XCTAssertTrue(viewModel.state.isRemoveConfirmationShown)
+        XCTAssertEqual(viewModel.state.isFavorite, true)
+        XCTAssertEqual(favorites.writes, [])
+    }
+
+    func testConfirmRemovesFavorite() async {
+        favorites = FavoritesStub(stored: true)
+        viewModel = TitleDetailsViewModel(titleId: detailsTitleId, details: source, favorites: favorites)
+        await showDetails()
+        viewModel.onIntent(.favoriteTapped)
+
+        viewModel.onIntent(.removeFavoriteConfirmed)
+
+        XCTAssertFalse(viewModel.state.isRemoveConfirmationShown)
+        let removed = await eventually { viewModel.state.isFavorite == false }
+        XCTAssertTrue(removed)
+        XCTAssertEqual(favorites.writes, [false])
+    }
+
+    func testConfirmTwiceWritesOnce() async {
+        favorites = FavoritesStub(stored: true)
+        viewModel = TitleDetailsViewModel(titleId: detailsTitleId, details: source, favorites: favorites)
+        await showDetails()
+        viewModel.onIntent(.favoriteTapped)
+
+        viewModel.onIntent(.removeFavoriteConfirmed)
+        viewModel.onIntent(.removeFavoriteConfirmed)
+        await settle()
+
+        XCTAssertEqual(favorites.writes, [false])
+    }
+
+    func testDismissKeepsFavorite() async {
+        favorites = FavoritesStub(stored: true)
+        viewModel = TitleDetailsViewModel(titleId: detailsTitleId, details: source, favorites: favorites)
+        await showDetails()
+        viewModel.onIntent(.favoriteTapped)
+
+        viewModel.onIntent(.removeFavoriteDismissed)
+        await settle()
+
+        XCTAssertFalse(viewModel.state.isRemoveConfirmationShown)
+        XCTAssertEqual(viewModel.state.isFavorite, true)
+        XCTAssertEqual(favorites.writes, [])
     }
 
     func testFavoriteTapIgnoredWithoutDetails() async {

@@ -55,6 +55,12 @@ struct TitleDetailsView: View {
                 recommendations: $recommendationsPosition
             )
         )
+        .removeFavoriteDialog(
+            isPresented: viewModel.state.isRemoveConfirmationShown,
+            titleName: viewModel.state.details?.name,
+            onConfirm: { viewModel.onIntent(.removeFavoriteConfirmed) },
+            onDismiss: { viewModel.onIntent(.removeFavoriteDismissed) }
+        )
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.visible, for: .navigationBar)
         .toolbarBackground(Theme.track, for: .navigationBar)

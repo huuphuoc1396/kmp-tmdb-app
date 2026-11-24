@@ -6,6 +6,7 @@ struct RestoringRow<Item: Identifiable, Cell: View>: View where Item.ID == Strin
     let spacing: CGFloat
     let rowKey: String
     @Binding var savedPosition: String
+    var leadingPadding: CGFloat = homeScreenPadding
     @ViewBuilder let cell: (Item) -> Cell
 
     @State private var visible: Set<Int> = []
@@ -28,7 +29,7 @@ struct RestoringRow<Item: Identifiable, Cell: View>: View where Item.ID == Strin
                                 }
                         }
                     }
-                    .padding(.leading, homeScreenPadding)
+                    .padding(.leading, leadingPadding)
                     .padding(.trailing, 16)
                 }
                 .onAppear { restorePosition(with: proxy, rowWidth: geometry.size.width) }
@@ -45,7 +46,7 @@ struct RestoringRow<Item: Identifiable, Cell: View>: View where Item.ID == Strin
         guard savedPosition.hasPrefix(positionPrefix) else { return }
         let id = String(savedPosition.dropFirst(positionPrefix.count))
         guard let index = items.firstIndex(where: { $0.id == id }), index > 0, rowWidth > itemWidth else { return }
-        let anchor = UnitPoint(x: homeScreenPadding / (rowWidth - itemWidth), y: 0)
+        let anchor = UnitPoint(x: leadingPadding / (rowWidth - itemWidth), y: 0)
         DispatchQueue.main.async { proxy.scrollTo(id, anchor: anchor) }
     }
 

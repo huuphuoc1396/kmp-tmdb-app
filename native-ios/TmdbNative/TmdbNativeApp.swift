@@ -13,7 +13,8 @@ struct TmdbNativeApp: App {
                 settings: SharedCoreOnboardingSettings(),
                 titleLists: SharedCoreTitleLists(),
                 titleDetails: SharedCoreTitleDetails(),
-                favorites: SharedCoreFavorites()
+                favorites: SharedCoreFavorites(),
+                favoriteTitles: SharedCoreFavoriteTitles()
             )
         }
     }
