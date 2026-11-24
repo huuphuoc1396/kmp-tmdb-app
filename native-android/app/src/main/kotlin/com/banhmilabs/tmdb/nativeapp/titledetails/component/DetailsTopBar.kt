@@ -18,38 +18,23 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.banhmilabs.tmdb.nativeapp.R
-import com.banhmilabs.tmdb.nativeapp.titledetails.DetailsColors
-
-private val BarHeight = 48.dp
-
-private val BackStart = 8.dp
-private val PillHeight = 32.dp
-private val PillPadding = 10.dp
-private val ArrowSize = 24.dp
-private val ArrowToLabel = 6.dp
-private const val PILL_ALPHA = 0.65f
-
-private val FavoriteEnd = 22.dp
-private val FavoriteSize = 32.dp
-
-private val LabelStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSize
+import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.nativeapp.designsystem.component.FavoriteHeart
 
 @Composable
 internal fun DetailsTopBar(
@@ -62,33 +47,37 @@ internal fun DetailsTopBar(
         modifier = modifier
             .fillMaxWidth()
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
-            .heightIn(min = BarHeight),
+            .heightIn(min = TmdbSize.touchTarget),
     ) {
         Row(
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .padding(start = BackStart)
+                .padding(start = TmdbSpacing.xs)
                 .minimumInteractiveComponentSize()
-                .heightIn(min = PillHeight)
+                .heightIn(min = 32.dp)
                 .clip(CircleShape)
-                .background(DetailsColors.Track.copy(alpha = PILL_ALPHA))
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.65f))
                 .clickable(role = Role.Button, onClick = onBack)
-                .padding(horizontal = PillPadding),
+                .padding(horizontal = TmdbSpacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_back_arrow),
                 contentDescription = null,
-                modifier = Modifier.size(ArrowSize),
+                modifier = Modifier.size(TmdbSize.iconMedium),
             )
-            Spacer(modifier = Modifier.width(ArrowToLabel))
-            Text(text = stringResource(R.string.details_back), style = LabelStyle)
+            Spacer(modifier = Modifier.width(TmdbSpacing.xs))
+            Text(
+                text = stringResource(R.string.details_back),
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleMedium,
+            )
         }
         if (isFavorite != null) {
             FavoriteButton(
                 isFavorite = isFavorite,
                 onClick = onFavoriteClick,
-                modifier = Modifier.align(Alignment.CenterEnd).padding(end = FavoriteEnd),
+                modifier = Modifier.align(Alignment.CenterEnd).padding(end = TmdbSpacing.xl),
             )
         }
     }
@@ -97,12 +86,10 @@ internal fun DetailsTopBar(
 @Composable
 private fun FavoriteButton(isFavorite: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val label = stringResource(R.string.details_favorite)
-    Image(
-        painter = painterResource(if (isFavorite) R.drawable.ic_favorite_on else R.drawable.ic_favorite_off),
-        contentDescription = null,
+    FavoriteHeart(
+        isFavorite = isFavorite,
         modifier = modifier
             .minimumInteractiveComponentSize()
-            .size(FavoriteSize)
             .clip(CircleShape)
             .toggleable(value = isFavorite, role = Role.Switch, onValueChange = { onClick() })
             .semantics { contentDescription = label },

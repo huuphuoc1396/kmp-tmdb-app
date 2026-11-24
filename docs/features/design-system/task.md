@@ -94,6 +94,12 @@ color; the same screen looks the same in all three apps; and text follows the sy
   - When they are read
   - Then they state that screens use tokens, not raw values, and the design docs name the tokens each screen uses
 
+- **AC-9** Favorite heart is the same on every screen
+  - Given a title that is a favorite
+  - When it appears on Home (favorites section), My favorites or Title details, in any of the three apps
+  - Then it shows the same filled heart as My favorites (filled pink heart on a round background); a title that is
+    not a favorite shows the outline heart (Title details only)
+
 ## Edge cases
 - **EC-1** A very long title name at a large font size -> it wraps or ends with "…" as on that screen today; the
   layout does not break.
@@ -134,3 +140,5 @@ color; the same screen looks the same in all three apps; and text follows the sy
 7. [07 - Cross-app comparison and docs](subtasks/07-parity-and-docs.md)
 - 2026-11-24: Sizes and other values used in one place are written inline; named constants only for values
   used in two or more places.
+- 2026-11-24: Added AC-9: a favorite shows the same filled heart on Home, My favorites and Title details in all three
+  apps.

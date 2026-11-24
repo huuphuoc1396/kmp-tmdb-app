@@ -6,12 +6,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.nativeapp.R
+import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.nativeapp.designsystem.component.PosterRowDefaults
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.RetryMessage
-import com.banhmilabs.tmdb.nativeapp.home.ScreenPadding
-
-internal val RowMinHeight = 188.dp
 
 @Composable
 internal fun RowMessage(message: String, onRetry: (() -> Unit)?, modifier: Modifier = Modifier) {
@@ -21,7 +19,7 @@ internal fun RowMessage(message: String, onRetry: (() -> Unit)?, modifier: Modif
         onRetry = onRetry,
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = RowMinHeight)
-            .padding(horizontal = ScreenPadding),
+            .heightIn(min = PosterRowDefaults.PosterHeight)
+            .padding(horizontal = TmdbSpacing.xxl),
     )
 }
