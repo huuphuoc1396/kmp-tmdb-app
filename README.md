@@ -28,9 +28,7 @@ One Kotlin core (network, storage, business logic) backs three apps:
 
 | Onboarding | Home | Title details |
 |---|---|---|
-| <img src="docs/images/screenshots/onboarding.png" width="250"> | <img src="docs/images/screenshots/home.png" width="250"> | <img src="docs/images/screenshots/title-details.png" width="250"> |
-
-Images: `docs/images/screenshots/<onboarding|home|title-details>.png`.
+| <img src="docs/images/screenshots/onboarding.webp" width="250"> | <img src="docs/images/screenshots/home.webp" width="250"> | <img src="docs/images/screenshots/title-details.webp" width="250"> |
 
 ## Acknowledgements
 

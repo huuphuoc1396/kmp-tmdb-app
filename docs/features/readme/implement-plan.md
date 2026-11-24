@@ -13,7 +13,7 @@ verification is a manual review of the rendered page and of the commands against
 ## Decisions
 - Favorites are listed as a full feature (mark/unmark on Title details and a My favorites list), with a fourth
   screenshot row — user's choice over "list only what works today" (see Risks: the list screen is not built yet).
-- Screenshots live in `docs/images/screenshots/<screen>.png`, screen
+- Screenshots live in `docs/images/screenshots/<screen>.webp`, screen
   `onboarding` | `home` | `title-details` (3 files, not split by platform; favorites show inside Home and details) — user's choice; resolves task.md's open question.
 - TMDB disclaimer is text plus a link to https://www.themoviedb.org/, no logo file — user's choice over committing or
   hotlinking the official logo.
@@ -73,7 +73,7 @@ verification is a manual review of the rendered page and of the commands against
     `native-android/` (Jetpack Compose, core as published Android libraries), `native-ios/` (SwiftUI, core as a
     local Swift Package). One sentence: same business core, different amounts of shared presentation.
   - `## Screenshots`: table, columns Onboarding | Home | Title details, one row, each cell
-    `<img src="docs/images/screenshots/<screen>.png" width="200">`; one line under it listing the folder
+    `<img src="docs/images/screenshots/<screen>.webp" width="250">`; one line under it listing the folder
     and naming pattern so the owner can drop files in.
   - `## Acknowledgements`: design based on the TMDB Figma community file
     (https://www.figma.com/community/file/1059842558004825230/tmdb); data from the TMDB API
@@ -172,7 +172,7 @@ verification is a manual review of the rendered page and of the commands against
 | AC-5 | 2, 5 | Manual: Figma link, TMDB link and disclaimer sentence present |
 | AC-6 | 5 | Manual: `diff` each command block against `CLAUDE.md` Commands; spot-run `./gradlew :architecture-test:test` |
 | AC-7 | 1, 5 | Manual: `LICENSE` is MIT, 2026, Phuoc Bui; README links it |
-| AC-8 | 2 | Manual: 3 image paths follow `docs/images/screenshots/<screen>.png` |
+| AC-8 | 2 | Manual: 3 images in `docs/images/screenshots/<screen>.webp` show in the README |
 | EC-1 | 2 | Manual: table readable with images missing; naming line present |
 | EC-2 | 3, 4 | Manual: text before each diagram explains it alone |
 | EC-3 | 5 | Manual: missing-token behaviour described |
@@ -202,3 +202,5 @@ verification is a manual review of the rendered page and of the commands against
   Testing keep only the main commands and link the native app READMEs for the rest.
 - Screenshots changed to one row of 4 images, not split by platform, at the user's request.
 - Favorites screenshot column dropped: favorites show inside the Home and Title details screenshots.
+- Screenshots added as WebP (`onboarding`, `home`, `title-details`), so the README shows them directly and the
+  placeholder line under the table is gone.

@@ -120,7 +120,7 @@ Not applicable (documentation only).
 - Follows TMDB's attribution requirements for the disclaimer.
 
 ## Open questions
-- [x] Exact screenshot image folder: `docs/images/screenshots/<screen>.png`.
+- [x] Exact screenshot image folder: `docs/images/screenshots/<screen>.webp`.
 
 ## Change log
 - 2026-11-23: Initial version.
@@ -128,3 +128,4 @@ Not applicable (documentation only).
 - 2026-11-23: Native apps run by opening their own project; the run scripts are not documented.
 - 2026-11-23: Screenshots are one image per screen, not split by platform (`docs/images/screenshots/<screen>.png`).
 - 2026-11-23: Screenshots limited to onboarding, Home and title details; favorites show inside Home and title details.
+- 2026-11-24: Screenshots added (WebP): onboarding, home, title-details.
