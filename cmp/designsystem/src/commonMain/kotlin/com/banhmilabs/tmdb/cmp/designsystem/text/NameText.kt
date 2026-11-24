@@ -57,8 +57,24 @@ private fun TextMeasurer.measureWordSafe(
     maxWidth: Int,
 ): TextLayoutResult {
     val box = Constraints(maxWidth = maxWidth)
+    val glued = probeLines(text, style, maxLines, box)
+    val breakable = text.replace(NO_BREAK_SPACE, ' ')
+    val (shownText, lines) = if (breakable != text && glued.splitsWord) {
+        breakable to probeLines(breakable, style, maxLines, box).shown
+    } else {
+        text to glued.shown
+    }
+    return measure(shownText, style, TextOverflow.Ellipsis, softWrap = true, maxLines = lines, constraints = box)
+}
+
+private class ProbedLines(val shown: Int, val laidOut: Int) {
+    val splitsWord: Boolean get() = shown < laidOut
+}
+
+private fun TextMeasurer.probeLines(text: String, style: TextStyle, maxLines: Int, box: Constraints): ProbedLines {
     val probe = measure(text, style, TextOverflow.Clip, softWrap = true, maxLines = maxLines, constraints = box)
     val lineEnds = (0 until probe.lineCount).map { line -> probe.getLineEnd(line) }
-    val shownLines = wordSafeLineCount(text, lineEnds, maxLines)
-    return measure(text, style, TextOverflow.Ellipsis, softWrap = true, maxLines = shownLines, constraints = box)
+    return ProbedLines(shown = wordSafeLineCount(text, lineEnds, maxLines), laidOut = probe.lineCount)
 }
+
+private const val NO_BREAK_SPACE = '\u00A0'

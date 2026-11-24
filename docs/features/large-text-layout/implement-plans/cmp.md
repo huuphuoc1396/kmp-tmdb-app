@@ -169,3 +169,7 @@ screen's `ScrollState` has moved.
 - Step 1: `wordSafeLineCount` also keeps at least one line (`emptyTextKeepsOneLine`), so empty text never asks
   the measurer for zero lines.
 - Step 1: the compile check ran as `:cmp:designsystem:testAndroidHostTest` (there is no separate host-test compile task name to call).
+- Step 1 (after review with native-android): `nameWithYear` joins the year with a no-break space, so at large text
+  "Doomsday (2026)" was one unbreakable unit and got cut as "Doomsda…". When the probe shows a word split and the
+  name has a no-break space, `NameText` lays it out again with normal spaces ("Avengers: / Doomsday / (2026)").
+  Default size unchanged. Same as `native-android`.
