@@ -32,13 +32,11 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterRow
 import com.banhmilabs.tmdb.cmp.designsystem.component.RemoveFavoriteDialog
 import com.banhmilabs.tmdb.cmp.designsystem.component.RetryMessage
@@ -63,21 +61,6 @@ import com.banhmilabs.tmdb.service.title.domain.TitleDetails
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-
-private val ScreenPadding = 30.dp
-
-private val HeaderTop = 376.dp
-private val HeaderToDivider = 21.dp
-private val DividerToSynopsis = 20.dp
-private val SynopsisToTrailer = 30.dp
-private val ToCastHeading = 46.dp
-private val CastHeadingToRow = 16.dp
-private val ToSectionHeading = 41.dp
-private val HeadingToContent = 20.dp
-private val BottomPadding = 40.dp
-private const val DIVIDER_ALPHA = 0.48f
-
-private val SynopsisStyle = TextStyle(color = DetailsColors.Synopsis, fontSize = 14.sp, lineHeight = 17.5.sp)
 
 @Composable
 internal fun TitleDetailsScreen(
@@ -118,7 +101,7 @@ internal fun TitleDetailsContent(
         cast = rememberSaveable(saver = LazyListState.Saver) { LazyListState() },
         recommendations = rememberSaveable(saver = LazyListState.Saver) { LazyListState() },
     )
-    Box(modifier = modifier.fillMaxSize().background(DetailsColors.Page)) {
+    Box(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
         when (val load = state.load) {
             DetailsLoad.Loading -> CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
@@ -129,7 +112,7 @@ internal fun TitleDetailsContent(
                 message = stringResource(Res.string.details_error),
                 retryLabel = stringResource(Res.string.details_retry),
                 onRetry = { onIntent(TitleDetailsIntent.Retry) },
-                modifier = Modifier.align(Alignment.Center).padding(horizontal = ScreenPadding),
+                modifier = Modifier.align(Alignment.Center).padding(horizontal = TmdbSpacing.xxl),
                 horizontalAlignment = Alignment.CenterHorizontally,
             )
 
@@ -188,11 +171,11 @@ private fun LoadedContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = HeaderTop)
+                    .padding(top = 376.dp)
                     .windowInsetsPadding(
                         WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
                     )
-                    .padding(bottom = BottomPadding),
+                    .padding(bottom = TmdbSpacing.xxxl),
             ) {
                 DetailsBody(details = details, language = language, scroll = scroll, onIntent = onIntent)
             }
@@ -207,41 +190,42 @@ private fun DetailsBody(
     scroll: DetailsScroll,
     onIntent: (TitleDetailsIntent) -> Unit,
 ) {
-    val padded = Modifier.padding(horizontal = ScreenPadding)
+    val padded = Modifier.padding(horizontal = TmdbSpacing.xxl)
     DetailsHeader(details = details, language = language, modifier = padded)
-    Spacer(modifier = Modifier.height(HeaderToDivider))
-    HorizontalDivider(modifier = padded, color = Color.Black.copy(alpha = DIVIDER_ALPHA))
-    Spacer(modifier = Modifier.height(DividerToSynopsis))
+    Spacer(modifier = Modifier.height(TmdbSpacing.lg))
+    HorizontalDivider(modifier = padded, color = MaterialTheme.colorScheme.outlineVariant)
+    Spacer(modifier = Modifier.height(TmdbSpacing.lg))
     Text(
         text = details.synopsis ?: stringResource(Res.string.details_no_synopsis),
         modifier = padded,
-        style = SynopsisStyle,
+        color = MaterialTheme.colorScheme.onSurface,
+        style = MaterialTheme.typography.bodyMedium,
     )
     if (details.trailer != null) {
-        Spacer(modifier = Modifier.height(SynopsisToTrailer))
+        Spacer(modifier = Modifier.height(TmdbSpacing.xxl))
         TrailerButton(onClick = { onIntent(TitleDetailsIntent.TrailerClicked) }, modifier = padded)
     }
     if (details.cast.isNotEmpty()) {
-        Spacer(modifier = Modifier.height(ToCastHeading))
+        Spacer(modifier = Modifier.height(TmdbSpacing.xxxl))
         SectionHeading(text = stringResource(Res.string.details_cast), modifier = padded)
-        Spacer(modifier = Modifier.height(CastHeadingToRow))
-        CastRow(cast = details.cast, startPadding = ScreenPadding, listState = scroll.cast)
+        Spacer(modifier = Modifier.height(TmdbSpacing.md))
+        CastRow(cast = details.cast, startPadding = TmdbSpacing.xxl, listState = scroll.cast)
     }
     if (details.genres.isNotEmpty()) {
-        Spacer(modifier = Modifier.height(ToSectionHeading))
+        Spacer(modifier = Modifier.height(TmdbSpacing.xxxl))
         SectionHeading(text = stringResource(Res.string.details_genres), modifier = padded)
-        Spacer(modifier = Modifier.height(HeadingToContent))
+        Spacer(modifier = Modifier.height(TmdbSpacing.lg))
         GenreChips(genres = details.genres, modifier = padded)
     }
     if (details.recommendations.isNotEmpty()) {
-        Spacer(modifier = Modifier.height(ToSectionHeading))
+        Spacer(modifier = Modifier.height(TmdbSpacing.xxxl))
         SectionHeading(text = stringResource(Res.string.details_recommendations), modifier = padded)
-        Spacer(modifier = Modifier.height(HeadingToContent))
+        Spacer(modifier = Modifier.height(TmdbSpacing.lg))
         PosterRow(
             titles = details.recommendations,
             onTitleClick = { onIntent(TitleDetailsIntent.RecommendationClicked(it)) },
             listState = scroll.recommendations,
-            contentPadding = PaddingValues(start = ScreenPadding),
+            contentPadding = PaddingValues(start = TmdbSpacing.xxl),
         )
     }
 }

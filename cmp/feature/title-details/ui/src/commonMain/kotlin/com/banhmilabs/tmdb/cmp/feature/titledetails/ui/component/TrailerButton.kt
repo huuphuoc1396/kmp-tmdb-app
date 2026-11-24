@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -20,25 +20,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_watch_trailer
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.ic_play_circle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
-private val ButtonHeight = 44.dp
-private val ButtonShape = RoundedCornerShape(60.dp)
-private val IconSize = 20.dp
-private val IconToLabel = 10.dp
-
-private val LabelStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
 
 @Composable
 internal fun TrailerButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -52,8 +43,8 @@ internal fun TrailerButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .minimumInteractiveComponentSize()
-            .heightIn(min = ButtonHeight)
-            .clip(ButtonShape)
+            .heightIn(min = 44.dp)
+            .clip(CircleShape)
             .background(gradient)
             .clickable(role = Role.Button, onClick = onClick),
         horizontalArrangement = Arrangement.Center,
@@ -62,12 +53,13 @@ internal fun TrailerButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         Image(
             painter = painterResource(Res.drawable.ic_play_circle),
             contentDescription = null,
-            modifier = Modifier.size(IconSize),
+            modifier = Modifier.size(TmdbSize.iconSmall),
         )
-        Spacer(modifier = Modifier.width(IconToLabel))
+        Spacer(modifier = Modifier.width(TmdbSpacing.sm))
         Text(
             text = stringResource(Res.string.details_watch_trailer),
-            style = LabelStyle,
+            color = colors.onPrimary,
+            style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center,
         )
     }

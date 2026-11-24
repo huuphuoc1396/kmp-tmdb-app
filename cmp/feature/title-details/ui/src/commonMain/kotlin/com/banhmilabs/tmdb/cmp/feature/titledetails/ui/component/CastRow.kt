@@ -17,40 +17,24 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.designsystem.component.PersonIcon
-import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.DetailsColors
 import com.banhmilabs.tmdb.service.title.domain.CastMember
 
-private val ItemWidth = 75.dp
-private val ItemSpacing = 4.dp
-private val PhotoSize = 60.dp
-private val BorderWidth = 4.dp
-private val PhotoToName = 3.dp
-private val PlaceholderIconSize = 30.dp
-private const val NAME_MAX_LINES = 2
-
-private val NameStyle = TextStyle(
-    color = Color.White,
-    fontSize = 12.sp,
-    fontWeight = FontWeight.Bold,
-    textAlign = TextAlign.Center,
-)
+private val PhotoBorder = 4.dp
 
 @Composable
 internal fun CastRow(
@@ -63,7 +47,7 @@ internal fun CastRow(
         modifier = modifier,
         state = listState,
         contentPadding = PaddingValues(start = startPadding),
-        horizontalArrangement = Arrangement.spacedBy(ItemSpacing),
+        horizontalArrangement = Arrangement.spacedBy(TmdbSpacing.xxs),
     ) {
         itemsIndexed(cast, key = { index, member -> "$index-${member.name}" }) { _, member ->
             CastItem(member)
@@ -74,21 +58,21 @@ internal fun CastRow(
 @Composable
 private fun CastItem(member: CastMember) {
     Column(
-        modifier = Modifier.width(ItemWidth).semantics(mergeDescendants = true) {},
+        modifier = Modifier.width(76.dp).semantics(mergeDescendants = true) {},
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
             modifier = Modifier
-                .size(PhotoSize + BorderWidth * 2)
-                .border(BorderWidth, DetailsColors.Track, CircleShape)
-                .padding(BorderWidth)
+                .size(60.dp + PhotoBorder * 2)
+                .border(PhotoBorder, MaterialTheme.colorScheme.surfaceContainerHigh, CircleShape)
+                .padding(PhotoBorder)
                 .clip(CircleShape)
-                .background(DetailsColors.Track),
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh),
             contentAlignment = Alignment.Center,
         ) {
             val photoUrl = member.photoUrl
             if (photoUrl == null) {
-                PersonIcon(modifier = Modifier.size(PlaceholderIconSize))
+                PersonIcon(modifier = Modifier.size(32.dp))
             } else {
                 AsyncImage(
                     model = photoUrl,
@@ -98,11 +82,13 @@ private fun CastItem(member: CastMember) {
                 )
             }
         }
-        Spacer(modifier = Modifier.height(PhotoToName))
+        Spacer(modifier = Modifier.height(TmdbSpacing.xxs))
         Text(
             text = member.name,
-            style = NameStyle,
-            maxLines = NAME_MAX_LINES,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.labelMedium,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
     }

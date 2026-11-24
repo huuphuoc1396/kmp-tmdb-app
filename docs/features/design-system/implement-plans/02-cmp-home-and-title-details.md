@@ -1,7 +1,7 @@
 # Plan: cmp Home and Title details
 
 Requirement: [02 - cmp: Home and Title details](../subtasks/02-cmp-home-and-title-details.md)
-Status: Approved
+Status: Done
 
 ## Summary
 Home (header, search field, category tabs, favorites section, rows) and Title details (screen, header, rating ring,
@@ -109,7 +109,7 @@ ring's value scales with the system font up to a cap, so it always fits inside t
 | `cmp:feature:title-details:ui` | `androidHostTest/.../component/RatingRingFontScaleTest.kt` (new) | Font scale cap |
 
 ## Steps
-### Step 1: Home on tokens  (AC-3, AC-4, AC-6, EC-1, EC-5)
+### Step 1: Home on tokens  (AC-3, AC-4, AC-6, EC-1, EC-5) ✅
 - Files: `cmp/feature/home/ui/src/commonMain/kotlin/com/banhmilabs/tmdb/cmp/feature/home/ui/HomeScreen.kt`,
   `component/HomeHeader.kt`, `SearchField.kt`, `CategoryTabs.kt`, `FavoritesSection.kt`, `RowMessage.kt` (modify).
 - What (values from the mapping table; every `TextStyle`, `Color`, `RoundedCornerShape` and spacing literal goes):
@@ -138,7 +138,7 @@ ring's value scales with the system font up to a cap, so it always fits inside t
 - Unit tests: the existing `HomeViewModel*Test` classes are unchanged (no behavior change).
 - Compile: `./gradlew :cmp:feature:home:ui:compileAndroidMain`
 
-### Step 2: Title details on tokens  (AC-3, AC-4, AC-5, AC-6, EC-1, EC-4, EC-5)
+### Step 2: Title details on tokens  (AC-3, AC-4, AC-5, AC-6, EC-1, EC-4, EC-5) ✅
 - Files: `cmp/feature/title-details/ui/src/commonMain/kotlin/com/banhmilabs/tmdb/cmp/feature/titledetails/ui/`
   `TitleDetailsScreen.kt`, `component/SectionHeading.kt`, `DetailsHeader.kt`, `RatingRing.kt`, `CastRow.kt`,
   `DetailsTopBar.kt`, `TrailerButton.kt`, `GenreChips.kt`, `DetailsArtwork.kt` (modify); `DetailsColors.kt`
@@ -181,7 +181,7 @@ ring's value scales with the system font up to a cap, so it always fits inside t
   `TitleDetailsRouteTest` are unchanged.
 - Compile: `./gradlew :cmp:feature:title-details:ui:compileAndroidMain :cmp:feature:title-details:ui:compileAndroidHostTest`
 
-### Step 3: Run checks
+### Step 3: Run checks ✅
 - `./gradlew :cmp:feature:home:ui:testAndroidHostTest :cmp:feature:home:ui:detekt
   :cmp:feature:title-details:ui:testAndroidHostTest :cmp:feature:title-details:ui:detekt` and
   `./gradlew :architecture-test:test`.
@@ -216,3 +216,13 @@ ring's value scales with the system font up to a cap, so it always fits inside t
   device with gesture navigation that the last row is still clear of the system bar (the safe-drawing insets stay).
 - Darker Details page (`#21222E` -> `#130E1F`) with the purple surface family. Mitigation: agreed by the user; the
   artwork fade uses the same color, so there is no visible seam.
+
+## Deviations
+- Rating ring value: `BasicText` with `TextAutoSize.StepBased(min = labelSmall, max = titleMedium)` and an 8dp
+  (`TmdbSpacing.xs`) inset, inside the capped density. On the iOS simulator at the largest text size, "77%" at the
+  plain 1.15 cap still touched the stroke, and "100%" would overflow even at 100%. The value now scales with the
+  system font up to the cap and shrinks to fit the ring.
+- Date line: `FlowRow` in place of `Row`, with the dot, clock and runtime kept together in one item. At the
+  largest text size the `Row` broke "2h 6m" one character per line; the runtime group now wraps to the next line.
+- The date-line text is a private `DateLineText` composable (used twice), in place of a shared `TextStyle`.
+- Test function names are lowerCamelCase, as `.claude/rules/testing.md` requires.
