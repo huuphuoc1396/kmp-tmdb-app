@@ -206,3 +206,5 @@ verification is a manual review of the rendered page and of the commands against
   placeholder line under the table is gone.
 - Screenshots retaken on the iPhone 17 simulator (native-ios) and stored as 600 px wide JPEGs in two rows of three:
   onboarding, home, home-scrolled / title-details, title-details-scrolled, my-favorites. The WebP files are removed.
+- Screenshots replaced by a single banner image `docs/images/screenshots.webp` (2000×1111) supplied by the user; the
+  six JPEGs are removed.

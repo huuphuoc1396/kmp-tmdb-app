@@ -120,7 +120,7 @@ Not applicable (documentation only).
 - Follows TMDB's attribution requirements for the disclaimer.
 
 ## Open questions
-- [x] Exact screenshot image folder: `docs/images/screenshots/<screen>.jpg`.
+- [x] Screenshot image: one banner, `docs/images/screenshots.webp`.
 
 ## Change log
 - 2026-11-23: Initial version.
@@ -131,3 +131,5 @@ Not applicable (documentation only).
 - 2026-11-24: Screenshots added (WebP): onboarding, home, title-details.
 - 2026-11-24: Screenshots retaken on the iOS simulator (native-ios) as 600 px JPEGs: onboarding, Home (top and
   scrolled), title details (top and scrolled), My favorites.
+- 2026-11-24: Screenshots replaced by one banner image (`docs/images/screenshots.webp`) showing onboarding, Home,
+  title details and My favorites.
