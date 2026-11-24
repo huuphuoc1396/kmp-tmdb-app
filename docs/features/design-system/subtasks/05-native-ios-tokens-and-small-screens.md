@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Onboarding](../../onboarding/design/onboarding.md), [My favorites](../../favorites/design/my-favorites.md), [Remove favorite dialog](../../favorites/design/remove-favorite-dialog.md), [Home](../../home/design/home.md) (maybe)
 Depends on: 01-cmp-tokens-and-small-screens
-Status: Todo
+Status: Done
 
 ## Goal
 `native-ios` has a design system with the same token names and values as `cmp`, with text styles that follow
