@@ -172,7 +172,7 @@ stay as the Figma record.
 | Divider and synopsis | `lg` above and below the divider; `xxl` to the trailer | `bodyMedium` | — | divider `outlineVariant` (`borderWidth`), synopsis `onSurface` | |
 | Trailer button | `sm` padding; icon `iconSmall`, `sm` gap; min height 44 | `titleMedium` | full (pill) | `primary` → `primaryContainer`, `onPrimary` | |
 | Section headings | `xxxl` above; `md` (cast) or `lg` (others) below | `titleLarge` | — | `onSurface` | |
-| Cast | `xxs` between items and photo → name; item 76, photo 60, border 4 | `labelMedium` (2 lines) | full (circle) | `surfaceContainerHigh`, `onSurface` | |
+| Cast | `xxs` between items and photo → name; item 76, photo 60, border 4 | `labelMedium` (2 lines, break between words, "…" at the cut) | full (circle) | `surfaceContainerHigh`, `onSurface` | |
 | Genre chips | `md` between and padding; `sm` between lines; min height 32 | `titleMedium` | full (pill) | `surfaceContainerHigh`, `onSurface` | |
 | Recommendations | `PosterRowDefaults`; `sm` between | — | `small` | — | |
 

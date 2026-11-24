@@ -38,6 +38,8 @@ Content, top to bottom (start padding 30dp throughout):
   edge (content scrolls under the edge; no end clipping at 345dp).
 - Larger screens, landscape and large fonts: the same single column; rows show more posters; the title wraps
   (EC-10).
+- Title names (poster placeholders, favorites) break only between words; a word wider than its line, or the last
+  allowed line, ends with "…" (`native-ios`: `NameText`).
 
 ### System bars (from user)
 Edge-to-edge, as in onboarding: the background and header glow draw behind the status bar, with light (white)

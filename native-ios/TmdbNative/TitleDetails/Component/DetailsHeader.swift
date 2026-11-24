@@ -9,11 +9,13 @@ struct DetailsHeader: View {
         HStack(alignment: .top, spacing: TmdbSpacing.md) {
             RatingRing(percent: details.ratingPercent)
             VStack(alignment: .leading, spacing: TmdbSpacing.xxs) {
-                Text(verbatim: TitleDetailsFormat.nameWithYear(details.name, year: details.releaseDate?.year))
-                    .tmdbFont(.titleLarge)
-                    .foregroundStyle(TmdbColor.onSurface)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityAddTraits(.isHeader)
+                NameText(
+                    TitleDetailsFormat.nameWithYear(details.name, year: details.releaseDate?.year),
+                    style: .titleLarge,
+                    lineLimit: nil
+                )
+                .foregroundStyle(TmdbColor.onSurface)
+                .accessibilityAddTraits(.isHeader)
                 let date = details.releaseDate.map { TitleDetailsFormat.releaseDate($0, language: language) }
                 let runtime = details.runtimeMinutes.map(TitleDetailsFormat.runtime(minutes:))
                 if date != nil || runtime != nil {

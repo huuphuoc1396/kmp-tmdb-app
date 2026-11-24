@@ -15,12 +15,8 @@ struct PosterTile: View {
                     }
                 }
             } else if let name {
-                Text(name)
-                    .tmdbFont(.titleSmall)
+                NameText(name, style: .titleSmall, lineLimit: 4, alignment: .center)
                     .foregroundStyle(TmdbColor.onSurface)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(4)
-                    .truncationMode(.tail)
                     .padding(TmdbSpacing.xs)
             }
         }

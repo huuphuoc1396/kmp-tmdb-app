@@ -22,6 +22,8 @@ The section is a card on Home, between the featured row and the "Most popular" /
 - Inside the card (padding ≈12dp start, so posters line up with Home's 30dp content edge), top to bottom:
   1. Header row (top ≈18dp): "Favoritos" title, count badge ≈8dp after it; "Ver todos ›" aligned to the end (≈16dp
      from the card's end edge).
+     At large text sizes, when the row doesn't fit, "Ver todos ›" moves to its own line below the title and badge,
+     at the end edge, kept on one line with its chevron (`native-ios`: `ViewThatFits` in `FavoritesSection`).
   2. Subtitle, ≈12dp below the title.
   3. Poster row, ≈16dp below the subtitle: horizontal scroll of up to 10 items, ≈12dp apart. It scrolls inside the
      card; the third item ends ≈12dp from the card's end edge in the design.

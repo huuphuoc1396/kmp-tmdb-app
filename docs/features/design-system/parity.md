@@ -88,3 +88,7 @@ Large-text issues found while checking, for a separate task:
 - "View all" wraps and loses its chevron.
 - Names and long words break mid-word.
 - The floating Details top bar overlaps content while scrolling.
+
+Large text (`docs/features/large-text-layout/task.md`), `native-ios`: names use `NameText` (breaks only between
+words, "…" at the cut), and the favorites header moves "View all ›" to its own line when it doesn't fit. The Title
+details navigation bar stays the system bar (accepted platform difference).
