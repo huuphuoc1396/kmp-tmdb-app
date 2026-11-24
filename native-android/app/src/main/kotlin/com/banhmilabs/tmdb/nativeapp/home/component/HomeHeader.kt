@@ -14,24 +14,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.banhmilabs.tmdb.nativeapp.R
+import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSize
+import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.PersonIcon
-
-private val TitleToAvatar = 8.dp
-private val AvatarSize = 40.dp
-private val AvatarTopOffset = 7.dp
-private val PersonIconSize = 24.dp
-
-private val TitleStyle = TextStyle(color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
 
 @Composable
 internal fun HomeHeader(modifier: Modifier = Modifier) {
@@ -39,19 +30,20 @@ internal fun HomeHeader(modifier: Modifier = Modifier) {
         Text(
             text = stringResource(R.string.home_title),
             modifier = Modifier.weight(1f).semantics { heading() },
-            style = TitleStyle,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.headlineMedium,
         )
-        Spacer(modifier = Modifier.width(TitleToAvatar))
+        Spacer(modifier = Modifier.width(TmdbSpacing.xs))
         Box(
             modifier = Modifier
-                .padding(top = AvatarTopOffset)
-                .size(AvatarSize)
+                .padding(top = TmdbSpacing.xs)
+                .size(40.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .clearAndSetSemantics {},
             contentAlignment = Alignment.Center,
         ) {
-            PersonIcon(modifier = Modifier.size(PersonIconSize))
+            PersonIcon(modifier = Modifier.size(TmdbSize.iconMedium))
         }
     }
 }

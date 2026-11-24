@@ -3,15 +3,17 @@ package com.banhmilabs.tmdb.nativeapp.titledetails.component
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
@@ -22,16 +24,16 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.nativeapp.R
-import com.banhmilabs.tmdb.nativeapp.titledetails.DetailsColors
+import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
 
-internal val RingSize = 57.dp
-private val RingWidth = 6.dp
+internal const val MAX_RING_FONT_SCALE = 1.15f
 private const val START_ANGLE = -90f
 private const val DEGREES_PER_PERCENT = 3.6f
 
-private val ValueSize = 15.dp
+internal fun ringFontScale(systemFontScale: Float): Float = minOf(systemFontScale, MAX_RING_FONT_SCALE)
 
 @Composable
 internal fun RatingRing(percent: Int?, modifier: Modifier = Modifier) {
@@ -41,20 +43,20 @@ internal fun RatingRing(percent: Int?, modifier: Modifier = Modifier) {
         stringResource(R.string.details_rating_description, percent)
     }
     val value = percent?.toString() ?: stringResource(R.string.details_not_rated)
-    val arcColor = MaterialTheme.colorScheme.secondary
-    val valueSize = with(LocalDensity.current) { ValueSize.toSp() }
+    val colors = MaterialTheme.colorScheme
+    val density = LocalDensity.current
     Box(
-        modifier = modifier.size(RingSize).clearAndSetSemantics { contentDescription = description },
+        modifier = modifier.size(56.dp).clearAndSetSemantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val width = RingWidth.toPx()
-            drawCircle(color = DetailsColors.Track)
-            drawCircle(color = DetailsColors.RingCenter, radius = size.minDimension / 2 - width)
+            val width = 6.dp.toPx()
+            drawCircle(color = colors.surfaceContainerHigh)
+            drawCircle(color = colors.surface, radius = size.minDimension / 2 - width)
             if (percent != null) {
                 val inset = width / 2
                 drawArc(
-                    color = arcColor,
+                    color = colors.secondary,
                     startAngle = START_ANGLE,
                     sweepAngle = percent * DEGREES_PER_PERCENT,
                     useCenter = false,
@@ -64,15 +66,23 @@ internal fun RatingRing(percent: Int?, modifier: Modifier = Modifier) {
                 )
             }
         }
-        Text(
-            text = buildAnnotatedString {
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(value)
-                }
-                if (percent != null) withStyle(SpanStyle(fontWeight = FontWeight.Normal)) { append("%") }
-            },
-            color = Color.White,
-            fontSize = valueSize,
-        )
+        CompositionLocalProvider(LocalDensity provides Density(density.density, ringFontScale(density.fontScale))) {
+            val style = MaterialTheme.typography.titleMedium
+            BasicText(
+                text = buildAnnotatedString {
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append(value)
+                    }
+                    if (percent != null) withStyle(SpanStyle(fontWeight = FontWeight.Normal)) { append("%") }
+                },
+                modifier = Modifier.padding(TmdbSpacing.xs),
+                style = style.copy(color = colors.onSurface),
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = MaterialTheme.typography.labelSmall.fontSize,
+                    maxFontSize = style.fontSize,
+                ),
+            )
+        }
     }
 }

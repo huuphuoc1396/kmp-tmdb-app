@@ -16,6 +16,8 @@ outside its design system.
 - Decide and apply the Home background: a gradient between two color roles or a flat surface (open question in task.md).
 - Move Title details to tokens.
 - Large Dynamic Type sizes on these screens.
+- Home (favorites section) and Title details use the shared favorite heart from 05 in place of the `FavoriteRemove`,
+  `FavoriteOn` and `FavoriteOff` images.
 ### Out of scope (handled later)
 - Cross-app comparison and docs -> 07-parity-and-docs
 
@@ -43,6 +45,11 @@ outside its design system.
   - Then text is larger, and no text is cut off mid-line, overlaps other content, or pushes content off screen
     with no way to scroll to it
 
+- **AC-9** Favorite heart is the same on every screen (partial: `native-ios` Home and Title details; completes AC-9)
+  - Given a title that is a favorite
+  - When it appears on Home (favorites section), My favorites or Title details, in any of the three apps
+  - Then it shows the same filled heart as My favorites (filled pink heart on a round background); a title that is
+    not a favorite shows the outline heart (Title details only)
 ## Edge cases
 - **EC-1** A very long title name at a large font size (partial: `native-ios`; completes EC-1) -> it wraps or ends with "…" as on that screen today; the
   layout does not break.
@@ -64,3 +71,4 @@ outside its design system.
 - 2026-11-24: Initial version.
 - 2026-11-24: AC-3 updated: component- and feature-specific sizes are named constants next to their component.
 - 2026-11-24: AC-3 updated: single-use sizes are written inline.
+- 2026-11-24: Added AC-9 (filled favorite heart on Home and Title details).

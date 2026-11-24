@@ -15,6 +15,8 @@ favorites use only those tokens and keep iOS controls (alerts, navigation bar).
 - Define the same token set as `cmp` in `native-ios`, with text styles that scale with Dynamic Type.
 - Map the iOS-only colors (track, page, date line, synopsis, ring center) to color roles; the Home gradient is handled in 06.
 - Move its shared components, Onboarding and My favorites to tokens, keeping iOS controls.
+- A shared favorite heart view (filled pink heart on a round background; outline when not a favorite), used by My
+  favorites.
 ### Out of scope (handled later)
 - Home and Title details in `native-ios`, Home gradient -> 06-native-ios-home-and-title-details
 
@@ -46,6 +48,11 @@ favorites use only those tokens and keep iOS controls (alerts, navigation bar).
   - Then text is larger, and no text is cut off mid-line, overlaps other content, or pushes content off screen
     with no way to scroll to it
 
+- **AC-9** Favorite heart is the same on every screen (partial: `native-ios` shared heart component and My favorites)
+  - Given a title that is a favorite
+  - When it appears on Home (favorites section), My favorites or Title details, in any of the three apps
+  - Then it shows the same filled heart as My favorites (filled pink heart on a round background); a title that is
+    not a favorite shows the outline heart (Title details only)
 ## Edge cases
 - **EC-5** Touch targets (partial: `native-ios` shared components, Onboarding, My favorites) -> every tappable element keeps at least a 48×48 (Android) / 44×44 (iOS) touch area after
   rounding.
@@ -63,3 +70,4 @@ favorites use only those tokens and keep iOS controls (alerts, navigation bar).
 - 2026-11-24: Initial version.
 - 2026-11-24: AC-3 updated: component- and feature-specific sizes are named constants next to their component.
 - 2026-11-24: AC-3 updated: single-use sizes are written inline.
+- 2026-11-24: Added AC-9 (shared favorite heart, used on My favorites).

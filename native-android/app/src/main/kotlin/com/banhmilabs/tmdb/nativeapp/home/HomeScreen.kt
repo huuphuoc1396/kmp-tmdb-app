@@ -32,51 +32,30 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
 import com.banhmilabs.tmdb.core.model.TitleId
 import com.banhmilabs.tmdb.nativeapp.R
+import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.PosterRow
+import com.banhmilabs.tmdb.nativeapp.designsystem.component.PosterRowDefaults
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.RemoveFavoriteDialog
 import com.banhmilabs.tmdb.nativeapp.home.component.CategoryTabs
 import com.banhmilabs.tmdb.nativeapp.home.component.FavoritesSection
 import com.banhmilabs.tmdb.nativeapp.home.component.HomeHeader
 import com.banhmilabs.tmdb.nativeapp.home.component.RowMessage
-import com.banhmilabs.tmdb.nativeapp.home.component.RowMinHeight
 import com.banhmilabs.tmdb.nativeapp.home.component.SearchField
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 import com.banhmilabs.tmdb.service.title.domain.TitleListType
 import org.koin.androidx.compose.koinViewModel
-
-internal val ScreenPadding = 30.dp
-
-private val ContentTopPadding = 20.dp
-private val ContentBottomPadding = 79.dp
-private val HeaderToSearch = 17.dp
-
-private val SearchToTabs = 24.dp
-private val TabsToFeatured = 30.dp
-private val FeaturedToHeading = 23.dp
-private val FeaturedToFavorites = 28.dp
-private val FavoritesToHeading = 32.dp
-private val FavoritesCardInset = 12.dp
-private val HeadingToPopular = 16.dp
-private val HeaderGlowHeight = 522.dp
-private val RowSpinnerSize = 24.dp
-
-private val HeadingStyle = TextStyle(color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
 @Composable
 internal fun HomeScreen(
@@ -142,24 +121,24 @@ internal fun HomeContent(state: HomeUiState, onIntent: (HomeIntent) -> Unit, mod
                 Image(
                     painter = painterResource(R.drawable.home_header_glow),
                     contentDescription = null,
-                    modifier = Modifier.fillMaxWidth().height(HeaderGlowHeight),
+                    modifier = Modifier.fillMaxWidth().height(520.dp),
                     contentScale = ContentScale.FillBounds,
                 )
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .windowInsetsPadding(WindowInsets.safeDrawing)
-                        .padding(top = ContentTopPadding, bottom = ContentBottomPadding),
+                        .padding(top = TmdbSpacing.lg, bottom = TmdbSpacing.xxxl),
                 ) {
-                    HomeHeader(modifier = Modifier.padding(horizontal = ScreenPadding))
-                    Spacer(modifier = Modifier.height(HeaderToSearch))
-                    SearchField(modifier = Modifier.padding(horizontal = ScreenPadding).fillMaxWidth())
-                    Spacer(modifier = Modifier.height(SearchToTabs))
+                    HomeHeader(modifier = Modifier.padding(horizontal = TmdbSpacing.xxl))
+                    Spacer(modifier = Modifier.height(TmdbSpacing.md))
+                    SearchField(modifier = Modifier.padding(horizontal = TmdbSpacing.xxl).fillMaxWidth())
+                    Spacer(modifier = Modifier.height(TmdbSpacing.xl))
                     CategoryTabs(
                         selected = state.selectedCategory,
                         onSelect = { onIntent(HomeIntent.CategorySelected(it)) },
                     )
-                    Spacer(modifier = Modifier.height(TabsToFeatured))
+                    Spacer(modifier = Modifier.height(TmdbSpacing.xxl))
                     HomeRows(state = state, onIntent = onIntent)
                 }
             }
@@ -171,7 +150,7 @@ internal fun HomeContent(state: HomeUiState, onIntent: (HomeIntent) -> Unit, mod
 private fun HomeRows(state: HomeUiState, onIntent: (HomeIntent) -> Unit) {
     if (state.featured == RowState.Loading && state.popular == RowState.Loading) {
         Box(
-            modifier = Modifier.fillMaxWidth().heightIn(min = RowMinHeight),
+            modifier = Modifier.fillMaxWidth().heightIn(min = PosterRowDefaults.PosterHeight),
             contentAlignment = Alignment.Center,
         ) {
             CircularProgressIndicator(color = MaterialTheme.colorScheme.secondary)
@@ -182,30 +161,31 @@ private fun HomeRows(state: HomeUiState, onIntent: (HomeIntent) -> Unit) {
     TitleRow(row = state.featured, category = state.selectedCategory, listType = TitleListType.FEATURED, onIntent)
     if (state.favoritesCount > 0) {
         Favorites(state = state, onIntent = onIntent)
-        Spacer(modifier = Modifier.height(FavoritesToHeading))
+        Spacer(modifier = Modifier.height(TmdbSpacing.xxl))
     } else {
-        Spacer(modifier = Modifier.height(FeaturedToHeading))
+        Spacer(modifier = Modifier.height(TmdbSpacing.xl))
     }
     Text(
         text = stringResource(R.string.home_popular_heading),
-        modifier = Modifier.padding(horizontal = ScreenPadding).semantics { heading() },
-        style = HeadingStyle,
+        modifier = Modifier.padding(horizontal = TmdbSpacing.xxl).semantics { heading() },
+        color = MaterialTheme.colorScheme.onSurface,
+        style = MaterialTheme.typography.titleLarge,
     )
-    Spacer(modifier = Modifier.height(HeadingToPopular))
+    Spacer(modifier = Modifier.height(TmdbSpacing.md))
     TitleRow(row = state.popular, category = state.selectedCategory, listType = TitleListType.POPULAR, onIntent)
 }
 
 @Composable
 private fun Favorites(state: HomeUiState, onIntent: (HomeIntent) -> Unit) {
     if (state.favoritesCount == 0) return
-    Spacer(modifier = Modifier.height(FeaturedToFavorites))
+    Spacer(modifier = Modifier.height(TmdbSpacing.xxl))
     FavoritesSection(
         favorites = state.favorites,
         count = state.favoritesCount,
         onFavoriteClick = { onIntent(HomeIntent.FavoriteClicked(it)) },
         onRemoveClick = { onIntent(HomeIntent.RemoveFavoriteClicked(it)) },
         onSeeAll = { onIntent(HomeIntent.SeeAllFavoritesClicked) },
-        modifier = Modifier.padding(horizontal = ScreenPadding - FavoritesCardInset),
+        modifier = Modifier.padding(horizontal = TmdbSpacing.xxl - TmdbSpacing.sm),
     )
 }
 
@@ -214,11 +194,11 @@ private fun TitleRow(row: RowState, category: TitleCategory, listType: TitleList
     val listState = rememberSaveable(category, saver = LazyListState.Saver) { LazyListState() }
     when (row) {
         RowState.Loading -> Box(
-            modifier = Modifier.fillMaxWidth().height(RowMinHeight).padding(start = ScreenPadding),
+            modifier = Modifier.fillMaxWidth().height(PosterRowDefaults.PosterHeight).padding(start = TmdbSpacing.xxl),
             contentAlignment = Alignment.CenterStart,
         ) {
             CircularProgressIndicator(
-                modifier = Modifier.size(RowSpinnerSize),
+                modifier = Modifier.size(24.dp),
                 color = MaterialTheme.colorScheme.secondary,
             )
         }
@@ -235,7 +215,7 @@ private fun TitleRow(row: RowState, category: TitleCategory, listType: TitleList
                 titles = row.titles,
                 onTitleClick = { onIntent(HomeIntent.TitleClicked(it)) },
                 listState = listState,
-                contentPadding = PaddingValues(start = ScreenPadding),
+                contentPadding = PaddingValues(start = TmdbSpacing.xxl),
             )
         }
     }

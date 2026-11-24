@@ -10,7 +10,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -18,37 +18,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.banhmilabs.tmdb.nativeapp.R
+import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSize
+import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory
-
-private val TabsMinHeight = 48.dp
-private val TabsStart = 33.dp
-private val TabSpacing = 29.dp
-private val PillShape = RoundedCornerShape(70.dp)
-private val PillHorizontalPadding = 14.dp
-private val TabVerticalPadding = 6.dp
-private const val UNSELECTED_ALPHA = 0.4f
-
-private val SelectedStyle = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-private val UnselectedStyle = TextStyle(
-    color = Color.White.copy(alpha = UNSELECTED_ALPHA),
-    fontSize = 16.sp,
-    fontWeight = FontWeight.Normal,
-)
 
 @Composable
 internal fun CategoryTabs(selected: TitleCategory, onSelect: (TitleCategory) -> Unit, modifier: Modifier = Modifier) {
     LazyRow(
-        modifier = modifier.selectableGroup().heightIn(min = TabsMinHeight),
-        contentPadding = PaddingValues(start = TabsStart),
-        horizontalArrangement = Arrangement.spacedBy(TabSpacing),
+        modifier = modifier.selectableGroup().heightIn(min = TmdbSize.touchTarget),
+        contentPadding = PaddingValues(start = TmdbSpacing.xxl),
+        horizontalArrangement = Arrangement.spacedBy(TmdbSpacing.xxl),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         items(TitleCategory.entries) { category ->
@@ -63,23 +45,25 @@ internal fun CategoryTabs(selected: TitleCategory, onSelect: (TitleCategory) -> 
 
 @Composable
 private fun CategoryTab(label: String, selected: Boolean, onClick: () -> Unit) {
-    val shape = if (selected) {
+    val colors = MaterialTheme.colorScheme
+    val pill = if (selected) {
         Modifier
-            .minimumInteractiveComponentSize()
-            .clip(PillShape)
-            .background(MaterialTheme.colorScheme.secondary)
+            .clip(CircleShape)
+            .background(colors.secondary)
     } else {
-        Modifier.minimumInteractiveComponentSize()
+        Modifier
     }
+    val pillPadding = if (selected) Modifier.padding(horizontal = TmdbSpacing.md) else Modifier
     Text(
         text = label,
-        modifier = shape
+        modifier = Modifier
+            .minimumInteractiveComponentSize()
+            .then(pill)
             .selectable(selected = selected, role = Role.Tab, onClick = onClick)
-            .padding(
-                horizontal = if (selected) PillHorizontalPadding else 0.dp,
-                vertical = TabVerticalPadding,
-            ),
-        style = if (selected) SelectedStyle else UnselectedStyle,
+            .then(pillPadding)
+            .padding(vertical = TmdbSpacing.xs),
+        color = if (selected) colors.onSecondary else colors.onSurfaceVariant,
+        style = if (selected) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge,
         maxLines = 1,
     )
 }
