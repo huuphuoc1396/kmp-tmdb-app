@@ -14,28 +14,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.feature.onboarding.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.onboarding.ui.generated.resources.onboarding_get_started
 import org.jetbrains.compose.resources.stringResource
 
 internal const val GET_STARTED_TAG = "onboarding_get_started"
-
-private val ButtonMinHeight = 48.dp
-private val ButtonPadding = 12.dp
-private val ButtonLabelStyle = TextStyle(
-    color = Color.White,
-    fontSize = 16.sp,
-    fontWeight = FontWeight.SemiBold,
-    textAlign = TextAlign.Center,
-)
 
 @Composable
 internal fun GetStartedButton(enabled: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -44,13 +32,18 @@ internal fun GetStartedButton(enabled: Boolean, onClick: () -> Unit, modifier: M
         modifier = modifier
             .testTag(GET_STARTED_TAG)
             .fillMaxWidth()
-            .heightIn(min = ButtonMinHeight)
+            .heightIn(min = TmdbSize.touchTarget)
             .clip(CircleShape)
             .background(Brush.linearGradient(listOf(colors.primary, colors.primaryContainer)))
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
-            .padding(ButtonPadding),
+            .padding(TmdbSpacing.sm),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text = stringResource(Res.string.onboarding_get_started), style = ButtonLabelStyle)
+        Text(
+            text = stringResource(Res.string.onboarding_get_started),
+            color = colors.onPrimary,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleMedium,
+        )
     }
 }
