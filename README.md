@@ -1,7 +1,5 @@
 # kmp-tmdb-app
 
-A Kotlin Multiplatform TMDB discovery app: one shared business core, three apps on top of it.
-
 [![CI](https://github.com/huuphuoc1396/kmp-tmdb-app/actions/workflows/ci.yml/badge.svg)](https://github.com/huuphuoc1396/kmp-tmdb-app/actions/workflows/ci.yml)
 ![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?logo=kotlin&logoColor=white)
 ![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20iOS-3DDC84)
