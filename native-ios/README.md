@@ -23,10 +23,11 @@ Multiplatform build itself.
    ```
 3. After changing the shared core, publish again (step 1), then rebuild the app.
 
-Screens: onboarding, Home and Title details (artwork, rating, cast, genres, recommendations, trailer, and the
-favorite heart, stored on the device through the shared core). Every repository reaches the app through a small
-Swift protocol with a `SharedCore…` adapter (`OnboardingSettings`, `TitleLists`, `TitleDetailsSource`,
-`Favorites`), so ViewModels and tests hold Swift types.
+Screens: onboarding, Home (with a Favorites section), My favorites and Title details (artwork, rating, cast,
+genres, recommendations, trailer, and the favorite heart, stored on the device through the shared core). Removing a
+favorite always asks for confirmation. Every repository reaches the app through a small Swift protocol with a
+`SharedCore…` adapter (`OnboardingSettings`, `TitleLists`, `TitleDetailsSource`, `Favorites`, `FavoriteTitles`), so
+ViewModels and tests hold Swift types.
 
 Posters load with [Nuke](https://github.com/kean/Nuke) (`NukeUI`), a remote Swift package pinned in
 `TmdbNative.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`. Xcode fetches it on the first build,

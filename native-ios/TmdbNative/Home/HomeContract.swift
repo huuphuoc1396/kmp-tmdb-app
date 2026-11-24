@@ -11,6 +11,9 @@ struct HomeUiState: Equatable {
     var featured: RowState = .loading
     var popular: RowState = .loading
     var isRefreshing = false
+    var favorites: [FavoriteTitleItem] = []
+    var favoritesCount = 0
+    var pendingRemoval: FavoriteTitleItem?
 }
 
 enum HomeIntent {
@@ -18,8 +21,14 @@ enum HomeIntent {
     case categorySelected(TitleCategory)
     case titleTapped(TitleItem)
     case retry(TitleListType)
+    case favoriteTapped(FavoriteTitleItem)
+    case seeAllFavoritesTapped
+    case removeFavoriteTapped(FavoriteTitleItem)
+    case removeFavoriteConfirmed
+    case removeFavoriteDismissed
 }
 
 enum HomeEffect: Equatable {
     case openTitle(TitleItem)
+    case openFavorites
 }

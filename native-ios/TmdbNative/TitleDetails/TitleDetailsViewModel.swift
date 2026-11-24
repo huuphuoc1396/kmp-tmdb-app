@@ -51,7 +51,11 @@ final class TitleDetailsViewModel: ObservableObject {
             guard let language else { return }
             Task { await refresh(language, force: true) }
         case .favoriteTapped:
-            toggleFavorite()
+            favoriteTapped()
+        case .removeFavoriteConfirmed:
+            confirmRemoval()
+        case .removeFavoriteDismissed:
+            state.isRemoveConfirmationShown = false
         }
     }
 
@@ -86,9 +90,19 @@ final class TitleDetailsViewModel: ObservableObject {
         Task { await refresh(newLanguage, force: false) }
     }
 
-    private func toggleFavorite() {
+    private func favoriteTapped() {
         guard state.details != nil, let current = state.isFavorite else { return }
-        Task { await favorites.setFavorite(titleId, !current) }
+        if current {
+            state.isRemoveConfirmationShown = true
+        } else {
+            Task { await favorites.setFavorite(titleId, true) }
+        }
+    }
+
+    private func confirmRemoval() {
+        guard state.isRemoveConfirmationShown else { return }
+        state.isRemoveConfirmationShown = false
+        Task { await favorites.setFavorite(titleId, false) }
     }
 
     private func refresh(_ language: Language, force: Bool) async {

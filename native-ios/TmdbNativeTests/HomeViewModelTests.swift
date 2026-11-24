@@ -9,7 +9,7 @@ final class HomeViewModelTests: XCTestCase {
 
     override func setUp() async throws {
         titleLists = TitleListsStub()
-        viewModel = HomeViewModel(titleLists: titleLists)
+        viewModel = HomeViewModel(titleLists: titleLists, favoriteTitles: FavoriteTitlesStub(), favorites: FavoritesStub())
     }
 
     func testStartsLoadingWithMoviesSelected() {

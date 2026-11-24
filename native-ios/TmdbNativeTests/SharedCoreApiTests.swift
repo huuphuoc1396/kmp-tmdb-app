@@ -82,6 +82,20 @@ final class SharedCoreApiTests: XCTestCase {
     }
 
     @MainActor
+    func testFavoriteTitlesAdapterEmitsStoredFavorites() async {
+        let favorites = SharedCoreFavorites()
+        let id = TitleId(tmdbId: 9_999_002, type: .movie)
+        await favorites.setFavorite(id, true)
+
+        var iterator = SharedCoreFavoriteTitles().observe(.enUs).makeAsyncIterator()
+        let first = await iterator.next()
+        await favorites.setFavorite(id, false)
+
+        let listed = try? XCTUnwrap(first)
+        XCTAssertEqual(listed?.contains { $0.id == TitleItem.id(for: id) }, true)
+    }
+
+    @MainActor
     func testTitleDatabaseIsEncrypted() async throws {
         var iterator = SharedCoreTitleLists().observe(listKey(.movies, .featured, .enUs)).makeAsyncIterator()
 

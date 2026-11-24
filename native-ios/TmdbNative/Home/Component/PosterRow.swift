@@ -1,4 +1,3 @@
-import NukeUI
 import SwiftUI
 
 private let posterWidth: CGFloat = 124
@@ -29,29 +28,10 @@ private struct Poster: View {
     let title: TitleItem
     let action: () -> Void
 
-    @ScaledMetric(relativeTo: .subheadline) private var nameSize: CGFloat = 14
-
     var body: some View {
         Button(action: action) {
-            ZStack {
-                Theme.surfaceVariant
-                if let url = title.posterURL {
-                    LazyImage(url: url) { state in
-                        if let image = state.image {
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        }
-                    }
-                } else {
-                    Text(title.name)
-                        .font(.system(size: nameSize, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .multilineTextAlignment(.center)
-                        .lineLimit(4)
-                        .truncationMode(.tail)
-                        .padding(8)
-                }
-            }
-            .frame(width: posterWidth, height: posterHeight)
+            PosterTile(name: title.name, posterURL: title.posterURL)
+                .frame(width: posterWidth, height: posterHeight)
             .clipShape(posterShape)
             .contentShape(posterShape)
         }
