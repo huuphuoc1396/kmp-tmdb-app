@@ -1,9 +1,7 @@
 package com.banhmilabs.tmdb.cmp.feature.favorites.ui.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -30,16 +28,14 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.cmp.designsystem.component.FavoriteHeart
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterTile
 import com.banhmilabs.tmdb.cmp.designsystem.component.removeFavoriteLabel
 import com.banhmilabs.tmdb.cmp.designsystem.text.metaLine
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.favorites_loading
-import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.ic_heart_filled
 import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -111,18 +107,12 @@ internal fun FavoriteCard(
 @Composable
 private fun RemoveButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val label = removeFavoriteLabel()
-    Box(
+    FavoriteHeart(
+        isFavorite = true,
         modifier = modifier
             .minimumInteractiveComponentSize()
             .clip(CircleShape)
             .clickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = label },
-        contentAlignment = Alignment.Center,
-    ) {
-        Image(
-            painter = painterResource(Res.drawable.ic_heart_filled),
-            contentDescription = null,
-            modifier = Modifier.size(TmdbSize.iconSmall),
-        )
-    }
+    )
 }

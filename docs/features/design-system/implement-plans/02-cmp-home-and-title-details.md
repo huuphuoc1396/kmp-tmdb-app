@@ -1,7 +1,7 @@
 # Plan: cmp Home and Title details
 
 Requirement: [02 - cmp: Home and Title details](../subtasks/02-cmp-home-and-title-details.md)
-Status: Draft
+Status: Approved
 
 ## Summary
 Home (header, search field, category tabs, favorites section, rows) and Title details (screen, header, rating ring,
@@ -69,7 +69,7 @@ ring's value scales with the system font up to a cap, so it always fits inside t
 | Title -> subtitle, subtitle -> row, item spacing | 12 / 16 / 12dp | `sm` / `md` / `sm` |
 | Item width / poster height / poster radius | 97 / 147 / 8dp | `96.dp` / `148.dp` / `shapes.small` |
 | Poster -> name, name -> meta | 12 / 8dp | `sm` / `xs` |
-| Heart size / touch offset | 28 / 4dp | `28.dp` / `xxs` |
+| Heart / touch offset | 28dp outline heart | `FavoriteHeart(isFavorite = true)` / `xxs` |
 | Section title / badge / view all / subtitle / name / meta | 20 Bold / 12 Bold / 14 SemiBold / 13 / 14 SemiBold / 12 | `titleLarge` / `labelMedium` / `labelLarge` / `bodyMedium` / `titleSmall` / `bodySmall` |
 | Details screen padding | 30dp | `xxl` |
 | Details content top | 376dp | `376.dp` |
@@ -84,7 +84,7 @@ ring's value scales with the system font up to a cap, so it always fits inside t
 | Cast item width / spacing / photo / border / photo -> name / placeholder | 75 / 4 / 60 / 4 / 3 / 30dp | `76.dp` / `xxs` / `60.dp` / `private val PhotoBorder = 4.dp` / `xxs` / `32.dp` |
 | Cast name | 12 Bold | `labelMedium` `onSurface` |
 | Top bar height / back start / pill height / pill padding | 48 / 8 / 32 / 10dp | `TmdbSize.touchTarget` / `xs` / `32.dp` / `sm` |
-| Arrow / arrow -> label / favorite end / favorite size | 24 / 6 / 22 / 32dp | `TmdbSize.iconMedium` / `xs` / `xl` / `32.dp` |
+| Arrow / arrow -> label / favorite end / favorite | 24 / 6 / 22dp / 32dp icon | `TmdbSize.iconMedium` / `xs` / `xl` / `FavoriteHeart` |
 | Top bar label | 16 Bold | `titleMedium` `onSurface` |
 | Trailer height / radius / icon / icon -> label / label | 44 / 60 / 20 / 10dp / 16 SemiBold | `44.dp` / `CircleShape` / `TmdbSize.iconSmall` / `sm` / `titleMedium` `onPrimary` |
 | Chip height / radius / padding / spacing / line spacing | 31 / 34 / 17.5 / 14 / 10dp | `32.dp` / `CircleShape` / `md` / `md` / `sm` |
@@ -129,8 +129,8 @@ ring's value scales with the system font up to a cap, so it always fits inside t
     on both; `UNSELECTED_ALPHA` goes. `minimumInteractiveComponentSize()` stays (EC-5).
   - `FavoritesSection`: card `shapes.large`, `surfaceContainer`,
     `border(TmdbSize.borderWidth, surfaceContainerHigh, shapes.large)`; inline sizes: badge
-    `defaultMinSize(24.dp, 24.dp)`, chevron `size(12.dp)`, item `width(96.dp)`, item poster `height(148.dp)`, heart
-    `size(28.dp)`; spacing tokens as mapped; badge `secondaryContainer` + `labelMedium` in `onSecondaryContainer`; view all `labelLarge` and chevron
+    `defaultMinSize(24.dp, 24.dp)`, chevron `size(12.dp)`, item `width(96.dp)`, item poster `height(148.dp)`; the heart is the shared
+    `FavoriteHeart` (already in the design system); spacing tokens as mapped; badge `secondaryContainer` + `labelMedium` in `onSecondaryContainer`; view all `labelLarge` and chevron
     tint in `secondary`; subtitle `bodyMedium` and meta `bodySmall` in `onSurfaceVariant`; name `titleSmall` in
     `onSurface` (`maxLines = 2`, ellipsis stays, EC-1); heart offset `xxs`; `minimumInteractiveComponentSize()` on
     view all and the heart stays (EC-5).
@@ -165,8 +165,7 @@ ring's value scales with the system font up to a cap, so it always fits inside t
   - `CastRow`: item `width(76.dp)`, photo `60.dp`, placeholder icon `size(32.dp)` inline;
     `private val PhotoBorder = 4.dp` (used three times); spacing `xxs`; photo border and fill `surfaceContainerHigh`; name `labelMedium`
     in `onSurface`, centered, `maxLines = 2` and ellipsis (EC-1).
-  - `DetailsTopBar`: `heightIn(min = TmdbSize.touchTarget)`; pill `heightIn(min = 32.dp)` and favorite
-    `size(32.dp)` inline; pill background `surfaceContainerHigh.copy(alpha = 0.65f)`; arrow
+  - `DetailsTopBar`: `heightIn(min = TmdbSize.touchTarget)`; pill `heightIn(min = 32.dp)` inline; the favorite button is the shared `FavoriteHeart`; pill background `surfaceContainerHigh.copy(alpha = 0.65f)`; arrow
     `TmdbSize.iconMedium`; label `titleMedium` in `onSurface`; spacing as mapped; `minimumInteractiveComponentSize()`
     stays (EC-5).
   - `TrailerButton`: `heightIn(min = 44.dp)`; `CircleShape`; icon `TmdbSize.iconSmall`; gap `sm`; label

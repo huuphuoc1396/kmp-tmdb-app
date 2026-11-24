@@ -5,7 +5,7 @@
     <string name="favorites_loading">Carregando título</string>
     <string name="favorites_empty">Nenhum favorito ainda. Toque no coração de um título para salvá-lo aqui.</string>
     <plurals name="favorites_count">
-        <item quantity="one">%d título</item>
-        <item quantity="other">%d títulos</item>
+        <item quantity="one">%1$d título</item>
+        <item quantity="other">%1$d títulos</item>
     </plurals>
 </resources>

@@ -3,7 +3,7 @@
 Feature: [task.md](../task.md)
 Design: [Home](../../home/design/home.md), [Home favorites](../../favorites/design/home-favorites.md), [Title details](../../title-details/design/title-details.md)
 Depends on: 01-cmp-tokens-and-small-screens
-Status: Todo
+Status: Planned
 
 ## Goal
 Home (with its favorites section) and Title details in `cmp` use only design-system tokens and stay readable at
