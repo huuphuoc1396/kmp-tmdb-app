@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -46,6 +47,7 @@ import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.FavoriteHeart
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.PosterTile
+import com.banhmilabs.tmdb.nativeapp.designsystem.text.NameText
 import com.banhmilabs.tmdb.nativeapp.designsystem.text.metaLine
 import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 
@@ -69,21 +71,11 @@ internal fun FavoritesSection(
             .border(width = TmdbSize.borderWidth, color = colors.surfaceContainerHigh, shape = shape)
             .padding(top = TmdbSpacing.lg, bottom = TmdbSpacing.md),
     ) {
-        Row(
+        FavoritesHeader(
+            count = count,
+            onSeeAll = onSeeAll,
             modifier = Modifier.fillMaxWidth().padding(start = TmdbSpacing.sm, end = TmdbSpacing.xxs),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(R.string.home_favorites_title),
-                modifier = Modifier.semantics { heading() },
-                color = colors.onSurface,
-                style = MaterialTheme.typography.titleLarge,
-            )
-            Spacer(modifier = Modifier.width(TmdbSpacing.xs))
-            CountBadge(count = count)
-            Spacer(modifier = Modifier.weight(1f))
-            ViewAll(onClick = onSeeAll)
-        }
+        )
         Spacer(modifier = Modifier.height(TmdbSpacing.sm))
         Text(
             text = stringResource(R.string.home_favorites_subtitle),
@@ -103,6 +95,43 @@ internal fun FavoritesSection(
                     onClick = { onFavoriteClick(favorite.id) },
                     onRemoveClick = { onRemoveClick(favorite) },
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun FavoritesHeader(count: Int, onSeeAll: () -> Unit, modifier: Modifier = Modifier) {
+    Layout(
+        modifier = modifier,
+        content = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(R.string.home_favorites_title),
+                    modifier = Modifier.semantics { heading() },
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleLarge,
+                )
+                Spacer(modifier = Modifier.width(TmdbSpacing.xs))
+                CountBadge(count = count)
+            }
+            ViewAll(onClick = onSeeAll)
+        },
+    ) { measurables, constraints ->
+        val loose = constraints.copy(minWidth = 0, minHeight = 0)
+        val title = measurables[0].measure(loose)
+        val viewAll = measurables[1].measure(loose)
+        val width = constraints.maxWidth
+        if (title.width + viewAll.width <= width) {
+            val height = maxOf(title.height, viewAll.height)
+            layout(width, height) {
+                title.placeRelative(0, (height - title.height) / 2)
+                viewAll.placeRelative(width - viewAll.width, (height - viewAll.height) / 2)
+            }
+        } else {
+            layout(width, title.height + viewAll.height) {
+                title.placeRelative(0, 0)
+                viewAll.placeRelative(width - viewAll.width, title.height)
             }
         }
     }
@@ -138,8 +167,11 @@ private fun ViewAll(onClick: () -> Unit) {
     ) {
         Text(
             text = stringResource(R.string.home_favorites_view_all),
+            modifier = Modifier.weight(1f, fill = false),
             color = accent,
             style = MaterialTheme.typography.labelLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
         Spacer(modifier = Modifier.width(TmdbSpacing.xs))
         Image(
@@ -172,12 +204,11 @@ private fun FavoriteItem(favorite: FavoriteTitle, onClick: () -> Unit, onRemoveC
             )
             if (summary != null) {
                 Spacer(modifier = Modifier.height(TmdbSpacing.sm))
-                Text(
+                NameText(
                     text = summary.name,
-                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
                 )
                 val meta = metaLine(summary.releaseYear, summary.firstGenre)
                 if (meta.isNotEmpty()) {

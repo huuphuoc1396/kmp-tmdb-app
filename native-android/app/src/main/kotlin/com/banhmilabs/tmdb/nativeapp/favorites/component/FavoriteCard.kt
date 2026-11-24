@@ -33,6 +33,7 @@ import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.FavoriteHeart
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.PosterTile
+import com.banhmilabs.tmdb.nativeapp.designsystem.text.NameText
 import com.banhmilabs.tmdb.nativeapp.designsystem.text.metaLine
 import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 
@@ -77,12 +78,11 @@ internal fun FavoriteCard(
             Spacer(modifier = Modifier.width(TmdbSpacing.md))
             if (summary != null) {
                 Column {
-                    Text(
+                    NameText(
                         text = summary.name,
-                        color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
                     )
                     val meta = metaLine(summary.releaseYear, summary.firstGenre)
                     if (meta.isNotEmpty()) {
