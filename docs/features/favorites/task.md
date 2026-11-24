@@ -41,7 +41,8 @@ title in at most two taps, even offline, and never remove a favorite without con
 2. Home shows the "Favoritos" section between the featured row and "Mais populares", with the newest favorite
    first and the total in the badge.
 3. The user taps a favorite; its Title details opens. "Voltar" returns to Home as it was.
-4. The user taps "Ver todos"; My favorites opens with every favorite, newest first.
+4. The user taps "Ver todos"; My favorites opens with every favorite, newest first. "Voltar" and the badge stay at
+   the top while the list scrolls.
 5. The user taps a favorite's heart on Home, My favorites or Title details; the confirmation popup opens with the
    title's name.
 6. The user taps "Remover"; the title is no longer a favorite and disappears from Home and My favorites, and its
@@ -59,7 +60,7 @@ title in at most two taps, even offline, and never remove a favorite without con
 | State | When | What the user sees / can do |
 |---|---|---|
 | Content | One or more favorites | Badge "N títulos" and every favorite, newest first; can scroll, open a title, remove, go back |
-| Empty | No favorites (e.g. after removing the last one) | Badge "0 títulos" and a short empty message; can go back |
+| Empty | No favorites (e.g. after removing the last one) | The fixed row with "Voltar" and the badge "0 títulos", the title, the subtitle and a short empty message centered in the space below the subtitle; can go back |
 
 ### Confirmation popup
 | State | When | What the user sees / can do |
@@ -157,6 +158,15 @@ title in at most two taps, even offline, and never remove a favorite without con
   - And "Ver todos", the hearts and the popup buttons meet the minimum touch target, and the popup takes the screen
     reader's focus while it is open
 
+- **AC-14** My favorites fixed top bar
+  - Given My favorites is shown with more favorites than fit on screen
+  - When the user scrolls the list
+  - Then the row with "Voltar" and the "N títulos" badge stays fixed at the top, and the title, subtitle and cards
+    scroll beneath it
+  - And cards pass under the row and are cut off by it cleanly; the row has the screen background, with no divider
+    or shadow
+  - And the same applies in `cmp`, `native-android` and `native-ios`
+
 ## Edge cases
 - **EC-1** Heart or "Remover" tapped repeatedly or quickly -> only one popup opens and the title is removed once.
 - **EC-2** A favorite or "Ver todos" tapped repeatedly or quickly -> the details or My favorites screen opens
@@ -176,6 +186,8 @@ title in at most two taps, even offline, and never remove a favorite without con
 - **EC-10** A favorite TMDB no longer has -> it is still listed with its stored data and can still be removed.
 - **EC-11** Largest system font size -> section title, badge, list items and popup stay readable; nothing is
   clipped beyond the truncation in EC-5.
+- **EC-12** Largest system font size or a very long badge ("1234 títulos") -> the fixed row on My favorites stays a
+  single row and still shows "Voltar" and the full badge.
 
 ## Constraints
 - Platforms: Android (minSdk 24) and iOS 16+, in `cmp`, `native-android` and `native-ios`.
@@ -208,6 +220,10 @@ title in at most two taps, even offline, and never remove a favorite without con
 - 2026-11-23: Split into subtasks 01–05.
 - 2026-11-23: Open question answered: pt-BR title of My favorites is "Meus favoritos".
 - 2026-11-23: EC-6 changed: the popup stays open on rotation and closes on process death (user, plan 03).
+- 2026-11-24: My favorites keeps the "Voltar" + badge row fixed; title, subtitle and list scroll (AC-14, EC-12).
+  User flow step 4 and the Empty state updated.
+- 2026-11-24: Confirmed by the user.
+- 2026-11-24: Added subtask 06 for AC-14 and EC-12.
 
 ## Subtasks
 1. [01 - Favorites list data (shared core)](subtasks/01-favorites-list-data.md)
@@ -215,3 +231,4 @@ title in at most two taps, even offline, and never remove a favorite without con
 3. [03 - Remove with confirmation (cmp)](subtasks/03-cmp-remove-favorite.md)
 4. [04 - Favorites on Android (native)](subtasks/04-native-android-favorites.md)
 5. [05 - Favorites on iOS (native)](subtasks/05-native-ios-favorites.md)
+6. [06 - Fixed top bar on My favorites](subtasks/06-fixed-favorites-top-bar.md)
