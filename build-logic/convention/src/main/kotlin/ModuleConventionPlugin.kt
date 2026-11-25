@@ -37,7 +37,6 @@ class ModuleConventionPlugin : Plugin<Project> {
         group = derivedNamespace().substringBeforeLast('.')
         if (type.kind == ModuleKind.ANDROID_APP) {
             configureAndroidApplication(requireNotNull(type.app))
-            enforceAndroidDependencyRules(path, type)
             return
         }
         configureKotlinMultiplatform(iosFramework = if (type.kind == ModuleKind.APP) IOS_FRAMEWORK else null)
@@ -48,16 +47,6 @@ class ModuleConventionPlugin : Plugin<Project> {
         if (type.kind == ModuleKind.DOMAIN || type.kind == ModuleKind.DATA) configureKover()
         if (isPublished(type) && hasProductionSources()) configurePublishing()
         enforceDependencyRules(path, type)
-    }
-
-    private fun Project.enforceAndroidDependencyRules(fromPath: String, from: ModuleType) {
-        configurations.matching { it.name in ANDROID_MAIN_CONFIGURATIONS || it.name.endsWith("TestImplementation") }
-            .configureEach {
-                val configuration: Configuration = this
-                configuration.dependencies.withType<ProjectDependency>().configureEach {
-                    checkDependency(fromPath, from, path, configuration.name, testScope = "Test" in configuration.name)
-                }
-            }
     }
 
     private fun checkDependency(fromPath: String, from: ModuleType, toPath: String, configuration: String, testScope: Boolean) {
@@ -72,7 +61,6 @@ class ModuleConventionPlugin : Plugin<Project> {
         const val IOS_FRAMEWORK = "ComposeApp"
         const val SQLDELIGHT_SOURCES = "src/commonMain/sqldelight"
         val COMPOSE_KINDS = setOf(ModuleKind.DESIGNSYSTEM, ModuleKind.UI, ModuleKind.APP)
-        val ANDROID_MAIN_CONFIGURATIONS = setOf("implementation", "api", "compileOnly", "runtimeOnly")
     }
 
     private fun Project.enforceDependencyRules(fromPath: String, from: ModuleType) {

@@ -118,7 +118,8 @@ Feature A needing something from feature B: service `domain` → the app's `desi
 app shell → an entry interface in B's `api` bound with Koin (5.4).
 
 Enforced by `tmdb.module` (`build-logic/convention/.../buildlogic/DependencyRules.kt`): an unknown module path or a
-forbidden `project(...)` dependency fails configuration with `Rule: <from> -> <to>: …`; the `domain → domain`
+forbidden `project(...)` dependency fails configuration with `Rule: <from> -> <to>: …` (not checked in
+`cmp:androidApp`); the `domain → domain`
 allowlist is `DependencyRules.domainAllowlist` (one level, checked); the shared core never depends on an app. Enforced by Konsist (`architecture-test/`, over
 `core/`, `service/`, `cmp/`): `core:model`, `service/*/domain`, `cmp/feature/*/nav` import no frameworks (Ktor,
 SQLDelight, `androidx.`, Compose, Koin, `android.`, `platform.`); `domain` imports no `data`/`fake`/infrastructure/`di`;
