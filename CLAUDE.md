@@ -102,7 +102,7 @@ and sets targets `android` (with host and device tests), `iosArm64`, `iosSimulat
 | `core:di` | `initKoin()`, collects every `service/*/data` Koin module | everything |
 | `core:ios` | iOS entry point `SharedCore` (start, repositories); exports its `api` dependencies (kernel, service domains) in the `TmdbCore` XCFramework, with SKIE | the shared core; nothing depends on it |
 | `service/<ctx>/domain` (on demand) | Context models, repository interfaces, use cases | kernel; another context's `domain` (one level, registered in `DependencyRules.domainAllowlist`) |
-| `service/<ctx>/data` (on demand) | Repository impls, endpoints + DTOs, mappers, its own SQLDelight database, refresh policy, Koin module | own `domain`, kernel, `network`/`database`/`datastore` |
+| `service/<ctx>/data` (on demand) | Repository impls, endpoints + DTOs, mappers, its own SQLDelight database, refresh policy, Koin module | own `domain`, kernel, infra (`network`/`database`/`datastore`/`security`) |
 | `service/<ctx>/fake` (on demand) | In-memory repository fakes + repository contract test | own `domain`, kernel |
 | `cmp/composeApp` | `App()`, navigation graph; builds the iOS framework `ComposeApp` (root of the app) | its own app, the shared core |
 | `cmp/androidApp` | Android application: `Application` (starts `initKoin`), `Activity` (root of the app) | its own app, the shared core |

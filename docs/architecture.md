@@ -166,7 +166,7 @@ The **public API of the shared core** is the set of `service/*/domain` modules. 
 |---|---|---|
 | `core/common`, `core/model` | kernel | Technical primitives; models shared by two or more contexts |
 | `core/network`, `core/database`, `core/datastore` | infra | Infrastructure, `expect`/`actual` |
-| `core/security` | security | Master key and encryption, used by infra |
+| `core/security` | infra (security) | Bottom layer of the infrastructure: master key, encryption, database passphrases; used by the other infra modules and by `data` |
 | `core/testing` | testing | Shared test utilities |
 | `core/di` | root | Wiring of the shared core (`initKoin()`) |
 | `core/ios` | ios-sdk | `SharedCore` (start, repositories); exports its `api` dependencies (kernel, service domains) in the XCFramework |
@@ -199,12 +199,14 @@ graph TD
   DS --> MODEL
 ```
 
-Allowed dependencies (everything not listed is forbidden):
+Allowed dependencies (everything not listed is forbidden; "infra" includes `core:security`, the layer under the
+other infra modules):
 
 | Type | May depend on |
 |---|---|
 | kernel | nothing |
-| infra, security | kernel, `core:security` |
+| infra (`network`, `database`, `datastore`) | kernel, `core:security` |
+| security | kernel |
 | designsystem | `core:model` |
 | domain | kernel, another context's `domain` (one level, see below) |
 | data | its own context's `domain`, kernel, infra |
