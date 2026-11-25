@@ -1,8 +1,11 @@
 package com.banhmilabs.tmdb.buildlogic
 
+import org.gradle.api.GradleException
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 
 class DependencyRulesTest {
     @Test
@@ -85,6 +88,18 @@ class DependencyRulesTest {
     @Test
     fun shippedAllowlistIsValid() {
         assertNull(DependencyRules.allowlistViolation())
+    }
+
+    @Test
+    fun chainedAllowlistFailsTheBuild() {
+        assertThrows<GradleException> {
+            DependencyRules.requireValidAllowlist(setOf("a" to "b", "b" to "c"))
+        }
+    }
+
+    @Test
+    fun shippedAllowlistPasses() {
+        assertDoesNotThrow { DependencyRules.requireValidAllowlist() }
     }
 
     @Test

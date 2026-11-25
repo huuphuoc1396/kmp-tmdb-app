@@ -16,6 +16,7 @@ import com.banhmilabs.tmdb.buildlogic.ModuleKind.NAV
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.SECURITY
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.TESTING
 import com.banhmilabs.tmdb.buildlogic.ModuleKind.UI
+import org.gradle.api.GradleException
 
 internal object DependencyRules {
     val domainAllowlist: Set<Pair<String, String>> = setOf("title" to "favorites")
@@ -46,6 +47,10 @@ internal object DependencyRules {
             UI -> to.kind in KERNEL || to.kind in setOf(NAV, API, DOMAIN, DESIGNSYSTEM)
         }
         return if (allowed) null else ruleFor(from.kind)
+    }
+
+    fun requireValidAllowlist(allowlist: Set<Pair<String, String>> = domainAllowlist) {
+        allowlistViolation(allowlist)?.let { throw GradleException(it) }
     }
 
     fun allowlistViolation(allowlist: Set<Pair<String, String>> = domainAllowlist): String? {

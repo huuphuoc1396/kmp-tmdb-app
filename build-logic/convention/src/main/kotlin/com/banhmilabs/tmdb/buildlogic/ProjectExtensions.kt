@@ -13,3 +13,6 @@ internal fun VersionCatalog.version(alias: String): String =
 
 internal fun Project.derivedNamespace(): String =
     "com.banhmilabs.tmdb." + path.removePrefix(":").split(":").joinToString(".") { it.replace("-", "") }
+
+internal fun Project.derivedGroup(): String =
+    derivedNamespace().substringBeforeLast('.')
