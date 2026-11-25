@@ -22,8 +22,8 @@ and a wrapped one with "View all ›" on its own trailing line.
 - Each computed line is drawn as its own `Text` with `lineLimit(1)` and `truncationMode(.tail)`, stacked with
   the scaled token line spacing — if a measurement is a fraction off, the line ends with "…" instead of
   wrapping a word again.
-- A word wider than the line is cut with "…" on its own line, and the next words continue on the next lines
-  (EC-3); when the line limit is reached, the last visible line is cut at a character with "…" appended (AC-4),
+- A word wider than the line is cut with "…" and the name stops there, as in `cmp` `NameText` (lines before it
+  stay); when the line limit is reached, the last visible line is cut at a character with "…" appended (AC-4),
   like TextKit tail truncation.
 - The available width is read with a `GeometryReader` in the background of a `maxWidth: .infinity` frame and
   kept in `@State`; until it is known the view draws the plain `Text` (one frame, then the computed lines).
@@ -71,7 +71,7 @@ and a wrapped one with "View all ›" on its own trailing line.
   cut(text): drop trailing characters (and trailing spaces) until measure(text + "…") <= width; keep at least one character
   ```
 - Unit tests: `NameLinesTests` with `measure = { CGFloat($0.count) }`: `fitsOnOneLine`, `breaksOnlyBetweenWords`,
-  `cutsWordWiderThanLineWithEllipsis`, `continuesAfterCutWord`, `cutsLastLineWhenLimitReached`,
+  `cutsWordWiderThanLineWithEllipsis`, `stopsAtCutWord`, `keepsLinesBeforeCutWord`, `cutsLastLineWhenLimitReached`,
   `keepsAllLinesWithoutLimit`, `emptyNameGivesNoLines`.
 - Compile: `xcodebuild -project TmdbNative.xcodeproj -scheme TmdbNative -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`
 
@@ -121,7 +121,7 @@ and a wrapped one with "View all ›" on its own trailing line.
 | AC-9 | all | Manual (same screens as the sibling apps) |
 | EC-1 | 4 | Manual: badge on the title line |
 | EC-2 | 4 | Manual: pt-BR "Ver todos" |
-| EC-3 | 1 | `cutsWordWiderThanLineWithEllipsis`, `continuesAfterCutWord` |
+| EC-3 | 1 | `cutsWordWiderThanLineWithEllipsis`, `stopsAtCutWord`, `keepsLinesBeforeCutWord` |
 | EC-4 | 3 | Placeholder (`PosterTile` name) uses `NameText`; "loading" texts are not names |
 | EC-5–EC-7 | — | Top bar, not for `native-ios` |
 
@@ -141,3 +141,7 @@ and a wrapped one with "View all ›" on its own trailing line.
   the touch target) stays the same in both header variants.
 - Simulator check ran on iPhone 17 (the iPhone SE was not available to drive): at xxxLarge the English and pt-BR
   headers still fit on one line there; the wrapped header was checked at an accessibility size (AX3).
+- After merging `main`: a word wider than its line now ends the name (was: later words continued on the next
+  lines), to match `cmp` `NameText` and the "Large text" sections of the design docs (AC-9).
+- The design-doc and `parity.md` edits were dropped in the merge: `main` already records the behavior for all
+  three apps.

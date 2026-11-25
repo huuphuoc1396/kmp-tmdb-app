@@ -25,6 +25,7 @@ enum NameLines {
                 current = word
             } else {
                 lines.append(cut(word, width: width, measure: measure))
+                break
             }
         }
         if !current.isEmpty {

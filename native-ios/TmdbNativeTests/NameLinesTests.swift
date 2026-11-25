@@ -18,8 +18,12 @@ final class NameLinesTests: XCTestCase {
         XCTAssertEqual(lines("Doomsday", width: 6), ["Dooms…"])
     }
 
-    func testContinuesAfterCutWord() {
-        XCTAssertEqual(lines("Doomsday is near", width: 7), ["Doomsd…", "is near"])
+    func testStopsAtCutWord() {
+        XCTAssertEqual(lines("Doomsday is near", width: 7), ["Doomsd…"])
+    }
+
+    func testKeepsLinesBeforeCutWord() {
+        XCTAssertEqual(lines("Chris Hemsworth", width: 8), ["Chris", "Hemswor…"])
     }
 
     func testCutsLastLineWhenLimitReached() {
