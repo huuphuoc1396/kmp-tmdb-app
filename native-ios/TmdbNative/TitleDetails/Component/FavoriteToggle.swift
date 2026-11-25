@@ -18,6 +18,7 @@ private struct FavoriteToggleStyle: ToggleStyle {
             configuration.isOn.toggle()
         } label: {
             FavoriteHeart(isFavorite: configuration.isOn)
+                .frame(width: TmdbSize.touchTarget, height: TmdbSize.touchTarget)
                 .contentShape(Circle())
         }
         .buttonStyle(.plain)

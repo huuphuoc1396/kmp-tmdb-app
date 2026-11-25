@@ -6,6 +6,7 @@ struct FavoritesView: View {
     private let onTitleTap: (TitleItem) -> Void
 
     @SceneStorage("favorites.scroll") private var savedPosition = ""
+    @Environment(\.dismiss) private var dismiss
 
     init(favoriteTitles: any FavoriteTitles, favorites: any Favorites, onTitleTap: @escaping (TitleItem) -> Void) {
         _viewModel = StateObject(
@@ -15,16 +16,13 @@ struct FavoritesView: View {
     }
 
     var body: some View {
-        FavoritesContent(state: viewModel.state, onIntent: viewModel.onIntent, savedPosition: $savedPosition)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar(.visible, for: .navigationBar)
-            .toolbarBackground(TmdbColor.surface, for: .navigationBar)
-            .toolbarColorScheme(.dark, for: .navigationBar)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    CountBadge(count: viewModel.state.favorites.count)
-                }
-            }
+        FavoritesContent(
+            state: viewModel.state,
+            onIntent: viewModel.onIntent,
+            onBack: { dismiss() },
+            savedPosition: $savedPosition
+        )
+        .toolbar(.hidden, for: .navigationBar)
             .task {
                 let language = HomeLanguage.from(preferredLocalizations: Bundle.main.preferredLocalizations)
                 viewModel.onIntent(.languageChanged(language))
@@ -41,14 +39,15 @@ struct FavoritesView: View {
 struct FavoritesContent: View {
     let state: FavoritesUiState
     let onIntent: (FavoritesIntent) -> Void
+    let onBack: () -> Void
     @Binding var savedPosition: String
 
     @State private var visible: [String: Int] = [:]
     @State private var restored = false
 
     var body: some View {
-        ZStack {
-            TmdbColor.surface.ignoresSafeArea()
+        VStack(spacing: 0) {
+            FavoritesTopBar(count: state.favorites.count, onBack: onBack)
             if state.favorites.isEmpty {
                 emptyContent
             } else {
@@ -75,6 +74,7 @@ struct FavoritesContent: View {
                 }
             }
         }
+        .background(TmdbColor.surface.ignoresSafeArea())
         .removeFavoriteDialog(
             isPresented: state.pendingRemoval != nil,
             titleName: state.pendingRemoval?.name,
@@ -134,6 +134,22 @@ struct FavoritesContent: View {
         if state.favorites.contains(where: { $0.id == savedPosition }) {
             proxy.scrollTo(savedPosition, anchor: .top)
         }
+    }
+}
+
+private struct FavoritesTopBar: View {
+    let count: Int
+    let onBack: () -> Void
+
+    var body: some View {
+        HStack(spacing: 0) {
+            BackButton(label: "favorites.back", action: onBack)
+            Spacer(minLength: TmdbSpacing.xs)
+            CountBadge(count: count)
+        }
+        .frame(minHeight: TmdbSize.touchTarget)
+        .padding(.horizontal, TmdbSpacing.lg)
+        .padding(.top, TmdbSpacing.xs)
     }
 }
 

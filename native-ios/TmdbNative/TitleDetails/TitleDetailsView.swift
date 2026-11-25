@@ -10,6 +10,7 @@ struct TitleDetailsView: View {
     private let onTitleTap: (TitleItem) -> Void
 
     @Environment(\.openURL) private var openURL
+    @Environment(\.dismiss) private var dismiss
 
     @SceneStorage private var scrollPosition: String
     @SceneStorage private var castPosition: String
@@ -39,6 +40,7 @@ struct TitleDetailsView: View {
             language: language,
             onIntent: viewModel.onIntent,
             onRefresh: viewModel.refresh,
+            onBack: { dismiss() },
             positions: DetailsPositions(
                 key: TitleItem.id(for: titleId),
                 scroll: $scrollPosition,
@@ -52,17 +54,7 @@ struct TitleDetailsView: View {
             onConfirm: { viewModel.onIntent(.removeFavoriteConfirmed) },
             onDismiss: { viewModel.onIntent(.removeFavoriteDismissed) }
         )
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar(.visible, for: .navigationBar)
-        .toolbarBackground(TmdbColor.surfaceContainerHigh, for: .navigationBar)
-        .toolbarColorScheme(.dark, for: .navigationBar)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                if viewModel.state.details != nil, let isFavorite = viewModel.state.isFavorite {
-                    FavoriteToggle(isOn: isFavorite) { viewModel.onIntent(.favoriteTapped) }
-                }
-            }
-        }
+        .toolbar(.hidden, for: .navigationBar)
         .task {
             viewModel.onIntent(.languageChanged(language))
             for await effect in viewModel.effects {
@@ -89,27 +81,43 @@ struct TitleDetailsContent: View {
     let language: Language
     let onIntent: (TitleDetailsIntent) -> Void
     let onRefresh: @MainActor @Sendable () async -> Void
+    let onBack: () -> Void
     let positions: DetailsPositions
 
+    @State private var isScrolled = false
+
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             TmdbColor.surface.ignoresSafeArea()
-            switch state.load {
-            case .loading:
-                ProgressView()
-                    .controlSize(.large)
-                    .tint(TmdbColor.secondary)
-            case .error:
-                RowMessage(message: "details.error", alignment: .center) { onIntent(.retry) }
-            case let .loaded(details):
-                LoadedContent(
-                    details: details,
-                    language: language,
-                    onIntent: onIntent,
-                    onRefresh: onRefresh,
-                    positions: positions
-                )
-            }
+            content
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            DetailsTopBar(
+                isFavorite: state.details == nil ? nil : state.isFavorite,
+                isScrolled: isScrolled,
+                onBack: onBack,
+                onFavoriteTap: { onIntent(.favoriteTapped) }
+            )
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch state.load {
+        case .loading:
+            ProgressView()
+                .controlSize(.large)
+                .tint(TmdbColor.secondary)
+        case .error:
+            RowMessage(message: "details.error", alignment: .center) { onIntent(.retry) }
+        case let .loaded(details):
+            LoadedContent(
+                details: details,
+                language: language,
+                onIntent: onIntent,
+                onRefresh: onRefresh,
+                onScrolledChange: { isScrolled = $0 },
+                positions: positions
+            )
         }
     }
 }
@@ -119,6 +127,7 @@ private struct LoadedContent: View {
     let language: Language
     let onIntent: (TitleDetailsIntent) -> Void
     let onRefresh: @MainActor @Sendable () async -> Void
+    let onScrolledChange: (Bool) -> Void
     let positions: DetailsPositions
 
     @State private var restored = false
@@ -146,12 +155,7 @@ private struct LoadedContent: View {
             .coordinateSpace(name: scrollSpace)
             .ignoresSafeArea(edges: .top)
             .refreshable { await onRefresh() }
-            .onPreferenceChange(ScrollOffsetKey.self) { offset in
-                let current = Int(max(0, offset) / markerStep)
-                guard restored, current != marker else { return }
-                marker = current
-                positions.scroll = "\(positions.key)|\(current)"
-            }
+            .onScrollOffsetChange(perform: scrollOffsetChanged)
             .onAppear { restoreScroll(with: proxy) }
         }
     }
@@ -167,6 +171,14 @@ private struct LoadedContent: View {
             }
         }
         .accessibilityHidden(true)
+    }
+
+    private func scrollOffsetChanged(_ offset: CGFloat) {
+        onScrolledChange(offset > 0)
+        let current = Int(max(0, offset) / markerStep)
+        guard restored, current != marker else { return }
+        marker = current
+        positions.scroll = "\(positions.key)|\(current)"
     }
 
     private func markerId(_ index: Int) -> String {
@@ -250,6 +262,21 @@ private struct LoadedContent: View {
     }
 }
 
+private extension View {
+    @ViewBuilder
+    func onScrollOffsetChange(perform action: @escaping (CGFloat) -> Void) -> some View {
+        if #available(iOS 18, *) {
+            onScrollGeometryChange(for: CGFloat.self) { geometry in
+                geometry.contentOffset.y + geometry.contentInsets.top
+            } action: { _, offset in
+                action(offset)
+            }
+        } else {
+            onPreferenceChange(ScrollOffsetKey.self, perform: action)
+        }
+    }
+}
+
 private struct ScrollOffsetKey: PreferenceKey {
     static let defaultValue: CGFloat = 0
 
@@ -294,22 +321,19 @@ private let sparseDetails = TitleDetailsItem(
 
 @MainActor
 private func detailsPreview(_ state: TitleDetailsUiState, language: Language = .enUs) -> some View {
-    NavigationStack {
-        TitleDetailsContent(
-            state: state,
-            language: language,
-            onIntent: { _ in },
-            onRefresh: {},
-            positions: DetailsPositions(
-                key: "movie-1",
-                scroll: .constant(""),
-                cast: .constant(""),
-                recommendations: .constant("")
-            )
+    TitleDetailsContent(
+        state: state,
+        language: language,
+        onIntent: { _ in },
+        onRefresh: {},
+        onBack: {},
+        positions: DetailsPositions(
+            key: "movie-1",
+            scroll: .constant(""),
+            cast: .constant(""),
+            recommendations: .constant("")
         )
-        .toolbarBackground(TmdbColor.surfaceContainerHigh, for: .navigationBar)
-        .toolbarColorScheme(.dark, for: .navigationBar)
-    }
+    )
 }
 
 #Preview("English") {
