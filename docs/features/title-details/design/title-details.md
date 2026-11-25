@@ -121,6 +121,14 @@ below it a "Tentar novamente" pill, as Home's row error: message Inter Regular 1
 pill fill `#FF1F8A`, corner radius 70dp, padding 14dp horizontal / 6dp vertical, label Inter SemiBold 16sp
 `#FFFFFF`. Centered on the screen.
 
+## Large text
+- Top bar (`cmp`, `native-android`): transparent over the artwork while the screen is at the top. As soon as the
+  screen scrolls, the bar (status bar area included) gets a solid `surface` background behind the same back pill
+  and heart; back at the top it is transparent again (`docs/features/large-text-layout/task.md` AC-6, AC-7).
+  `native-ios` keeps its system navigation bar.
+- The name wraps between words over as many lines as it needs; cast names keep 2 lines. Names never break inside a word. When a name reaches its line limit, or one word is wider than its line, the
+text stops at the end of that line with "…" (`docs/features/large-text-layout/task.md` AC-3, AC-4).
+
 ## Dark mode
 The design is dark only; there is no light variant. The app uses a dark theme throughout.
 
@@ -172,7 +180,7 @@ stay as the Figma record.
 | Divider and synopsis | `lg` above and below the divider; `xxl` to the trailer | `bodyMedium` | — | divider `outlineVariant` (`borderWidth`), synopsis `onSurface` | |
 | Trailer button | `sm` padding; icon `iconSmall`, `sm` gap; min height 44 | `titleMedium` | full (pill) | `primary` → `primaryContainer`, `onPrimary` | |
 | Section headings | `xxxl` above; `md` (cast) or `lg` (others) below | `titleLarge` | — | `onSurface` | |
-| Cast | `xxs` between items and photo → name; item 76, photo 60, border 4 | `labelMedium` (2 lines, break between words, "…" at the cut) | full (circle) | `surfaceContainerHigh`, `onSurface` | |
+| Cast | `xxs` between items and photo → name; item 76, photo 60, border 4 | `labelMedium` (2 lines) | full (circle) | `surfaceContainerHigh`, `onSurface` | |
 | Genre chips | `md` between and padding; `sm` between lines; min height 32 | `titleMedium` | full (pill) | `surfaceContainerHigh`, `onSurface` | |
 | Recommendations | `PosterRowDefaults`; `sm` between | — | `small` | — | |
 
@@ -192,3 +200,4 @@ stay as the Figma record.
 - 2026-11-20: Initial version.
 - 2026-11-20: Confirmed by the user.
 - 2026-11-24: Added Tokens (design system).
+- 2026-11-24: Large text: top bar background on scroll; names break only between words (large-text-layout).

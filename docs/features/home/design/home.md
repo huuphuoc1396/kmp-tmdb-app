@@ -38,8 +38,6 @@ Content, top to bottom (start padding 30dp throughout):
   edge (content scrolls under the edge; no end clipping at 345dp).
 - Larger screens, landscape and large fonts: the same single column; rows show more posters; the title wraps
   (EC-10).
-- Title names (poster placeholders, favorites) break only between words; a word wider than its line, or the last
-  allowed line, ends with "…" (`native-ios`: `NameText`).
 
 ### System bars (from user)
 Edge-to-edge, as in onboarding: the background and header glow draw behind the status bar, with light (white)
@@ -101,6 +99,10 @@ stays.
 Per row with no cache (AC-8, EC-4): as Empty, with the error message and below it a "Tentar novamente" pill in
 the selected-tab style (fill `#FF1F8A`, radius 70dp, padding 14dp / 6dp, Inter SemiBold 16sp `#FFFFFF`).
 
+## Large text
+Poster placeholder names (and every title name on Home) never break inside a word. When a name reaches its line limit, or one word is wider than its line, the
+text stops at the end of that line with "…" (`docs/features/large-text-layout/task.md` AC-3, AC-4).
+
 ## Dark mode
 The design is dark only; there is no light variant. The app uses a dark theme throughout.
 
@@ -152,3 +154,4 @@ stay as the Figma record.
 - 2026-11-19: Gaps closed by plans 04 and 05: English tab labels, empty and error copy, 48dp tab touch targets,
   Material Icons person icon. Press feedback stays the platform default.
 - 2026-11-24: Added Tokens (design system).
+- 2026-11-24: Large text: names break only between words (large-text-layout).

@@ -21,6 +21,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.cmp.designsystem.text.NameText
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.formatReleaseDate
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.formatRuntime
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.Res
@@ -36,11 +37,11 @@ internal fun DetailsHeader(details: TitleDetails, language: Language, modifier: 
         RatingRing(percent = details.ratingPercent)
         Spacer(modifier = Modifier.width(TmdbSpacing.md))
         Column(modifier = Modifier.weight(1f)) {
-            Text(
+            NameText(
                 text = nameWithYear(details.name, details.releaseYear),
-                modifier = Modifier.semantics { heading() },
-                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.semantics { heading() },
             )
             val date = details.releaseDate?.let { formatReleaseDate(it, language) }
             val runtime = details.runtimeMinutes?.let(::formatRuntime)
