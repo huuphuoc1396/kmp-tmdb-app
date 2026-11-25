@@ -59,6 +59,13 @@ As in the reference: up to 10 favorites, most recently added first; the badge sh
 No favorites: the card is not drawn and the featured row is followed directly by "Mais populares", with Home's
 usual spacing (task.md AC-2).
 
+## Large text
+- Header: one line while "Favoritos" with the badge and "Ver todos ›" fit side by side. When they don't, "Ver todos ›"
+  moves to its own line below, at the trailing edge; the badge stays next to the title. The link is always one
+  line, with its chevron inside the card (`docs/features/large-text-layout/task.md` AC-1, AC-2).
+- Names never break inside a word. When a name reaches its line limit, or one word is wider than its line, the
+text stops at the end of that line with "…" (`docs/features/large-text-layout/task.md` AC-3, AC-4).
+
 ## Dark mode
 The design is dark only. No light variant.
 
@@ -102,3 +109,4 @@ stay as the Figma record.
 - 2026-11-23: Initial version, from screenshots (Figma MCP rate-limited).
 - 2026-11-23: Confirmed by the user.
 - 2026-11-24: Added Tokens (design system).
+- 2026-11-24: Large text: header wraps "View all ›" when needed; names break only between words (large-text-layout).
