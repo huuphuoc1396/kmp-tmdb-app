@@ -1,7 +1,9 @@
 package com.banhmilabs.tmdb.nativeapp.titledetails.component
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,6 +30,8 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreview
 
 internal const val MAX_RING_FONT_SCALE = 1.15f
 private const val START_ANGLE = -90f
@@ -83,6 +87,22 @@ internal fun RatingRing(percent: Int?, modifier: Modifier = Modifier) {
                     maxFontSize = style.fontSize,
                 ),
             )
+        }
+    }
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun RatingRingPreview() {
+    TmdbPreview {
+        Row(
+            modifier = Modifier.padding(TmdbSpacing.md),
+            horizontalArrangement = Arrangement.spacedBy(TmdbSpacing.md),
+        ) {
+            RatingRing(percent = 82)
+            RatingRing(percent = 45)
+            RatingRing(percent = 12)
+            RatingRing(percent = null)
         }
     }
 }

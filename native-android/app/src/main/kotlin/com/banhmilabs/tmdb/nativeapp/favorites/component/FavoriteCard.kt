@@ -2,6 +2,7 @@ package com.banhmilabs.tmdb.nativeapp.favorites.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -33,8 +34,11 @@ import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.FavoriteHeart
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.PosterTile
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreview
 import com.banhmilabs.tmdb.nativeapp.designsystem.text.NameText
 import com.banhmilabs.tmdb.nativeapp.designsystem.text.metaLine
+import com.banhmilabs.tmdb.nativeapp.favorites.previewFavorites
 import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 
 @Composable
@@ -113,4 +117,24 @@ private fun RemoveButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
             .clickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = label },
     )
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun FavoriteCardPreview() {
+    TmdbPreview {
+        Column(
+            modifier = Modifier.padding(TmdbSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(TmdbSpacing.md),
+        ) {
+            previewFavorites.forEach { favorite ->
+                FavoriteCard(
+                    favorite = favorite,
+                    onClick = {},
+                    onRemoveClick = {},
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+    }
 }

@@ -14,6 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreview
+import com.banhmilabs.tmdb.nativeapp.titledetails.previewDetails
 
 @Composable
 internal fun GenreChips(genres: List<String>, modifier: Modifier = Modifier) {
@@ -37,5 +40,13 @@ internal fun GenreChips(genres: List<String>, modifier: Modifier = Modifier) {
                 )
             }
         }
+    }
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun GenreChipsPreview() {
+    TmdbPreview {
+        GenreChips(genres = previewDetails.genres + "Action & Adventure", modifier = Modifier.padding(TmdbSpacing.md))
     }
 }

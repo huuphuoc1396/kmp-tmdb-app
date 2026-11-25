@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.foundation)
     implementation(libs.compose.material3)
+    implementation(libs.compose.ui.tooling.preview)
     implementation(libs.navigation.compose)
     implementation(libs.activity.compose)
     implementation(libs.koin.android)
@@ -51,6 +52,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    debugImplementation(libs.compose.ui.tooling)
 
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.shared.core.settings.fake)

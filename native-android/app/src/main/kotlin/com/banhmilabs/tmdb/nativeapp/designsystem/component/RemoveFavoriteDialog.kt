@@ -26,11 +26,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreview
 
 @Composable
 internal fun RemoveFavoriteDialog(titleName: String?, onConfirm: () -> Unit, onDismiss: () -> Unit) {
@@ -100,5 +103,21 @@ private fun DialogButton(label: String, labelColor: Color, onClick: () -> Unit, 
         contentAlignment = Alignment.Center,
     ) {
         Text(text = label, color = labelColor, style = MaterialTheme.typography.titleMedium)
+    }
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun RemoveFavoriteDialogPreview() {
+    TmdbPreview {
+        RemoveFavoriteDialog(titleName = "Dune: Part Two", onConfirm = {}, onDismiss = {})
+    }
+}
+
+@Preview(name = "Unknown title")
+@Composable
+private fun RemoveFavoriteDialogUnknownTitlePreview() {
+    TmdbPreview {
+        RemoveFavoriteDialog(titleName = null, onConfirm = {}, onDismiss = {})
     }
 }

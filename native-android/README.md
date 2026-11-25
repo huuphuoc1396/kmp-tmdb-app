@@ -28,6 +28,11 @@ always asks for confirmation.
 Screens use the tokens in `app/src/main/kotlin/com/banhmilabs/tmdb/nativeapp/designsystem` (`TmdbSpacing`,
 `TmdbSize`, `MaterialTheme`), with the same names and values as `cmp` (see `CLAUDE.md`, Design system).
 
+Compose previews work as in `cmp`: each screen's `<Feature>Content` and each component has `private` previews at the
+end of its own file (`@TmdbPreviews` / `@TmdbComponentPreviews` with `TmdbPreview { }` from `designsystem/preview`:
+English, pt-BR, large text). `DesignSystemCatalogPreview` in `designsystem/catalog` shows every token and component
+with its usage; add new ones to it.
+
 ## Checks
 ```bash
 ./gradlew :app:detekt :app:testDebugUnitTest
