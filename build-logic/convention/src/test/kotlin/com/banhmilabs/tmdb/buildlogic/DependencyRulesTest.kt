@@ -19,6 +19,12 @@ class DependencyRulesTest {
     }
 
     @Test
+    fun dataMayUseSecurityAndInfra() {
+        assertAllowed(":service:title:data", ":core:security")
+        assertAllowed(":service:title:data", ":core:datastore")
+    }
+
+    @Test
     fun dataToOtherContextDomainIsRejected() {
         assertRejected(":service:title:data", ":service:favorites:domain")
     }
