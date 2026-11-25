@@ -24,6 +24,7 @@ import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.nativeapp.designsystem.text.NameText
 import com.banhmilabs.tmdb.nativeapp.titledetails.formatReleaseDate
 import com.banhmilabs.tmdb.nativeapp.titledetails.formatRuntime
 import com.banhmilabs.tmdb.nativeapp.titledetails.nameWithYear
@@ -35,11 +36,11 @@ internal fun DetailsHeader(details: TitleDetails, language: Language, modifier: 
         RatingRing(percent = details.ratingPercent)
         Spacer(modifier = Modifier.width(TmdbSpacing.md))
         Column(modifier = Modifier.weight(1f)) {
-            Text(
+            NameText(
                 text = nameWithYear(details.name, details.releaseYear),
-                modifier = Modifier.semantics { heading() },
-                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.semantics { heading() },
             )
             val date = details.releaseDate?.let { formatReleaseDate(it, language) }
             val runtime = details.runtimeMinutes?.let(::formatRuntime)

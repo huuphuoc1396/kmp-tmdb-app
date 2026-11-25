@@ -27,7 +27,9 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -95,6 +97,7 @@ internal fun TitleDetailsContent(
         cast = rememberSaveable(saver = LazyListState.Saver) { LazyListState() },
         recommendations = rememberSaveable(saver = LazyListState.Saver) { LazyListState() },
     )
+    val isScrolled by remember(scroll.screen) { derivedStateOf { scroll.screen.value > 0 } }
     Box(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
         when (val load = state.load) {
             DetailsLoad.Loading -> CircularProgressIndicator(
@@ -122,6 +125,7 @@ internal fun TitleDetailsContent(
             onBack = { onIntent(TitleDetailsIntent.BackClicked) },
             isFavorite = state.isFavorite.takeIf { state.load is DetailsLoad.Loaded },
             onFavoriteClick = { onIntent(TitleDetailsIntent.FavoriteClicked) },
+            isScrolled = isScrolled,
         )
     }
     if (state.isRemoveConfirmationShown) {
