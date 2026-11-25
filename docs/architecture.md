@@ -23,7 +23,7 @@ one product.
 
 - **Scales with the team.** Modules follow the patterns large Android codebases use (Airbnb: feature + nav modules;
   Square: public / impl / fake; Slack: Features / Services / Libraries), so the structure holds as contexts and
-  features grow.
+  features grow (sources in section 15).
 - **Rules are checked by the build, not by review.** A forbidden dependency or import fails the build (section 9).
 - **Offline-first.** The local database is the single source of truth; the network only refreshes it.
 - **Fast feedback.** Almost every test runs on the developer's machine (Android host tests), without an emulator or
@@ -575,3 +575,21 @@ The KMP build publishes the shared core so that standalone apps can use it like 
   the catalog) to the git-ignored `build/swift-package/TmdbCore`. `core:ios` is not published to Maven. A consumer
   adds the folder as a local Swift Package; a build before publishing fails with "the package … cannot be accessed".
 - Set up by `tmdb.module` (`build-logic/.../buildlogic/Publishing.kt`, `IosSdk.kt` for iOS).
+
+---
+
+## 15. References
+
+The module tiers follow how large Android codebases are modularized (section 1).
+
+| Source | What this architecture takes from it |
+|---|---|
+| Airbnb, [Introducing Trio, Part II](https://medium.com/p/fe836013a798) | A `feat` module per feature plus a small `nav` module; features never depend on each other (`cmp/feature/<x>/{nav,ui}`) |
+| Ben Schwab (Airbnb), [Scaling your Android app with modularization](https://www.slideshare.net/slideshow/scaling-your-android-app-with-modularization/189450767) | Feature and nav modules at scale |
+| Square, [Isolated Development (DPE Summit 2022)](https://dpe.org/files/sessions/2022/DPESummit_Isolated_Development.pdf) | `public` / `impl` / `fake` modules per unit (`service/<ctx>/{domain,data,fake}`) |
+| Ralf Wondratschek (Square), [Android at Scale @Square](https://speakerdeck.com/vrallev/android-at-scale-at-square) | Layers hide implementation details; modules for build speed and isolation |
+| Cash App, [Android Architecture for the Rocketship, Part 1: Modularisation](https://code.cash.app/android-architecture-for-the-rocketship-part1-modularisation) | Fake implementations of each module's public API for tests |
+| Slack, [Stabilize, Modularize, Modernize: Scaling Slack's Mobile Codebases, Part 2](https://slack.engineering/stabilize-modularize-modernize-scaling-slacks-mobile-codebases-2/) | Features / Services / Libraries tiers (`cmp/feature`, `service/`, `core/`) |
+| Slack, [Part 1](https://slack.engineering/stabilize-modularize-modernize-scaling-slacks-mobile-codebases/) and [Modernization](https://slack.engineering/scaling-slacks-mobile-codebases-modernization/) | Context for the modularization effort |
+| Android Developers, [Common modularization patterns](https://developer.android.com/topic/modularization/patterns) | Official guidance on feature, data and common modules |
+| Android Developers, [Modularize navigation code](https://developer.android.com/guide/navigation/navigation-3/modularize) | `api` / `impl` split for navigation keys (the `nav` → `api` rename, section 5.4) |
