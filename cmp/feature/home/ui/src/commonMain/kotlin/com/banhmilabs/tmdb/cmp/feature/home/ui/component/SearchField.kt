@@ -3,6 +3,7 @@ package com.banhmilabs.tmdb.cmp.feature.home.ui.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
@@ -17,6 +18,8 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_search_hint
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.ic_search
@@ -47,5 +50,13 @@ internal fun SearchField(modifier: Modifier = Modifier) {
             contentDescription = null,
             modifier = Modifier.graphicsLayer(scaleX = -1f),
         )
+    }
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun SearchFieldPreview() {
+    TmdbPreview {
+        SearchField(modifier = Modifier.padding(TmdbSpacing.md).fillMaxWidth())
     }
 }

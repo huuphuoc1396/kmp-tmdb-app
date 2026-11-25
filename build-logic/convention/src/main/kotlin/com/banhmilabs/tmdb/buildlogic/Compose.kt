@@ -29,7 +29,9 @@ internal fun Project.configureComposeMultiplatform() {
                 "compose-ui",
                 "compose-material3",
                 "compose-components-resources",
+                "compose-ui-tooling-preview",
             ).forEach { implementation(libs.findLibrary(it).get()) }
         }
     }
+    dependencies.add("androidRuntimeClasspath", libs.findLibrary("compose-ui-tooling").get())
 }

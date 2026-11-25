@@ -1,9 +1,12 @@
 package com.banhmilabs.tmdb.cmp.designsystem.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,6 +16,8 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import coil3.compose.AsyncImage
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
 import com.banhmilabs.tmdb.cmp.designsystem.text.NameText
 
 @Composable
@@ -37,6 +42,24 @@ fun PosterTile(name: String?, posterUrl: String?, modifier: Modifier = Modifier)
                 maxLines = 4,
                 textAlign = TextAlign.Center,
             )
+        }
+    }
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun PosterTilePreview() {
+    TmdbPreview {
+        Row(
+            modifier = Modifier.padding(TmdbSpacing.md),
+            horizontalArrangement = Arrangement.spacedBy(TmdbSpacing.md),
+        ) {
+            PosterTile(
+                name = "Kingdom of the Planet of the Apes",
+                posterUrl = null,
+                modifier = Modifier.width(PosterRowDefaults.PosterWidth),
+            )
+            PosterTile(name = null, posterUrl = null, modifier = Modifier.width(PosterRowDefaults.PosterWidth))
         }
     }
 }

@@ -1,6 +1,9 @@
 package com.banhmilabs.tmdb.cmp.designsystem.text
 
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -18,6 +21,10 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.dp
+import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
 
 @Composable
 fun NameText(
@@ -78,3 +85,17 @@ private fun TextMeasurer.probeLines(text: String, style: TextStyle, maxLines: In
 }
 
 private const val NO_BREAK_SPACE = '\u00A0'
+
+@TmdbComponentPreviews
+@Composable
+private fun NameTextPreview() {
+    TmdbPreview {
+        NameText(
+            text = "Supercalifragilisticexpialidocious and the Extraordinarily Long Title",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(TmdbSpacing.md).width(160.dp),
+            maxLines = 2,
+        )
+    }
+}
