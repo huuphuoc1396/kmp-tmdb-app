@@ -32,7 +32,7 @@ skeleton or existing examples.
 - iOS targets need macOS + Xcode; `kotlin.native.ignoreDisabledTargets=true` lets Android work proceed without them.
 - iOS binaries link the official dynamic `SQLCipher.xcframework` in place of the system sqlite3. Gradle resolves it from
   the SQLCipher.swift GitHub releases (ivy repository in `settings.gradle.kts`; version `sqlcipher` and SHA-256
-  `sqlcipher-ios-checksum` in the catalog) into each module's `build/sqlcipher`. `cmp/iosApp` adds it as a Swift package
+  `sqlcipher-ios-checksum` in the catalog) once, with `:core:database:unpackSqlCipher`, into the root `build/sqlcipher`. `cmp/iosApp` adds it as a Swift package
   and repeats the version, since Xcode can't read the catalog.
 - Configuration cache and build cache are on (`gradle.properties`). Keep build logic config-cache safe.
 - TMDB API Read Access Token: `TMDB_ACCESS_TOKEN` in git-ignored `secrets.properties` (copy `secrets.properties.example`),
