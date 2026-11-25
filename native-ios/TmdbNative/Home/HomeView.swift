@@ -115,8 +115,14 @@ struct HomeContent: View {
         )
     }
 
-    @ViewBuilder
     private var rows: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            rowsContent
+        }
+    }
+
+    @ViewBuilder
+    private var rowsContent: some View {
         if state.featured == .loading, state.popular == .loading {
             ProgressView()
                 .controlSize(.large)

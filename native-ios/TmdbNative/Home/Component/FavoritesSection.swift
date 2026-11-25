@@ -20,10 +20,6 @@ struct FavoritesSection: View {
         posterHeight + TmdbSpacing.sm + nameLineHeight * 2 + TmdbSpacing.xs + metaLineHeight
     }
 
-    private var touchOffset: CGFloat {
-        (TmdbSize.touchTarget - badgeSize) / 2
-    }
-
     private var title: some View {
         Text("favorites.section.title")
             .tmdbFont(.titleLarge)
@@ -86,7 +82,7 @@ struct FavoritesSection: View {
                 .foregroundStyle(TmdbColor.onSurfaceVariant)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, TmdbSpacing.sm)
-                .padding(.top, TmdbSpacing.sm - touchOffset)
+                .padding(.top, TmdbSpacing.sm)
             RestoringRow(
                 items: favorites,
                 itemWidth: itemWidth,
@@ -104,7 +100,7 @@ struct FavoritesSection: View {
             .frame(height: rowHeight)
             .padding(.top, TmdbSpacing.md)
         }
-        .padding(.top, TmdbSpacing.lg - touchOffset)
+        .padding(.top, TmdbSpacing.lg)
         .padding(.bottom, TmdbSpacing.md)
         .background(TmdbColor.surfaceContainer, in: RoundedRectangle(cornerRadius: TmdbShape.large))
         .overlay(

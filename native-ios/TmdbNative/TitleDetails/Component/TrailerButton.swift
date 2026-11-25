@@ -22,7 +22,7 @@ struct TrailerButton: View {
                     .multilineTextAlignment(.center)
             }
             .padding(TmdbSpacing.sm)
-            .frame(maxWidth: .infinity, minHeight: 44)
+            .frame(maxWidth: .infinity, minHeight: TmdbSize.touchTarget)
             .background(gradient, in: Capsule())
             .contentShape(Capsule())
         }
