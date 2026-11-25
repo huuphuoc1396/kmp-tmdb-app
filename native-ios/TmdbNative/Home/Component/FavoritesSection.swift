@@ -24,35 +24,60 @@ struct FavoritesSection: View {
         (TmdbSize.touchTarget - badgeSize) / 2
     }
 
+    private var title: some View {
+        Text("favorites.section.title")
+            .tmdbFont(.titleLarge)
+            .foregroundStyle(TmdbColor.onSurface)
+            .accessibilityAddTraits(.isHeader)
+    }
+
+    private var badge: some View {
+        Text("\(count)")
+            .tmdbFont(.labelMedium)
+            .foregroundStyle(TmdbColor.onSecondaryContainer)
+            .padding(.horizontal, TmdbSpacing.xs)
+            .frame(minWidth: badgeSize, minHeight: badgeSize)
+            .background(TmdbColor.secondaryContainer, in: Capsule())
+            .fixedSize()
+    }
+
+    private var viewAllButton: some View {
+        Button { onIntent(.seeAllFavoritesTapped) } label: {
+            HStack(spacing: TmdbSpacing.xs) {
+                Text("favorites.section.viewAll")
+                    .tmdbFont(.labelLarge)
+                Image("ChevronRight")
+                    .resizable()
+                    .frame(width: 12, height: 12)
+                    .accessibilityHidden(true)
+            }
+            .foregroundStyle(TmdbColor.secondary)
+            .padding(.horizontal, TmdbSpacing.xs)
+            .frame(minHeight: TmdbSize.touchTarget)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: TmdbSpacing.xs) {
-                Text("favorites.section.title")
-                    .tmdbFont(.titleLarge)
-                    .foregroundStyle(TmdbColor.onSurface)
-                    .accessibilityAddTraits(.isHeader)
-                Text("\(count)")
-                    .tmdbFont(.labelMedium)
-                    .foregroundStyle(TmdbColor.onSecondaryContainer)
-                    .padding(.horizontal, TmdbSpacing.xs)
-                    .frame(minWidth: badgeSize, minHeight: badgeSize)
-                    .background(TmdbColor.secondaryContainer, in: Capsule())
-                Spacer(minLength: 0)
-                Button { onIntent(.seeAllFavoritesTapped) } label: {
-                    HStack(spacing: TmdbSpacing.xs) {
-                        Text("favorites.section.viewAll")
-                            .tmdbFont(.labelLarge)
-                        Image("ChevronRight")
-                            .resizable()
-                            .frame(width: 12, height: 12)
-                            .accessibilityHidden(true)
-                    }
-                    .foregroundStyle(TmdbColor.secondary)
-                    .padding(.horizontal, TmdbSpacing.xs)
-                    .frame(minHeight: TmdbSize.touchTarget)
-                    .contentShape(Rectangle())
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: TmdbSpacing.xs) {
+                    title.fixedSize()
+                    badge
+                    Spacer(minLength: 0)
+                    viewAllButton.fixedSize()
                 }
-                .buttonStyle(.plain)
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack(spacing: TmdbSpacing.xs) {
+                        title
+                        badge
+                    }
+                    .frame(minHeight: TmdbSize.touchTarget)
+                    viewAllButton
+                        .fixedSize()
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
             }
             .padding(.leading, TmdbSpacing.sm)
             .padding(.trailing, TmdbSpacing.xxs)
@@ -106,10 +131,8 @@ private struct FavoriteItem: View {
                         .frame(width: itemWidth, height: posterHeight)
                         .clipShape(RoundedRectangle(cornerRadius: TmdbShape.small))
                     if let name = favorite.name {
-                        Text(name)
-                            .tmdbFont(.titleSmall)
+                        NameText(name, style: .titleSmall, lineLimit: 2)
                             .foregroundStyle(TmdbColor.onSurface)
-                            .lineLimit(2)
                             .padding(.top, TmdbSpacing.sm)
                         if !favorite.meta.isEmpty {
                             Text(favorite.meta)

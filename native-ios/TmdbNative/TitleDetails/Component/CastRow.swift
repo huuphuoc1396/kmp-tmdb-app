@@ -43,12 +43,8 @@ private struct CastCell: View {
                 .clipShape(Circle())
                 .padding(photoBorder)
                 .background(TmdbColor.surfaceContainerHigh, in: Circle())
-            Text(verbatim: member.name)
-                .tmdbFont(.labelMedium)
+            NameText(member.name, style: .labelMedium, lineLimit: 2, alignment: .center)
                 .foregroundStyle(TmdbColor.onSurface)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-                .truncationMode(.tail)
                 .frame(width: itemWidth, height: nameHeight, alignment: .top)
         }
         .frame(width: itemWidth)

@@ -14,10 +14,8 @@ struct FavoriteCard: View {
                         .clipShape(RoundedRectangle(cornerRadius: TmdbShape.small))
                     if let name = favorite.name {
                         VStack(alignment: .leading, spacing: TmdbSpacing.xs) {
-                            Text(name)
-                                .tmdbFont(.titleMedium)
+                            NameText(name, style: .titleMedium, lineLimit: 2)
                                 .foregroundStyle(TmdbColor.onSurface)
-                                .lineLimit(2)
                             if !favorite.meta.isEmpty {
                                 Text(favorite.meta)
                                     .tmdbFont(.bodyMedium)
