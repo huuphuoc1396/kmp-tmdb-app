@@ -20,7 +20,9 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,6 +39,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
@@ -52,6 +55,7 @@ import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.favorite
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.ic_back_arrow
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.TitleId
+import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -87,36 +91,34 @@ internal fun FavoritesContent(
     modifier: Modifier = Modifier,
 ) {
     val insets = WindowInsets.safeDrawing.asPaddingValues()
-    LazyColumn(
-        modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface),
-        contentPadding = PaddingValues(
-            start = TmdbSpacing.lg,
-            end = TmdbSpacing.lg,
-            top = insets.calculateTopPadding() + TmdbSpacing.xs,
-            bottom = insets.calculateBottomPadding() + TmdbSpacing.xl,
-        ),
-        verticalArrangement = Arrangement.spacedBy(TmdbSpacing.sm),
-    ) {
-        item(key = "header") {
-            FavoritesHeader(count = state.favorites.size, onBack = onBack)
-        }
-        items(state.favorites, key = { "${it.id.type}-${it.id.tmdbId}" }) { favorite ->
-            FavoriteCard(
-                favorite = favorite,
-                onClick = { onIntent(FavoritesIntent.TitleClicked(favorite.id)) },
-                onRemoveClick = { onIntent(FavoritesIntent.RemoveFavoriteClicked(favorite)) },
-            )
-        }
+    val listState = rememberLazyListState()
+    Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
+        FavoritesTopBar(
+            count = state.favorites.size,
+            onBack = onBack,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(
+                    start = TmdbSpacing.lg,
+                    end = TmdbSpacing.lg,
+                    top = insets.calculateTopPadding() + TmdbSpacing.xs,
+                ),
+        )
+        val bottomPadding = insets.calculateBottomPadding() + TmdbSpacing.xl
         if (state.favorites.isEmpty()) {
-            item(key = "empty") {
-                Text(
-                    text = stringResource(Res.string.favorites_empty),
-                    modifier = Modifier.fillMaxWidth().padding(top = TmdbSpacing.xxxl),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
+            FavoritesEmpty(
+                bottomPadding = bottomPadding,
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+            )
+        } else {
+            FavoritesList(
+                favorites = state.favorites,
+                listState = listState,
+                bottomPadding = bottomPadding,
+                onIntent = onIntent,
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+            )
         }
     }
     state.pendingRemoval?.let { pending ->
@@ -129,47 +131,112 @@ internal fun FavoritesContent(
 }
 
 @Composable
-private fun FavoritesHeader(count: Int, onBack: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+private fun FavoritesEmpty(bottomPadding: Dp, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.padding(
+            start = TmdbSpacing.lg,
+            end = TmdbSpacing.lg,
+            top = TmdbSpacing.md,
+            bottom = bottomPadding,
+        ),
+    ) {
+        FavoritesIntro()
+        Box(
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = stringResource(Res.string.favorites_empty),
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
+}
+
+@Composable
+private fun FavoritesList(
+    favorites: List<FavoriteTitle>,
+    listState: LazyListState,
+    bottomPadding: Dp,
+    onIntent: (FavoritesIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        state = listState,
+        modifier = modifier,
+        contentPadding = PaddingValues(
+            start = TmdbSpacing.lg,
+            end = TmdbSpacing.lg,
+            top = TmdbSpacing.md,
+            bottom = bottomPadding,
+        ),
+        verticalArrangement = Arrangement.spacedBy(TmdbSpacing.sm),
+    ) {
+        item(key = "intro") {
+            FavoritesIntro()
+        }
+        items(favorites, key = { "${it.id.type}-${it.id.tmdbId}" }) { favorite ->
+            FavoriteCard(
+                favorite = favorite,
+                onClick = { onIntent(FavoritesIntent.TitleClicked(favorite.id)) },
+                onRemoveClick = { onIntent(FavoritesIntent.RemoveFavoriteClicked(favorite)) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun FavoritesTopBar(count: Int, onBack: () -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier.heightIn(min = TmdbSize.touchTarget),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Row(
-            modifier = Modifier.fillMaxWidth().heightIn(min = TmdbSize.touchTarget),
+            modifier = Modifier
+                .minimumInteractiveComponentSize()
+                .clickable(role = Role.Button, onClick = onBack),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                modifier = Modifier
-                    .minimumInteractiveComponentSize()
-                    .clickable(role = Role.Button, onClick = onBack),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.ic_back_arrow),
-                    contentDescription = null,
-                    modifier = Modifier.size(TmdbSize.iconMedium),
-                )
-                Spacer(modifier = Modifier.width(TmdbSpacing.xs))
-                Text(
-                    text = stringResource(Res.string.favorites_back),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Box(
-                modifier = Modifier
-                    .heightIn(min = 28.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceContainer)
-                    .padding(horizontal = TmdbSpacing.sm),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = pluralStringResource(Res.plurals.favorites_count, count, count),
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            }
+            Image(
+                painter = painterResource(Res.drawable.ic_back_arrow),
+                contentDescription = null,
+                modifier = Modifier.size(TmdbSize.iconMedium),
+            )
+            Spacer(modifier = Modifier.width(TmdbSpacing.xs))
+            Text(
+                text = stringResource(Res.string.favorites_back),
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                softWrap = false,
+                style = MaterialTheme.typography.titleMedium,
+            )
         }
-        Spacer(modifier = Modifier.height(TmdbSpacing.md))
+        Spacer(modifier = Modifier.weight(1f))
+        Box(
+            modifier = Modifier
+                .heightIn(min = 28.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surfaceContainer)
+                .padding(horizontal = TmdbSpacing.sm),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = pluralStringResource(Res.plurals.favorites_count, count, count),
+                color = MaterialTheme.colorScheme.secondary,
+                maxLines = 1,
+                softWrap = false,
+                style = MaterialTheme.typography.labelMedium,
+            )
+        }
+    }
+}
+
+@Composable
+private fun FavoritesIntro() {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = stringResource(Res.string.favorites_title),
             modifier = Modifier.semantics { heading() },

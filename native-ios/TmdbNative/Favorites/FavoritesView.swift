@@ -49,35 +49,30 @@ struct FavoritesContent: View {
     var body: some View {
         ZStack {
             TmdbColor.surface.ignoresSafeArea()
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: TmdbSpacing.sm) {
-                        header
-                        ForEach(Array(state.favorites.enumerated()), id: \.element.id) { index, favorite in
-                            FavoriteCard(
-                                favorite: favorite,
-                                onTap: { onIntent(.titleTapped(favorite)) },
-                                onRemoveTap: { onIntent(.removeTapped(favorite)) }
-                            )
-                            .id(favorite.id)
-                            .onAppear { track(favorite.id, at: index) }
-                            .onDisappear { untrack(favorite.id) }
+            if state.favorites.isEmpty {
+                emptyContent
+            } else {
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: TmdbSpacing.sm) {
+                            header
+                            ForEach(Array(state.favorites.enumerated()), id: \.element.id) { index, favorite in
+                                FavoriteCard(
+                                    favorite: favorite,
+                                    onTap: { onIntent(.titleTapped(favorite)) },
+                                    onRemoveTap: { onIntent(.removeTapped(favorite)) }
+                                )
+                                .id(favorite.id)
+                                .onAppear { track(favorite.id, at: index) }
+                                .onDisappear { untrack(favorite.id) }
+                            }
                         }
-                        if state.favorites.isEmpty {
-                            Text("favorites.empty")
-                                .tmdbFont(.bodyMedium)
-                                .foregroundStyle(TmdbColor.onSurfaceVariant)
-                                .multilineTextAlignment(.center)
-                                .frame(maxWidth: .infinity)
-                                .padding(.top, TmdbSpacing.xxxl)
-                        }
+                        .padding(.horizontal, TmdbSpacing.lg)
+                        .padding(.top, TmdbSpacing.md)
+                        .padding(.bottom, TmdbSpacing.xl)
                     }
-                    .padding(.horizontal, TmdbSpacing.lg)
-                    .padding(.top, TmdbSpacing.md)
-                    .padding(.bottom, TmdbSpacing.xl)
+                    .onAppear { restore(proxy) }
                 }
-                .onChange(of: state.favorites.isEmpty) { _ in restore(proxy) }
-                .onAppear { restore(proxy) }
             }
         }
         .removeFavoriteDialog(
@@ -86,6 +81,22 @@ struct FavoritesContent: View {
             onConfirm: { onIntent(.removeConfirmed) },
             onDismiss: { onIntent(.removeDismissed) }
         )
+    }
+
+    private var emptyContent: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            header
+            Spacer(minLength: TmdbSpacing.xl)
+            Text("favorites.empty")
+                .tmdbFont(.bodyMedium)
+                .foregroundStyle(TmdbColor.onSurfaceVariant)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+            Spacer(minLength: TmdbSpacing.xl)
+        }
+        .padding(.horizontal, TmdbSpacing.lg)
+        .padding(.top, TmdbSpacing.md)
+        .padding(.bottom, TmdbSpacing.xl)
     }
 
     private var header: some View {
