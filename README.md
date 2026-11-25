@@ -28,6 +28,13 @@ One Kotlin core (network, storage, business logic) backs three apps:
 
 - UI based on the [TMDB Figma community design](https://www.figma.com/community/file/1059842558004825230/tmdb).
 - Data from the [TMDB API](https://developer.themoviedb.org/).
+- Module structure inspired by
+  [Airbnb](https://medium.com/p/fe836013a798) (feature + nav),
+  [Square](https://dpe.org/files/sessions/2022/DPESummit_Isolated_Development.pdf) (public / impl / fake),
+  [Slack](https://slack.engineering/stabilize-modularize-modernize-scaling-slacks-mobile-codebases-2/)
+  (Features / Services / Libraries) and the
+  [Android modularization guide](https://developer.android.com/topic/modularization/patterns).
+  More in [`docs/architecture.md` section 15](docs/architecture.md#15-references).
 
 ## Architecture
 
