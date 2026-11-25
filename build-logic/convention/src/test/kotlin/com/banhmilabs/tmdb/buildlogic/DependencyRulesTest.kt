@@ -141,6 +141,14 @@ class DependencyRulesTest {
         assertAllowed(":cmp:composeApp", ":service:settings:fake", testScope = true)
     }
 
+    @Test
+    fun diUsesFakeAndTestingOnlyInTests() {
+        assertRejected(":core:di", ":service:title:fake")
+        assertAllowed(":core:di", ":service:title:fake", testScope = true)
+        assertRejected(":core:di", ":core:testing")
+        assertAllowed(":core:di", ":core:testing", testScope = true)
+    }
+
     private fun violation(from: String, to: String, testScope: Boolean): String? =
         DependencyRules.violation(type(from), type(to), testScope)
 

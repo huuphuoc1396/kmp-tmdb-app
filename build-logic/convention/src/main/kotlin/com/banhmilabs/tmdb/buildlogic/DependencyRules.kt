@@ -31,7 +31,7 @@ internal object DependencyRules {
     ): String? {
         appViolation(from, to)?.let { return it }
         if (to.kind == IOS_SDK) return "core:ios is an entry point for iOS apps; no module depends on it"
-        if (to.kind in TEST_ONLY && from.kind != DI) {
+        if (to.kind in TEST_ONLY) {
             return if (testScope) null else "fake and core:testing are allowed only in test source sets"
         }
         val allowed = when (from.kind) {
