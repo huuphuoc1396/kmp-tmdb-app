@@ -20,6 +20,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_category_anime
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_category_documentaries
@@ -81,3 +83,15 @@ private val TitleCategory.label: StringResource
         TitleCategory.NOVELAS -> Res.string.home_category_novelas
         TitleCategory.DOCUMENTARIES -> Res.string.home_category_documentaries
     }
+
+@TmdbComponentPreviews
+@Composable
+private fun CategoryTabsPreview() {
+    TmdbPreview {
+        CategoryTabs(
+            selected = TitleCategory.SERIES,
+            onSelect = {},
+            modifier = Modifier.padding(vertical = TmdbSpacing.md),
+        )
+    }
+}

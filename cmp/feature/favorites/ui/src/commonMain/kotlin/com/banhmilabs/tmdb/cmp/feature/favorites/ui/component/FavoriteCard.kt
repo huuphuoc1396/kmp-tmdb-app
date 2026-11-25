@@ -2,6 +2,7 @@ package com.banhmilabs.tmdb.cmp.feature.favorites.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -32,10 +33,13 @@ import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.designsystem.component.FavoriteHeart
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterTile
 import com.banhmilabs.tmdb.cmp.designsystem.component.removeFavoriteLabel
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
 import com.banhmilabs.tmdb.cmp.designsystem.text.NameText
 import com.banhmilabs.tmdb.cmp.designsystem.text.metaLine
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.favorites_loading
+import com.banhmilabs.tmdb.cmp.feature.favorites.ui.previewFavorites
 import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 import org.jetbrains.compose.resources.stringResource
 
@@ -115,4 +119,24 @@ private fun RemoveButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
             .clickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = label },
     )
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun FavoriteCardPreview() {
+    TmdbPreview {
+        Column(
+            modifier = Modifier.padding(TmdbSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(TmdbSpacing.md),
+        ) {
+            previewFavorites.forEach { favorite ->
+                FavoriteCard(
+                    favorite = favorite,
+                    onClick = {},
+                    onRemoveClick = {},
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+    }
 }

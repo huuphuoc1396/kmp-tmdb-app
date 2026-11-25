@@ -39,12 +39,16 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.designsystem.component.RemoveFavoriteDialog
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreviews
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.component.FavoriteCard
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.favorites_back
@@ -55,7 +59,9 @@ import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.favorite
 import com.banhmilabs.tmdb.cmp.feature.favorites.ui.generated.resources.ic_back_arrow
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.TitleId
+import com.banhmilabs.tmdb.core.model.TitleType
 import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
+import com.banhmilabs.tmdb.service.title.domain.TitleSummary
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -250,5 +256,45 @@ private fun FavoritesIntro() {
             style = MaterialTheme.typography.bodyMedium,
         )
         Spacer(modifier = Modifier.height(TmdbSpacing.sm))
+    }
+}
+
+private fun previewFavorite(id: Long, type: TitleType, name: String, year: Int?, genre: String?): FavoriteTitle {
+    val titleId = TitleId(id, type)
+    return FavoriteTitle(titleId, TitleSummary(titleId, name, posterUrl = null, releaseYear = year, firstGenre = genre))
+}
+
+internal val previewFavorites = listOf(
+    previewFavorite(1, TitleType.MOVIE, "Dune: Part Two", 2024, "Science Fiction"),
+    previewFavorite(2, TitleType.TV, "Shōgun", 2024, "Drama"),
+    previewFavorite(3, TitleType.MOVIE, "The Wild Robot", null, null),
+    FavoriteTitle(TitleId(4, TitleType.TV), summary = null),
+)
+
+@TmdbPreviews
+@Composable
+private fun FavoritesContentPreview() {
+    TmdbPreview {
+        FavoritesContent(state = FavoritesUiState(favorites = previewFavorites), onBack = {}, onIntent = {})
+    }
+}
+
+@Preview(name = "Empty", device = Devices.PHONE)
+@Composable
+private fun FavoritesContentEmptyPreview() {
+    TmdbPreview {
+        FavoritesContent(state = FavoritesUiState(), onBack = {}, onIntent = {})
+    }
+}
+
+@Preview(name = "Remove dialog", device = Devices.PHONE)
+@Composable
+private fun FavoritesContentRemoveDialogPreview() {
+    TmdbPreview {
+        FavoritesContent(
+            state = FavoritesUiState(favorites = previewFavorites, pendingRemoval = previewFavorites.first()),
+            onBack = {},
+            onIntent = {},
+        )
     }
 }

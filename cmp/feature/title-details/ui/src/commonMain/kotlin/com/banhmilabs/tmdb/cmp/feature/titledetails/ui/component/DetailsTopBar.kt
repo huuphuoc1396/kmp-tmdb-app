@@ -4,7 +4,9 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -35,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.designsystem.component.FavoriteHeart
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_back
 import com.banhmilabs.tmdb.cmp.feature.titledetails.ui.generated.resources.details_favorite
@@ -105,4 +109,16 @@ private fun FavoriteButton(isFavorite: Boolean, onClick: () -> Unit, modifier: M
             .toggleable(value = isFavorite, role = Role.Switch, onValueChange = { onClick() })
             .semantics { contentDescription = label },
     )
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun DetailsTopBarPreview() {
+    TmdbPreview {
+        Column(verticalArrangement = Arrangement.spacedBy(TmdbSpacing.md)) {
+            DetailsTopBar(onBack = {}, isFavorite = true, onFavoriteClick = {}, isScrolled = false)
+            DetailsTopBar(onBack = {}, isFavorite = false, onFavoriteClick = {}, isScrolled = true)
+            DetailsTopBar(onBack = {}, isFavorite = null, onFavoriteClick = {}, isScrolled = false)
+        }
+    }
 }

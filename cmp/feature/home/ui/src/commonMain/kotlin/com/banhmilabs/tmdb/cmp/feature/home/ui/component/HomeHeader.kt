@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.designsystem.component.PersonIcon
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_title
 import org.jetbrains.compose.resources.stringResource
@@ -46,5 +48,13 @@ internal fun HomeHeader(modifier: Modifier = Modifier) {
         ) {
             PersonIcon(modifier = Modifier.size(TmdbSize.iconMedium))
         }
+    }
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun HomeHeaderPreview() {
+    TmdbPreview {
+        HomeHeader(modifier = Modifier.padding(TmdbSpacing.md))
     }
 }

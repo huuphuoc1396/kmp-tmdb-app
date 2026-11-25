@@ -30,6 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreviews
 import com.banhmilabs.tmdb.cmp.feature.onboarding.ui.component.GetStartedButton
 import com.banhmilabs.tmdb.cmp.feature.onboarding.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.onboarding.ui.generated.resources.onboarding_artwork_placeholder
@@ -115,5 +117,13 @@ internal fun OnboardingContent(
                 }
             }
         }
+    }
+}
+
+@TmdbPreviews
+@Composable
+private fun OnboardingContentPreview() {
+    TmdbPreview {
+        OnboardingContent(state = OnboardingUiState(), onIntent = {})
     }
 }

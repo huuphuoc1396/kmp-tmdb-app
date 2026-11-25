@@ -2,7 +2,9 @@ package com.banhmilabs.tmdb.cmp.feature.onboarding.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -19,6 +21,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
 import com.banhmilabs.tmdb.cmp.feature.onboarding.ui.generated.resources.Res
 import com.banhmilabs.tmdb.cmp.feature.onboarding.ui.generated.resources.onboarding_get_started
 import org.jetbrains.compose.resources.stringResource
@@ -45,5 +49,19 @@ internal fun GetStartedButton(enabled: Boolean, onClick: () -> Unit, modifier: M
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium,
         )
+    }
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun GetStartedButtonPreview() {
+    TmdbPreview {
+        Column(
+            modifier = Modifier.padding(TmdbSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(TmdbSpacing.md),
+        ) {
+            GetStartedButton(enabled = true, onClick = {})
+            GetStartedButton(enabled = false, onClick = {})
+        }
     }
 }

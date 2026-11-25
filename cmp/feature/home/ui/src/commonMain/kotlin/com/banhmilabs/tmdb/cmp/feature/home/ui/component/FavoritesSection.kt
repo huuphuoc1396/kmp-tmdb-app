@@ -44,6 +44,8 @@ import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.designsystem.component.FavoriteHeart
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterTile
 import com.banhmilabs.tmdb.cmp.designsystem.component.removeFavoriteLabel
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
 import com.banhmilabs.tmdb.cmp.designsystem.text.NameText
 import com.banhmilabs.tmdb.cmp.designsystem.text.metaLine
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.Res
@@ -52,7 +54,9 @@ import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_favorite
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_favorites_title
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_favorites_view_all
 import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.ic_chevron_right
+import com.banhmilabs.tmdb.cmp.feature.home.ui.previewFavorites
 import com.banhmilabs.tmdb.core.model.TitleId
+import com.banhmilabs.tmdb.core.model.TitleType
 import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -247,4 +251,19 @@ private fun RemoveButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
             .clickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = label },
     )
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun FavoritesSectionPreview() {
+    TmdbPreview {
+        FavoritesSection(
+            favorites = previewFavorites + FavoriteTitle(TitleId(tmdbId = 99, type = TitleType.TV), summary = null),
+            count = 12,
+            onFavoriteClick = {},
+            onRemoveClick = {},
+            onSeeAll = {},
+            modifier = Modifier.padding(TmdbSpacing.md),
+        )
+    }
 }

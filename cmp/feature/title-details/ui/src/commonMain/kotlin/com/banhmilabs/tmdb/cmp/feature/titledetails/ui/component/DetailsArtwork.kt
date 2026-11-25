@@ -12,8 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
 
 private const val FADE_START = 260f / 492f
 private const val FADE_END = 412f / 492f
@@ -39,5 +41,13 @@ internal fun DetailsArtwork(url: String?, modifier: Modifier = Modifier) {
             )
         }
         Box(modifier = Modifier.fillMaxSize().background(fade))
+    }
+}
+
+@Preview
+@Composable
+private fun DetailsArtworkPreview() {
+    TmdbPreview {
+        DetailsArtwork(url = null)
     }
 }

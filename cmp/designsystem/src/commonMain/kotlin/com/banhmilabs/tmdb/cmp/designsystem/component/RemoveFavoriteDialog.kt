@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSize
@@ -36,6 +37,8 @@ import com.banhmilabs.tmdb.cmp.designsystem.generated.resources.remove_favorite_
 import com.banhmilabs.tmdb.cmp.designsystem.generated.resources.remove_favorite_message
 import com.banhmilabs.tmdb.cmp.designsystem.generated.resources.remove_favorite_message_unknown
 import com.banhmilabs.tmdb.cmp.designsystem.generated.resources.remove_favorite_title
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -109,5 +112,21 @@ private fun DialogButton(label: String, labelColor: Color, onClick: () -> Unit, 
         contentAlignment = Alignment.Center,
     ) {
         Text(text = label, color = labelColor, style = MaterialTheme.typography.titleMedium)
+    }
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun RemoveFavoriteDialogPreview() {
+    TmdbPreview {
+        RemoveFavoriteDialog(titleName = "Dune: Part Two", onConfirm = {}, onDismiss = {})
+    }
+}
+
+@Preview(name = "Unknown title")
+@Composable
+private fun RemoveFavoriteDialogUnknownTitlePreview() {
+    TmdbPreview {
+        RemoveFavoriteDialog(titleName = null, onConfirm = {}, onDismiss = {})
     }
 }

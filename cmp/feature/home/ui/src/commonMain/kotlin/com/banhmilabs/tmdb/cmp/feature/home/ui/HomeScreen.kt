@@ -36,12 +36,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.cmp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterRow
 import com.banhmilabs.tmdb.cmp.designsystem.component.PosterRowDefaults
 import com.banhmilabs.tmdb.cmp.designsystem.component.RemoveFavoriteDialog
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreview
+import com.banhmilabs.tmdb.cmp.designsystem.preview.TmdbPreviews
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.CategoryTabs
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.FavoritesSection
 import com.banhmilabs.tmdb.cmp.feature.home.ui.component.HomeHeader
@@ -56,8 +60,11 @@ import com.banhmilabs.tmdb.cmp.feature.home.ui.generated.resources.home_row_erro
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
 import com.banhmilabs.tmdb.core.model.TitleId
+import com.banhmilabs.tmdb.core.model.TitleType
+import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 import com.banhmilabs.tmdb.service.title.domain.TitleListType
+import com.banhmilabs.tmdb.service.title.domain.TitleSummary
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -223,5 +230,52 @@ private fun TitleRow(row: RowState, category: TitleCategory, listType: TitleList
                 contentPadding = PaddingValues(start = TmdbSpacing.xxl),
             )
         }
+    }
+}
+
+private val previewTitles = listOf(
+    "Dune: Part Two",
+    "The Wild Robot",
+    "Inside Out 2",
+    "Furiosa: A Mad Max Saga",
+    "Kingdom of the Planet of the Apes",
+).mapIndexed { index, name -> Title(TitleId(index + 1L, TitleType.MOVIE), name, posterUrl = null) }
+
+internal val previewFavorites = previewTitles.take(3).map { title ->
+    FavoriteTitle(
+        id = title.id,
+        summary = TitleSummary(title.id, title.name, posterUrl = null, releaseYear = 2024, firstGenre = "Drama"),
+    )
+}
+
+@TmdbPreviews
+@Composable
+private fun HomeContentPreview() {
+    TmdbPreview {
+        HomeContent(
+            state = HomeUiState(
+                featured = RowState.Titles(previewTitles),
+                popular = RowState.Titles(previewTitles.reversed()),
+                favorites = previewFavorites,
+                favoritesCount = previewFavorites.size,
+            ),
+            onIntent = {},
+        )
+    }
+}
+
+@Preview(name = "Loading", device = Devices.PHONE)
+@Composable
+private fun HomeContentLoadingPreview() {
+    TmdbPreview {
+        HomeContent(state = HomeUiState(), onIntent = {})
+    }
+}
+
+@Preview(name = "Errors", device = Devices.PHONE)
+@Composable
+private fun HomeContentErrorPreview() {
+    TmdbPreview {
+        HomeContent(state = HomeUiState(featured = RowState.Error, popular = RowState.Error), onIntent = {})
     }
 }
