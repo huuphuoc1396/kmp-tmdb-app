@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -28,6 +29,8 @@ import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreview
 
 @Composable
 internal fun TrailerButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -60,5 +63,13 @@ internal fun TrailerButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center,
         )
+    }
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun TrailerButtonPreview() {
+    TmdbPreview {
+        TrailerButton(onClick = {}, modifier = Modifier.padding(TmdbSpacing.md))
     }
 }

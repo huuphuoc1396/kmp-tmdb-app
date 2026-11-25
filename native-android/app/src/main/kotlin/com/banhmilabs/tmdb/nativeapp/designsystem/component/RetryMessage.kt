@@ -15,7 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreview
 
 @Composable
 internal fun RetryMessage(
@@ -51,5 +54,31 @@ internal fun RetryMessage(
                 style = MaterialTheme.typography.titleMedium,
             )
         }
+    }
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun RetryMessagePreview() {
+    TmdbPreview {
+        RetryMessage(
+            message = "Couldn't load this list.",
+            retryLabel = "Try again",
+            onRetry = {},
+            modifier = Modifier.padding(TmdbSpacing.md),
+        )
+    }
+}
+
+@Preview(name = "Without retry")
+@Composable
+private fun RetryMessageWithoutRetryPreview() {
+    TmdbPreview {
+        RetryMessage(
+            message = "Nothing here yet.",
+            retryLabel = "Try again",
+            onRetry = null,
+            modifier = Modifier.padding(TmdbSpacing.md),
+        )
     }
 }

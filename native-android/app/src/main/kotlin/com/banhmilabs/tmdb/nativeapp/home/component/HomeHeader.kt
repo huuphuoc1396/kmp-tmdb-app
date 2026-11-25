@@ -23,6 +23,8 @@ import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.PersonIcon
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreview
 
 @Composable
 internal fun HomeHeader(modifier: Modifier = Modifier) {
@@ -45,5 +47,13 @@ internal fun HomeHeader(modifier: Modifier = Modifier) {
         ) {
             PersonIcon(modifier = Modifier.size(TmdbSize.iconMedium))
         }
+    }
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun HomeHeaderPreview() {
+    TmdbPreview {
+        HomeHeader(modifier = Modifier.padding(TmdbSpacing.md))
     }
 }

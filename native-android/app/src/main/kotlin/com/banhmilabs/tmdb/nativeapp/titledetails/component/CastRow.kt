@@ -30,7 +30,10 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.PersonIcon
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreview
 import com.banhmilabs.tmdb.nativeapp.designsystem.text.NameText
+import com.banhmilabs.tmdb.nativeapp.titledetails.previewDetails
 import com.banhmilabs.tmdb.service.title.domain.CastMember
 
 private val PhotoBorder = 4.dp
@@ -88,6 +91,18 @@ private fun CastItem(member: CastMember) {
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 2,
             textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun CastRowPreview() {
+    TmdbPreview {
+        CastRow(
+            cast = previewDetails.cast,
+            startPadding = TmdbSpacing.md,
+            modifier = Modifier.padding(vertical = TmdbSpacing.md),
         )
     }
 }

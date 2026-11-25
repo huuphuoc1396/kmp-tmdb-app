@@ -42,13 +42,17 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.core.model.TitleId
+import com.banhmilabs.tmdb.core.model.TitleType
 import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.FavoriteHeart
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.PosterTile
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreview
 import com.banhmilabs.tmdb.nativeapp.designsystem.text.NameText
 import com.banhmilabs.tmdb.nativeapp.designsystem.text.metaLine
+import com.banhmilabs.tmdb.nativeapp.home.previewFavorites
 import com.banhmilabs.tmdb.service.title.domain.FavoriteTitle
 
 @Composable
@@ -241,4 +245,19 @@ private fun RemoveButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
             .clickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = label },
     )
+}
+
+@TmdbComponentPreviews
+@Composable
+private fun FavoritesSectionPreview() {
+    TmdbPreview {
+        FavoritesSection(
+            favorites = previewFavorites + FavoriteTitle(TitleId(tmdbId = 99, type = TitleType.TV), summary = null),
+            count = 12,
+            onFavoriteClick = {},
+            onRemoveClick = {},
+            onSeeAll = {},
+            modifier = Modifier.padding(TmdbSpacing.md),
+        )
+    }
 }

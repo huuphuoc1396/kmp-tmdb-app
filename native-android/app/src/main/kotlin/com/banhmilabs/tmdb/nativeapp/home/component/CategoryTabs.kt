@@ -23,6 +23,8 @@ import androidx.compose.ui.semantics.Role
 import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSize
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreview
 import com.banhmilabs.tmdb.service.title.domain.TitleCategory
 
 @Composable
@@ -77,3 +79,15 @@ private val TitleCategory.label: Int
         TitleCategory.NOVELAS -> R.string.home_category_novelas
         TitleCategory.DOCUMENTARIES -> R.string.home_category_documentaries
     }
+
+@TmdbComponentPreviews
+@Composable
+private fun CategoryTabsPreview() {
+    TmdbPreview {
+        CategoryTabs(
+            selected = TitleCategory.SERIES,
+            onSelect = {},
+            modifier = Modifier.padding(vertical = TmdbSpacing.md),
+        )
+    }
+}

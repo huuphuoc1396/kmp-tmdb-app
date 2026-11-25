@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreview
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreviews
 import com.banhmilabs.tmdb.nativeapp.onboarding.component.GetStartedButton
 import org.koin.androidx.compose.koinViewModel
 
@@ -105,5 +107,13 @@ internal fun OnboardingContent(
                 }
             }
         }
+    }
+}
+
+@TmdbPreviews
+@Composable
+private fun OnboardingContentPreview() {
+    TmdbPreview {
+        OnboardingContent(state = OnboardingUiState(), onIntent = {})
     }
 }

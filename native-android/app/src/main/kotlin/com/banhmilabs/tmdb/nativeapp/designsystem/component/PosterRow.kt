@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,7 +19,11 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.banhmilabs.tmdb.core.model.Title
+import com.banhmilabs.tmdb.core.model.TitleId
+import com.banhmilabs.tmdb.core.model.TitleType
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbComponentPreviews
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreview
 
 @Composable
 internal fun PosterRow(
@@ -56,4 +61,20 @@ private fun Poster(title: Title, onClick: () -> Unit) {
 internal object PosterRowDefaults {
     val PosterWidth = 124.dp
     val PosterHeight = 188.dp
+}
+
+private val previewTitles = listOf("Dune: Part Two", "The Wild Robot", "Kingdom of the Planet of the Apes", "Shōgun")
+    .mapIndexed { index, name -> Title(TitleId(index + 1L, TitleType.MOVIE), name, posterUrl = null) }
+
+@TmdbComponentPreviews
+@Composable
+private fun PosterRowPreview() {
+    TmdbPreview {
+        PosterRow(
+            titles = previewTitles,
+            onTitleClick = {},
+            modifier = Modifier.padding(vertical = TmdbSpacing.md),
+            contentPadding = PaddingValues(horizontal = TmdbSpacing.md),
+        )
+    }
 }

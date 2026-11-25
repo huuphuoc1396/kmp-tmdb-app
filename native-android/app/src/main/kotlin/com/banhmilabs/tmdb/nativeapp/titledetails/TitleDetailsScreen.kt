@@ -37,16 +37,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.banhmilabs.tmdb.core.model.Language
 import com.banhmilabs.tmdb.core.model.Title
 import com.banhmilabs.tmdb.core.model.TitleId
+import com.banhmilabs.tmdb.core.model.TitleType
 import com.banhmilabs.tmdb.nativeapp.R
 import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbSpacing
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.PosterRow
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.RemoveFavoriteDialog
 import com.banhmilabs.tmdb.nativeapp.designsystem.component.RetryMessage
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreview
+import com.banhmilabs.tmdb.nativeapp.designsystem.preview.TmdbPreviews
 import com.banhmilabs.tmdb.nativeapp.titledetails.component.CastRow
 import com.banhmilabs.tmdb.nativeapp.titledetails.component.DetailsArtwork
 import com.banhmilabs.tmdb.nativeapp.titledetails.component.DetailsHeader
@@ -54,7 +59,10 @@ import com.banhmilabs.tmdb.nativeapp.titledetails.component.DetailsTopBar
 import com.banhmilabs.tmdb.nativeapp.titledetails.component.GenreChips
 import com.banhmilabs.tmdb.nativeapp.titledetails.component.SectionHeading
 import com.banhmilabs.tmdb.nativeapp.titledetails.component.TrailerButton
+import com.banhmilabs.tmdb.service.title.domain.CastMember
 import com.banhmilabs.tmdb.service.title.domain.TitleDetails
+import com.banhmilabs.tmdb.service.title.domain.Trailer
+import kotlinx.datetime.LocalDate
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -226,4 +234,50 @@ private fun DetailsBody(
             contentPadding = PaddingValues(start = TmdbSpacing.xxl),
         )
     }
+}
+
+internal val previewDetails = TitleDetails(
+    id = TitleId(1, TitleType.MOVIE),
+    name = "Dune: Part Two",
+    releaseDate = LocalDate(2024, 2, 27),
+    runtimeMinutes = 167,
+    ratingPercent = 82,
+    synopsis = "Paul Atreides unites with Chani and the Fremen while on a path of revenge against the " +
+        "conspirators who destroyed his family.",
+    artworkUrl = null,
+    genres = listOf("Science Fiction", "Adventure", "Drama"),
+    cast = listOf("Timothée Chalamet", "Zendaya", "Rebecca Ferguson", "Javier Bardem").map { CastMember(it, null) },
+    trailer = Trailer("Way9Dexny3w"),
+    recommendations = listOf("Dune", "Oppenheimer", "Blade Runner 2049").mapIndexed { index, name ->
+        Title(TitleId(index + 2L, TitleType.MOVIE), name, posterUrl = null)
+    },
+)
+
+@Composable
+private fun TitleDetailsPreviewContent(state: TitleDetailsUiState) {
+    TmdbPreview {
+        TitleDetailsContent(
+            state = state,
+            language = Language.fromLocaleTag(Locale.current.toLanguageTag()),
+            onIntent = {},
+        )
+    }
+}
+
+@TmdbPreviews
+@Composable
+private fun TitleDetailsContentPreview() {
+    TitleDetailsPreviewContent(TitleDetailsUiState(load = DetailsLoad.Loaded(previewDetails), isFavorite = true))
+}
+
+@Preview(name = "Loading", device = Devices.PHONE)
+@Composable
+private fun TitleDetailsContentLoadingPreview() {
+    TitleDetailsPreviewContent(TitleDetailsUiState())
+}
+
+@Preview(name = "Error", device = Devices.PHONE)
+@Composable
+private fun TitleDetailsContentErrorPreview() {
+    TitleDetailsPreviewContent(TitleDetailsUiState(load = DetailsLoad.Error))
 }
