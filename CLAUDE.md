@@ -32,7 +32,7 @@ skeleton or existing examples.
 - iOS targets need macOS + Xcode; `kotlin.native.ignoreDisabledTargets=true` lets Android work proceed without them.
 - iOS binaries link the official dynamic `SQLCipher.xcframework` in place of the system sqlite3. Gradle resolves it from
   the SQLCipher.swift GitHub releases (ivy repository in `settings.gradle.kts`; version `sqlcipher` and SHA-256
-  `sqlcipher-ios-checksum` in the catalog) into each module's `build/sqlcipher`. `cmp/iosApp` adds it as a Swift package
+  `sqlcipher-ios-checksum` in the catalog) once, with `:core:database:unpackSqlCipher`, into the root `build/sqlcipher`. `cmp/iosApp` adds it as a Swift package
   and repeats the version, since Xcode can't read the catalog.
 - Configuration cache and build cache are on (`gradle.properties`). Keep build logic config-cache safe.
 - TMDB API Read Access Token: `TMDB_ACCESS_TOKEN` in git-ignored `secrets.properties` (copy `secrets.properties.example`),
@@ -102,7 +102,7 @@ and sets targets `android` (with host and device tests), `iosArm64`, `iosSimulat
 | `core:di` | `initKoin()`, collects every `service/*/data` Koin module | everything |
 | `core:ios` | iOS entry point `SharedCore` (start, repositories); exports its `api` dependencies (kernel, service domains) in the `TmdbCore` XCFramework, with SKIE | the shared core; nothing depends on it |
 | `service/<ctx>/domain` (on demand) | Context models, repository interfaces, use cases | kernel; another context's `domain` (one level, registered in `DependencyRules.domainAllowlist`) |
-| `service/<ctx>/data` (on demand) | Repository impls, endpoints + DTOs, mappers, its own SQLDelight database, refresh policy, Koin module | own `domain`, kernel, `network`/`database`/`datastore` |
+| `service/<ctx>/data` (on demand) | Repository impls, endpoints + DTOs, mappers, its own SQLDelight database, refresh policy, Koin module | own `domain`, kernel, infra (`network`/`database`/`datastore`/`security`) |
 | `service/<ctx>/fake` (on demand) | In-memory repository fakes + repository contract test | own `domain`, kernel |
 | `cmp/composeApp` | `App()`, navigation graph; builds the iOS framework `ComposeApp` (root of the app) | its own app, the shared core |
 | `cmp/androidApp` | Android application: `Application` (starts `initKoin`), `Activity` (root of the app) | its own app, the shared core |
@@ -118,7 +118,8 @@ Feature A needing something from feature B: service `domain` → the app's `desi
 app shell → an entry interface in B's `api` bound with Koin (5.4).
 
 Enforced by `tmdb.module` (`build-logic/convention/.../buildlogic/DependencyRules.kt`): an unknown module path or a
-forbidden `project(...)` dependency fails configuration with `Rule: <from> -> <to>: …`; the `domain → domain`
+forbidden `project(...)` dependency fails configuration with `Rule: <from> -> <to>: …` (not checked in
+`cmp:androidApp`); the `domain → domain`
 allowlist is `DependencyRules.domainAllowlist` (one level, checked); the shared core never depends on an app. Enforced by Konsist (`architecture-test/`, over
 `core/`, `service/`, `cmp/`): `core:model`, `service/*/domain`, `cmp/feature/*/nav` import no frameworks (Ktor,
 SQLDelight, `androidx.`, Compose, Koin, `android.`, `platform.`); `domain` imports no `data`/`fake`/infrastructure/`di`;

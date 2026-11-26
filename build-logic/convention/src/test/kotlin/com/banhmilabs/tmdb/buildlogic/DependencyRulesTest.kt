@@ -1,8 +1,11 @@
 package com.banhmilabs.tmdb.buildlogic
 
+import org.gradle.api.GradleException
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 
 class DependencyRulesTest {
     @Test
@@ -16,6 +19,12 @@ class DependencyRulesTest {
         assertAllowed(":service:title:data", ":core:network")
         assertAllowed(":service:title:data", ":core:database")
         assertAllowed(":service:title:data", ":core:common")
+    }
+
+    @Test
+    fun dataMayUseSecurityAndInfra() {
+        assertAllowed(":service:title:data", ":core:security")
+        assertAllowed(":service:title:data", ":core:datastore")
     }
 
     @Test
@@ -82,6 +91,18 @@ class DependencyRulesTest {
     }
 
     @Test
+    fun chainedAllowlistFailsTheBuild() {
+        assertThrows<GradleException> {
+            DependencyRules.requireValidAllowlist(setOf("a" to "b", "b" to "c"))
+        }
+    }
+
+    @Test
+    fun shippedAllowlistPasses() {
+        assertDoesNotThrow { DependencyRules.requireValidAllowlist() }
+    }
+
+    @Test
     fun fakeAndTestingAllowedOnlyInTestScope() {
         assertRejected(":cmp:feature:home:ui", ":service:title:fake")
         assertAllowed(":cmp:feature:home:ui", ":service:title:fake", testScope = true)
@@ -139,6 +160,14 @@ class DependencyRulesTest {
     fun appShellUsesFakeOnlyInTests() {
         assertRejected(":cmp:composeApp", ":service:settings:fake")
         assertAllowed(":cmp:composeApp", ":service:settings:fake", testScope = true)
+    }
+
+    @Test
+    fun diUsesFakeAndTestingOnlyInTests() {
+        assertRejected(":core:di", ":service:title:fake")
+        assertAllowed(":core:di", ":service:title:fake", testScope = true)
+        assertRejected(":core:di", ":core:testing")
+        assertAllowed(":core:di", ":core:testing", testScope = true)
     }
 
     private fun violation(from: String, to: String, testScope: Boolean): String? =

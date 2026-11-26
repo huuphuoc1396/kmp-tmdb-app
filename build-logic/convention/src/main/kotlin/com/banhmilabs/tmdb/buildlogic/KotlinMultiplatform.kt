@@ -27,11 +27,11 @@ internal fun Project.configureKotlinMultiplatform(iosFramework: String? = null) 
                 instrumentationRunner = ANDROID_TEST_RUNNER
             }
         }
-        val unpackSqlCipher = registerSqlCipherUnpack()
+        if (path == SQLCIPHER_MODULE) registerSqlCipherUnpack()
         listOf(iosArm64(), iosSimulatorArm64()).forEach { target ->
             val frameworkDir = sqlCipherFrameworkDir(target.name)
             target.binaries.configureEach {
-                linkTaskProvider.configure { dependsOn(unpackSqlCipher) }
+                linkTaskProvider.configure { dependsOn(SQLCIPHER_UNPACK_TASK_PATH) }
                 linkerOpts("-F", frameworkDir, "-framework", "SQLCipher")
                 if (this is TestExecutable) linkerOpts("-rpath", frameworkDir)
             }
