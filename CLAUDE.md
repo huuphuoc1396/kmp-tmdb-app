@@ -36,8 +36,9 @@ skeleton or existing examples.
   and repeats the version, since Xcode can't read the catalog.
 - Configuration cache and build cache are on (`gradle.properties`). Keep build logic config-cache safe.
 - TMDB API Read Access Token: `TMDB_ACCESS_TOKEN` in git-ignored `secrets.properties` (copy `secrets.properties.example`),
-  or the `TMDB_ACCESS_TOKEN` environment variable on CI. It is injected XOR-obfuscated at build time; without it the build
-  warns and TMDB calls fail with Unauthorized.
+  or the `TMDB_ACCESS_TOKEN` environment variable. It is injected XOR-obfuscated at build time; without it the build
+  warns, generates the same empty `TmdbSecrets` every time (no recompiles) and TMDB calls fail with Unauthorized.
+  CI does not set it: its checks need no token.
 
 ## Commands
 `<module>` is a Gradle path such as `core:common` or `service:title:data`.
