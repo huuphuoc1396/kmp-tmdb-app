@@ -17,7 +17,7 @@ struct DetailsHeader: View {
                 .foregroundStyle(TmdbColor.onSurface)
                 .accessibilityAddTraits(.isHeader)
                 let date = details.releaseDate.map { TitleDetailsFormat.releaseDate($0, language: language) }
-                let runtime = details.runtimeMinutes.map(TitleDetailsFormat.runtime(minutes:))
+                let runtime = details.runtimeMinutes.map { TitleDetailsFormat.runtime(minutes: $0, language: language) }
                 if date != nil || runtime != nil {
                     DateLine(date: date, runtime: runtime)
                 }

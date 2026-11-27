@@ -50,7 +50,7 @@ internal fun DetailsHeader(details: TitleDetails, language: Language, modifier: 
                 modifier = Modifier.semantics { heading() },
             )
             val date = details.releaseDate?.let { formatReleaseDate(it, language) }
-            val runtime = details.runtimeMinutes?.let(::formatRuntime)
+            val runtime = details.runtimeMinutes?.let { formatRuntime(it, language) }
             if (date != null || runtime != null) {
                 Spacer(modifier = Modifier.height(TmdbSpacing.xxs))
                 DateLine(date = date, runtime = runtime)

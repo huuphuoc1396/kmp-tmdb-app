@@ -1,0 +1,10 @@
+<resources>
+    <string name="favorites_back">Quay lại</string>
+    <string name="favorites_title">Yêu thích của tôi</string>
+    <string name="favorites_subtitle">Tất cả phim bạn đã lưu, ở cùng một nơi.</string>
+    <string name="favorites_loading">Đang tải phim</string>
+    <string name="favorites_empty">Chưa có phim yêu thích nào. Chạm vào trái tim trên một phim để lưu vào đây.</string>
+    <plurals name="favorites_count">
+        <item quantity="other">%1$d phim</item>
+    </plurals>
+</resources>

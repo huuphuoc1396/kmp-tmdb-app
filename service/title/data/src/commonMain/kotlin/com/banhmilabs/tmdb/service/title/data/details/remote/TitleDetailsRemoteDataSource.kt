@@ -49,6 +49,7 @@ private val Language.videoLanguage: String
     get() = when (this) {
         Language.PT_BR -> "pt"
         Language.EN_US -> ENGLISH
+        Language.VI_VN -> "vi"
     }
 
 internal fun TmdbTitleDetailsDto.toEntry(key: TitleDetailsKey): TitleDetailsEntry? {

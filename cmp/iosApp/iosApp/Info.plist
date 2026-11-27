@@ -8,6 +8,7 @@
 	<array>
 		<string>en</string>
 		<string>pt-BR</string>
+		<string>vi</string>
 	</array>
 	<key>CFBundleDisplayName</key>
 	<string>TMDB</string>

@@ -1,0 +1,46 @@
+<resources>
+    <string name="onboarding_headline">Tất cả về phim lẻ, phim bộ, anime và nhiều hơn nữa.</string>
+    <string name="onboarding_body">Luôn cập nhật phim lẻ, phim bộ, anime và nhiều hơn nữa.</string>
+    <string name="onboarding_get_started">Bắt đầu</string>
+    <string name="home_title">Hôm nay bạn muốn xem gì?</string>
+    <string name="home_search_hint">Tìm kiếm</string>
+    <string name="home_popular_heading">Phổ biến nhất</string>
+    <string name="home_category_movies">Phim lẻ</string>
+    <string name="home_category_series">Phim bộ</string>
+    <string name="home_category_anime">Anime</string>
+    <string name="home_category_novelas">Telenovela</string>
+    <string name="home_category_documentaries">Phim tài liệu</string>
+    <string name="home_row_empty">Chưa có gì để hiển thị.</string>
+    <string name="home_row_error">Không tải được các phim này.</string>
+    <string name="home_retry">Thử lại</string>
+    <string name="details_back">Quay lại</string>
+    <string name="details_watch_trailer">Xem trailer</string>
+    <string name="details_cast">Diễn viên chính</string>
+    <string name="details_genres">Thể loại</string>
+    <string name="details_recommendations">Đề xuất</string>
+    <string name="details_no_synopsis">Chưa có tóm tắt.</string>
+    <string name="details_not_rated">NR</string>
+    <string name="details_not_rated_description">Chưa có đánh giá</string>
+    <string name="details_rating_description">Đánh giá %1$d%%</string>
+    <string name="details_error">Không tải được phim này.</string>
+    <string name="details_retry">Thử lại</string>
+    <string name="details_favorite">Yêu thích</string>
+    <string name="remove_favorite_title">Xóa khỏi danh sách yêu thích?</string>
+    <string name="remove_favorite_message">“%1$s” sẽ bị xóa khỏi danh sách của bạn. Bạn có thể thêm lại sau.</string>
+    <string name="remove_favorite_message_unknown">Phim này sẽ bị xóa khỏi danh sách của bạn. Bạn có thể thêm lại sau.</string>
+    <string name="remove_favorite_cancel">Hủy</string>
+    <string name="remove_favorite_confirm">Xóa</string>
+    <string name="remove_favorite_heart">Xóa khỏi yêu thích</string>
+    <string name="home_favorites_title">Yêu thích</string>
+    <string name="home_favorites_subtitle">Đã lưu để xem bất cứ lúc nào.</string>
+    <string name="home_favorites_view_all">Xem tất cả</string>
+    <string name="home_favorites_loading">Đang tải phim</string>
+    <string name="favorites_back">Quay lại</string>
+    <string name="favorites_title">Yêu thích của tôi</string>
+    <string name="favorites_subtitle">Tất cả phim bạn đã lưu, ở cùng một nơi.</string>
+    <string name="favorites_loading">Đang tải phim</string>
+    <string name="favorites_empty">Chưa có phim yêu thích nào. Chạm vào trái tim trên một phim để lưu vào đây.</string>
+    <plurals name="favorites_count">
+        <item quantity="other">%d phim</item>
+    </plurals>
+</resources>

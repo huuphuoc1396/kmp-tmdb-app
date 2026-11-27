@@ -1,0 +1,17 @@
+<resources>
+    <string name="home_title">Hôm nay bạn muốn xem gì?</string>
+    <string name="home_search_hint">Tìm kiếm</string>
+    <string name="home_popular_heading">Phổ biến nhất</string>
+    <string name="home_category_movies">Phim lẻ</string>
+    <string name="home_category_series">Phim bộ</string>
+    <string name="home_category_anime">Anime</string>
+    <string name="home_category_novelas">Telenovela</string>
+    <string name="home_category_documentaries">Phim tài liệu</string>
+    <string name="home_row_empty">Chưa có gì để hiển thị.</string>
+    <string name="home_row_error">Không tải được các phim này.</string>
+    <string name="home_retry">Thử lại</string>
+    <string name="home_favorites_title">Yêu thích</string>
+    <string name="home_favorites_subtitle">Đã lưu để xem bất cứ lúc nào.</string>
+    <string name="home_favorites_view_all">Xem tất cả</string>
+    <string name="home_favorites_loading">Đang tải phim</string>
+</resources>

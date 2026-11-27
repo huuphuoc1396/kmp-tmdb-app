@@ -11,6 +11,11 @@ final class HomeLanguageTests: XCTestCase {
         XCTAssertEqual(HomeLanguage.from(preferredLocalizations: ["en"]), .enUs)
     }
 
+    func testVietnameseMapsToViVn() {
+        XCTAssertEqual(HomeLanguage.from(preferredLocalizations: ["vi"]), .viVn)
+        XCTAssertEqual(HomeLanguage.from(preferredLocalizations: ["vi-VN"]), .viVn)
+    }
+
     func testOtherLanguageMapsToEnUs() {
         XCTAssertEqual(HomeLanguage.from(preferredLocalizations: ["es"]), .enUs)
     }

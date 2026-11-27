@@ -10,15 +10,18 @@ enum TitleDetailsFormat {
             return "\(day)/\(month)/\(year)"
         case .enUs:
             return "\(month)/\(day)/\(year)"
+        case .viVn:
+            return "\(date.day) thg \(date.month), \(date.year)"
         }
     }
 
-    static func runtime(minutes: Int) -> String {
+    static func runtime(minutes: Int, language: Language) -> String {
         let hours = minutes / 60
         let rest = minutes % 60
-        if hours == 0 { return "\(rest)m" }
-        if rest == 0 { return "\(hours)h" }
-        return "\(hours)h \(rest)m"
+        let (hourUnit, minuteUnit) = language == .viVn ? (" giờ", " phút") : ("h", "m")
+        if hours == 0 { return "\(rest)\(minuteUnit)" }
+        if rest == 0 { return "\(hours)\(hourUnit)" }
+        return "\(hours)\(hourUnit) \(rest)\(minuteUnit)"
     }
 
     static func nameWithYear(_ name: String, year: Int?) -> String {

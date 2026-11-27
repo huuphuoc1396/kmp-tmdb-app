@@ -164,6 +164,7 @@
 				en,
 				Base,
 				"pt-BR",
+				vi,
 			);
 			mainGroup = B10000000000000000000011;
 			minimizedProjectReferenceProxies = 1;
