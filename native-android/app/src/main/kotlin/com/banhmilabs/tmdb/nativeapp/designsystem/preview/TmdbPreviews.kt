@@ -9,11 +9,13 @@ import com.banhmilabs.tmdb.nativeapp.designsystem.TmdbTheme
 
 @Preview(name = "English", locale = "en", device = Devices.PHONE)
 @Preview(name = "Português (Brasil)", locale = "pt-rBR", device = Devices.PHONE)
+@Preview(name = "Tiếng Việt", locale = "vi", device = Devices.PHONE)
 @Preview(name = "Large text", locale = "en", fontScale = 2f, device = Devices.PHONE)
 internal annotation class TmdbPreviews
 
 @Preview(name = "English", locale = "en")
 @Preview(name = "Português (Brasil)", locale = "pt-rBR")
+@Preview(name = "Tiếng Việt", locale = "vi")
 @Preview(name = "Large text", locale = "en", fontScale = 2f)
 internal annotation class TmdbComponentPreviews
 

@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Depends on: 01-shared-core-and-cmp
-Status: Todo
+Status: Done
 
 ## Goal
 With the device set to Vietnamese, the `native-android` app shows every screen in Vietnamese, with Vietnamese dates
