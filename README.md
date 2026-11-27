@@ -191,8 +191,8 @@ API), Detekt + ktlint, Kover (80% on `domain` / `data`), Konsist.
 Requirements: JDK 21, Android SDK (`sdk.dir` in `local.properties`), and macOS + Xcode 16+ for iOS (without them the
 iOS targets are skipped).
 
-Add your TMDB **API Read Access Token** as `TMDB_ACCESS_TOKEN` in `secrets.properties` (env var on CI); without it,
-TMDB calls fail with `Unauthorized`:
+Add your TMDB **API Read Access Token** as `TMDB_ACCESS_TOKEN` in `secrets.properties` (or as an environment
+variable); without it, TMDB calls fail with `Unauthorized`:
 
 ```bash
 cp secrets.properties.example secrets.properties

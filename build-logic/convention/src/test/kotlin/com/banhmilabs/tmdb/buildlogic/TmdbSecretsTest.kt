@@ -25,6 +25,16 @@ class TmdbSecretsTest {
     }
 
     @Test
+    fun blankTokenRendersTheSameSourceEveryTime() {
+        assertEquals(renderBlank(), renderBlank())
+    }
+
+    @Test
+    fun tokenGetsAFreshRandomSalt() {
+        assertFalse(saltFor(TOKEN).contentEquals(saltFor(TOKEN)))
+    }
+
+    @Test
     fun renderedSourceDeclaresInternalObjectInNetworkPackage() {
         val source = renderSecretsSource(obfuscate(TOKEN, salt), salt)
 
@@ -47,6 +57,8 @@ class TmdbSecretsTest {
 
         assertEquals(token, deobfuscate(obfuscate(token, salt)))
     }
+
+    private fun renderBlank(): String = saltFor("").let { renderSecretsSource(obfuscate("", it), it) }
 
     private fun deobfuscate(data: ByteArray): String =
         ByteArray(data.size) { (data[it].toInt() xor salt[it % salt.size].toInt()).toByte() }.decodeToString()
