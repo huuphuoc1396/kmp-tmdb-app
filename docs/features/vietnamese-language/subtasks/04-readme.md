@@ -2,7 +2,7 @@
 
 Feature: [task.md](../task.md)
 Depends on: 02-native-android, 03-native-ios
-Status: Todo
+Status: Done
 
 ## Goal
 Once all three apps speak Vietnamese, the README tells readers the app works in English, Brazilian Portuguese and

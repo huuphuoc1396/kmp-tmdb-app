@@ -9,7 +9,7 @@
 
 ## Overview
 
-Find films, series, anime and novelas to watch, in English or Brazilian Portuguese.
+Find films, series, anime and novelas to watch, in English, Brazilian Portuguese or Vietnamese.
 
 - **Onboarding**: a welcome screen on first launch.
 - **Home**: category tabs with featured and most popular rows, pull-to-refresh, works offline.
@@ -115,7 +115,7 @@ sequenceDiagram
 ```
 
 - **Stale-while-revalidate**: TTL 6 h for home lists, 24 h for details.
-- **Per language**: cache keyed by `en-US` / `pt-BR`.
+- **Per language**: cache keyed by `en-US` / `pt-BR` / `vi-VN`.
 - **Errors keep the cache**: failures become `AppError` (`Network`, `Unauthorized`, `NotFound`, `Unknown`) and never
   clear cached data.
 - **Favorites** are local only.

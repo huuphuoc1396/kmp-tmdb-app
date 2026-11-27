@@ -30,7 +30,7 @@ Screens use the tokens in `app/src/main/kotlin/com/banhmilabs/tmdb/nativeapp/des
 
 Compose previews work as in `cmp`: each screen's `<Feature>Content` and each component has `private` previews at the
 end of its own file (`@TmdbPreviews` / `@TmdbComponentPreviews` with `TmdbPreview { }` from `designsystem/preview`:
-English, pt-BR, large text). `DesignSystemCatalogPreview` in `designsystem/catalog` shows every token and component
+English, pt-BR, Vietnamese, large text). `DesignSystemCatalogPreview` in `designsystem/catalog` shows every token and component
 with its usage; add new ones to it.
 
 ## Checks

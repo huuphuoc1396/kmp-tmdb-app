@@ -1,6 +1,6 @@
 # kmp-tmdb-app
 
-Kotlin Multiplatform shared core for a TMDB discovery app (films, series, anime, novelas; en + pt-BR).
+Kotlin Multiplatform shared core for a TMDB discovery app (films, series, anime, novelas; en + pt-BR + vi).
 Everything lives on `main` in directories: shared core (`core/`, `service/`), the Compose Multiplatform app
 `cmp/`, and the standalone native apps `native-android/` and `native-ios/`.
 Full design: `docs/architecture.md`.
@@ -76,7 +76,7 @@ Full (when the user asks, or before opening a PR):
 - Use cases are optional: create one only when it combines repositories, applies business rules, shapes data for a screen, or is reused by two features. Otherwise the ViewModel calls the repository directly. Never write a use case that only forwards.
 - Errors map to `AppError` (Network, Unauthorized, NotFound, Unknown) wrapped in `AppResult`; an error never clears cached data.
 - Refresh is stale-while-revalidate: lists store `fetchedAt`; TTL 6 h for home lists, 24 h for details.
-- Cached content is stored per language (`pt-BR` / `en-US`). Favorites are local-only.
+- Cached content is stored per language (`pt-BR` / `en-US` / `vi-VN`). Favorites are local-only.
 - Platform code goes through `expect`/`actual` (`DatabaseDriverFactory`, master key in `core:security`).
 - `DatabaseDriverFactory.create(schema, name, passphrase)` opens the database with SQLCipher when given a passphrase
   from `DatabaseKeys` (`core:security`); a database that cannot be opened with it is deleted and recreated. `data`
@@ -174,7 +174,7 @@ file uses the package of its path (`service/title/domain` → `com.banhmilabs.tm
 | Remote images (posters) | Coil 3 `AsyncImage`; the loader (Ktor network fetcher) is set in `App()` | `cmp/*` |
 | Confirm removing a favorite (cmp; `removeFavoriteLabel()` for the heart button) | `RemoveFavoriteDialog` | `cmp/designsystem` |
 | Poster image or name placeholder at any size (cmp) | `PosterTile` (`PosterRow` for a row of 124×188 posters) | `cmp/designsystem` |
-| Compose previews (cmp and native-android; English, pt-BR, large text, in `TmdbTheme` on `surface`) | `TmdbPreview { }` with `@TmdbPreviews` (phone frame) for `<Feature>Content`, `@TmdbComponentPreviews` for components; `private` previews at the end of the composable's own file (no separate preview files), sample data shared by a screen and its components is `internal` in the `*Screen.kt`; every non-private composable but `*Screen`/`App` has one, posters show the name placeholder | `cmp/designsystem` (same in `native-android` `designsystem/preview`) |
+| Compose previews (cmp and native-android; English, pt-BR, Vietnamese, large text, in `TmdbTheme` on `surface`) | `TmdbPreview { }` with `@TmdbPreviews` (phone frame) for `<Feature>Content`, `@TmdbComponentPreviews` for components; `private` previews at the end of the composable's own file (no separate preview files), sample data shared by a screen and its components is `internal` in the `*Screen.kt`; every non-private composable but `*Screen`/`App` has one, posters show the name placeholder | `cmp/designsystem` (same in `native-android` `designsystem/preview`) |
 | See every design-system token and component with its usage (cmp, native-android) | `DesignSystemCatalogPreview` (Android Studio preview; add new tokens and components to it) | `cmp/designsystem` `catalog/` (same in `native-android`) |
 | "year · genre" line, unknown parts left out (cmp) | `metaLine(year, genre)` | `cmp/designsystem` |
 | Spacing scale and shared sizes (touch target, icons, border) | `TmdbSpacing` (`xxs` 4 … `xxxl` 48), `TmdbSize` | `cmp/designsystem` (same names in `native-android`, `native-ios`) |
