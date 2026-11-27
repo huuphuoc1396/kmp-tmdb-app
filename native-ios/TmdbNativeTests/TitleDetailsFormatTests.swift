@@ -13,16 +13,30 @@ final class TitleDetailsFormatTests: XCTestCase {
         XCTAssertEqual(TitleDetailsFormat.releaseDate(date, language: .enUs), "12/05/2021")
     }
 
+    func testReleaseDateInVietnamese() {
+        XCTAssertEqual(TitleDetailsFormat.releaseDate(date, language: .viVn), "5 thg 12, 2021")
+    }
+
+    func testRuntimeInVietnamese() {
+        XCTAssertEqual(TitleDetailsFormat.runtime(minutes: 130, language: .viVn), "2 giờ 10 phút")
+        XCTAssertEqual(TitleDetailsFormat.runtime(minutes: 120, language: .viVn), "2 giờ")
+        XCTAssertEqual(TitleDetailsFormat.runtime(minutes: 45, language: .viVn), "45 phút")
+    }
+
+    func testRuntimeInPortugueseIsUnchanged() {
+        XCTAssertEqual(TitleDetailsFormat.runtime(minutes: 113, language: .ptBr), "1h 53m")
+    }
+
     func testRuntimeWithHoursAndMinutes() {
-        XCTAssertEqual(TitleDetailsFormat.runtime(minutes: 113), "1h 53m")
+        XCTAssertEqual(TitleDetailsFormat.runtime(minutes: 113, language: .enUs), "1h 53m")
     }
 
     func testRuntimeOfWholeHours() {
-        XCTAssertEqual(TitleDetailsFormat.runtime(minutes: 120), "2h")
+        XCTAssertEqual(TitleDetailsFormat.runtime(minutes: 120, language: .enUs), "2h")
     }
 
     func testRuntimeUnderAnHour() {
-        XCTAssertEqual(TitleDetailsFormat.runtime(minutes: 45), "45m")
+        XCTAssertEqual(TitleDetailsFormat.runtime(minutes: 45, language: .enUs), "45m")
     }
 
     func testNameWithYearKeepsYearAttached() {
