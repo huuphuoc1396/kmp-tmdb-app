@@ -23,6 +23,20 @@ class TrailerSelectionTest {
     }
 
     @Test
+    fun trailerPrefersVietnamese() {
+        val videos = listOf(trailer("en1", "en"), trailer("vi1", "vi"))
+
+        assertEquals("vi1", movie(withVideos(videos), Language.VI_VN).trailerKey)
+    }
+
+    @Test
+    fun vietnameseTrailerFallsBackToEnglish() {
+        val videos = listOf(trailer("pt1", "pt"), trailer("en1", "en"))
+
+        assertEquals("en1", movie(withVideos(videos), Language.VI_VN).trailerKey)
+    }
+
+    @Test
     fun trailerPrefersOfficial() {
         val videos = listOf(trailer("fan", "en", official = false), trailer("official", "en"))
 

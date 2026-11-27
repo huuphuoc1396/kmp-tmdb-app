@@ -25,14 +25,14 @@ class ObserveFavoriteTitles(private val favorites: FavoritesRepository, private 
         }
 
     private fun observeOne(id: TitleId, language: Language): Flow<FavoriteTitle> = channelFlow {
-        val fallbackLanguage = Language.entries.first { it != language }
         launch {
             if (details.observeSummary(id, language).first() == null) details.refresh(id, language)
         }
-        combine(
-            details.observeSummary(id, language),
-            details.observeSummary(id, fallbackLanguage),
-        ) { current, fallback -> FavoriteTitle(id, current ?: fallback) }
-            .collect { send(it) }
+        val languages = listOf(language) + (FALLBACK_ORDER - language)
+        combine(languages.map { details.observeSummary(id, it) }) { summaries ->
+            FavoriteTitle(id, summaries.firstNotNullOfOrNull { it })
+        }.collect { send(it) }
     }.distinctUntilChanged()
 }
+
+private val FALLBACK_ORDER = listOf(Language.EN_US, Language.PT_BR, Language.VI_VN)

@@ -13,16 +13,21 @@ internal fun formatReleaseDate(date: LocalDate, language: Language): String {
     return when (language) {
         Language.PT_BR -> "$day/$month/$year"
         Language.EN_US -> "$month/$day/$year"
+        Language.VI_VN -> "${date.day} thg ${date.month.number}, $year"
     }
 }
 
-internal fun formatRuntime(minutes: Int): String {
+internal fun formatRuntime(minutes: Int, language: Language): String {
     val hours = minutes / MINUTES_PER_HOUR
     val rest = minutes % MINUTES_PER_HOUR
+    val (hourUnit, minuteUnit) = when (language) {
+        Language.VI_VN -> " giờ" to " phút"
+        Language.PT_BR, Language.EN_US -> "h" to "m"
+    }
     return when {
-        hours == 0 -> "${rest}m"
-        rest == 0 -> "${hours}h"
-        else -> "${hours}h ${rest}m"
+        hours == 0 -> "$rest$minuteUnit"
+        rest == 0 -> "$hours$hourUnit"
+        else -> "$hours$hourUnit $rest$minuteUnit"
     }
 }
 

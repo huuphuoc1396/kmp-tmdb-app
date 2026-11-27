@@ -1,0 +1,14 @@
+<resources>
+    <string name="details_back">Quay lại</string>
+    <string name="details_watch_trailer">Xem trailer</string>
+    <string name="details_cast">Diễn viên chính</string>
+    <string name="details_genres">Thể loại</string>
+    <string name="details_recommendations">Đề xuất</string>
+    <string name="details_no_synopsis">Chưa có tóm tắt.</string>
+    <string name="details_not_rated">NR</string>
+    <string name="details_not_rated_description">Chưa có đánh giá</string>
+    <string name="details_rating_description">Đánh giá %1$d%%</string>
+    <string name="details_error">Không tải được phim này.</string>
+    <string name="details_retry">Thử lại</string>
+    <string name="details_favorite">Yêu thích</string>
+</resources>

@@ -1,0 +1,8 @@
+<resources>
+    <string name="remove_favorite_title">Xóa khỏi danh sách yêu thích?</string>
+    <string name="remove_favorite_message">“%1$s” sẽ bị xóa khỏi danh sách của bạn. Bạn có thể thêm lại sau.</string>
+    <string name="remove_favorite_message_unknown">Phim này sẽ bị xóa khỏi danh sách của bạn. Bạn có thể thêm lại sau.</string>
+    <string name="remove_favorite_cancel">Hủy</string>
+    <string name="remove_favorite_confirm">Xóa</string>
+    <string name="remove_favorite_heart">Xóa khỏi yêu thích</string>
+</resources>
